@@ -1,0 +1,771 @@
+
+> frontend@0.1.0 start
+> react-scripts start
+
+(node:9673) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:9673) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+Starting the development server...
+
+Compiled with warnings.
+
+[eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+src/Post.js
+  Line 7:11:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                 jsx-a11y/alt-text
+  Line 12:13:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+src/Post.js
+  Line 7:11:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                 jsx-a11y/alt-text
+  Line 12:13:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+webpack compiled with 1 warning
+Watchpack Error (watcher): Error: EACCES: permission denied, watch '/data/data'
+Watchpack Error (watcher): Error: EACCES: permission denied, watch '/data'
+Watchpack Error (watcher): Error: EACCES: permission denied, watch '/'
+Watchpack Error (initial scan): Error: EACCES: permission denied, scandir '/data/data'
+Watchpack Error (initial scan): Error: EACCES: permission denied, scandir '/'
+Watchpack Error (initial scan): Error: EACCES: permission denied, scandir '/data'
+Compiled with warnings.
+
+[eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+src/Post.js
+  Line 7:11:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                 jsx-a11y/alt-text
+  Line 12:13:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+src/Post.js
+  Line 7:11:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                 jsx-a11y/alt-text
+  Line 12:13:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+src/Post.js
+  Line 7:11:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                 jsx-a11y/alt-text
+  Line 12:13:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+src/Post.js
+  Line 7:11:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                 jsx-a11y/alt-text
+  Line 12:13:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+webpack compiled with 1 warning
+Compiling...
+Failed to compile.
+
+[eslint] 
+src/Post.js
+Syntax error: Unexpected token (12:36) (12:36)
+WARNING in [eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+ERROR in ./src/Post.js
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+SyntaxError: /data/data/com.termux/files/home/my-blog/frontend/src/Post.js: Unexpected token (12:36)
+
+  10 |           <h2>{title}</h2>
+  11 |           <p className="info">
+> 12 |             <a className="author">{</a>
+     |                                     ^
+  13 |             <time dateTime={formatISO9075(new Date(createdAt))}>
+  14 |             {format(new Date(createdAt), 'MMMM d, yyyy h:mm a')}
+  15 |           </time>
+    at constructor (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:365:19)
+    at FlowParserMixin.raise (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+    at FlowParserMixin.unexpected (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:6619:16)
+    at FlowParserMixin.jsxParseIdentifier (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4569:12)
+    at FlowParserMixin.jsxParseNamespacedName (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4576:23)
+    at FlowParserMixin.jsxParseElementName (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4585:21)
+    at FlowParserMixin.jsxParseOpeningElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4661:22)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4686:33)
+    at FlowParserMixin.jsxParseElement (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4749:17)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4759:19)
+    at FlowParserMixin.parseExprSubscripts (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+    at FlowParserMixin.parseUpdate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+    at FlowParserMixin.parseMaybeUnary (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+    at FlowParserMixin.parseExprOps (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+    at FlowParserMixin.parseMaybeConditional (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+    at /data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3498:39
+    at FlowParserMixin.tryParse (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:6907:20)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3498:18)
+    at FlowParserMixin.parseExpressionBase (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10784:23)
+    at /data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10780:39
+    at FlowParserMixin.allowInAnd (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:12426:12)
+    at FlowParserMixin.parseExpression (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10780:17)
+    at FlowParserMixin.jsxParseExpressionContainer (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4632:31)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4711:36)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4698:32)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4698:32)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4698:32)
+    at FlowParserMixin.jsxParseElement (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4749:17)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4759:19)
+    at FlowParserMixin.parseExprSubscripts (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+    at FlowParserMixin.parseUpdate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+    at FlowParserMixin.parseMaybeUnary (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+    at FlowParserMixin.parseExprOps (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+    at FlowParserMixin.parseMaybeConditional (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+    at /data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3498:39
+    at FlowParserMixin.tryParse (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:6907:20)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3498:18)
+    at /data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10800:39
+    at FlowParserMixin.allowInAnd (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:12426:12)
+    at FlowParserMixin.parseMaybeAssignAllowIn (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+    at FlowParserMixin.parseMaybeAssignAllowInOrVoidPattern (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:12493:17)
+    at FlowParserMixin.parseParenAndDistinguishExpression (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11675:28)
+    at FlowParserMixin.parseParenAndDistinguishExpression (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3591:18)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11331:23)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+    at FlowParserMixin.parseExprSubscripts (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+
+ERROR in [eslint] 
+src/Post.js
+  Line 12:36:  Parsing error: Unexpected token (12:36)
+
+webpack compiled with 2 errors and 1 warning
+Compiling...
+Failed to compile.
+
+[eslint] 
+src/Post.js
+Syntax error: Unterminated regular expression. (12:43) (12:43)
+WARNING in [eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+ERROR in ./src/Post.js
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+SyntaxError: /data/data/com.termux/files/home/my-blog/frontend/src/Post.js: Unterminated regular expression. (12:43)
+
+  10 |           <h2>{title}</h2>
+  11 |           <p className="info">
+> 12 |             <a className="author">{author</a>
+     |                                            ^
+  13 |             <time dateTime={formatISO9075(new Date(createdAt))}>
+  14 |             {format(new Date(createdAt), 'MMMM d, yyyy h:mm a')}
+  15 |           </time>
+    at constructor (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:365:19)
+    at FlowParserMixin.raise (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+    at FlowParserMixin.readRegexp (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:6328:20)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11313:16)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+    at FlowParserMixin.parseExprSubscripts (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+    at FlowParserMixin.parseUpdate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+    at FlowParserMixin.parseMaybeUnary (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+    at FlowParserMixin.parseExprOpBaseRightExpr (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10986:34)
+    at FlowParserMixin.parseExprOpRightExpr (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10981:21)
+    at FlowParserMixin.parseExprOp (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10947:27)
+    at FlowParserMixin.parseExprOps (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10908:17)
+    at FlowParserMixin.parseMaybeConditional (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3549:18)
+    at FlowParserMixin.parseExpressionBase (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10784:23)
+    at /data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10780:39
+    at FlowParserMixin.allowInAnd (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:12426:12)
+    at FlowParserMixin.parseExpression (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10780:17)
+    at FlowParserMixin.jsxParseExpressionContainer (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4632:31)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4711:36)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4698:32)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4698:32)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4698:32)
+    at FlowParserMixin.jsxParseElement (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4749:17)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4759:19)
+    at FlowParserMixin.parseExprSubscripts (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+    at FlowParserMixin.parseUpdate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+    at FlowParserMixin.parseMaybeUnary (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+    at FlowParserMixin.parseExprOps (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+    at FlowParserMixin.parseMaybeConditional (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+    at /data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3498:39
+    at FlowParserMixin.tryParse (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:6907:20)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3498:18)
+    at /data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10800:39
+    at FlowParserMixin.allowInAnd (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:12426:12)
+    at FlowParserMixin.parseMaybeAssignAllowIn (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+    at FlowParserMixin.parseMaybeAssignAllowInOrVoidPattern (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:12493:17)
+    at FlowParserMixin.parseParenAndDistinguishExpression (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11675:28)
+    at FlowParserMixin.parseParenAndDistinguishExpression (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3591:18)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11331:23)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+    at FlowParserMixin.parseExprSubscripts (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+    at FlowParserMixin.parseUpdate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+    at FlowParserMixin.parseMaybeUnary (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+    at FlowParserMixin.parseExprOps (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+
+ERROR in [eslint] 
+src/Post.js
+  Line 12:43:  Parsing error: Unterminated regular expression. (12:43)
+
+webpack compiled with 2 errors and 1 warning
+Compiling...
+Failed to compile.
+
+[eslint] 
+src/Post.js
+Syntax error: Unterminated regular expression. (12:52) (12:52)
+WARNING in [eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+ERROR in ./src/Post.js
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+SyntaxError: /data/data/com.termux/files/home/my-blog/frontend/src/Post.js: Unterminated regular expression. (12:52)
+
+  10 |           <h2>{title}</h2>
+  11 |           <p className="info">
+> 12 |             <a className="author">{author.username</a>
+     |                                                     ^
+  13 |             <time dateTime={formatISO9075(new Date(createdAt))}>
+  14 |             {format(new Date(createdAt), 'MMMM d, yyyy h:mm a')}
+  15 |           </time>
+    at constructor (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:365:19)
+    at FlowParserMixin.raise (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+    at FlowParserMixin.readRegexp (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:6328:20)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11313:16)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+    at FlowParserMixin.parseExprSubscripts (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+    at FlowParserMixin.parseUpdate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+    at FlowParserMixin.parseMaybeUnary (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+    at FlowParserMixin.parseExprOpBaseRightExpr (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10986:34)
+    at FlowParserMixin.parseExprOpRightExpr (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10981:21)
+    at FlowParserMixin.parseExprOp (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10947:27)
+    at FlowParserMixin.parseExprOps (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10908:17)
+    at FlowParserMixin.parseMaybeConditional (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3549:18)
+    at FlowParserMixin.parseExpressionBase (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10784:23)
+    at /data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10780:39
+    at FlowParserMixin.allowInAnd (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:12426:12)
+    at FlowParserMixin.parseExpression (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10780:17)
+    at FlowParserMixin.jsxParseExpressionContainer (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4632:31)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4711:36)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4698:32)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4698:32)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4698:32)
+    at FlowParserMixin.jsxParseElement (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4749:17)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4759:19)
+    at FlowParserMixin.parseExprSubscripts (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+    at FlowParserMixin.parseUpdate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+    at FlowParserMixin.parseMaybeUnary (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+    at FlowParserMixin.parseExprOps (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+    at FlowParserMixin.parseMaybeConditional (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+    at /data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3498:39
+    at FlowParserMixin.tryParse (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:6907:20)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3498:18)
+    at /data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10800:39
+    at FlowParserMixin.allowInAnd (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:12426:12)
+    at FlowParserMixin.parseMaybeAssignAllowIn (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+    at FlowParserMixin.parseMaybeAssignAllowInOrVoidPattern (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:12493:17)
+    at FlowParserMixin.parseParenAndDistinguishExpression (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11675:28)
+    at FlowParserMixin.parseParenAndDistinguishExpression (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3591:18)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11331:23)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+    at FlowParserMixin.parseExprSubscripts (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+    at FlowParserMixin.parseUpdate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+    at FlowParserMixin.parseMaybeUnary (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+    at FlowParserMixin.parseExprOps (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+
+ERROR in [eslint] 
+src/Post.js
+  Line 12:52:  Parsing error: Unterminated regular expression. (12:52)
+
+webpack compiled with 2 errors and 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+src/Post.js
+  Line 7:11:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                 jsx-a11y/alt-text
+  Line 12:13:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+src/Post.js
+  Line 7:11:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                 jsx-a11y/alt-text
+  Line 12:13:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+src/Post.js
+  Line 7:11:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                 jsx-a11y/alt-text
+  Line 12:13:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+src/Post.js
+  Line 7:11:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                 jsx-a11y/alt-text
+  Line 12:13:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+src/Post.js
+  Line 7:11:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                 jsx-a11y/alt-text
+  Line 12:13:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+src/Post.js
+  Line 7:11:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                 jsx-a11y/alt-text
+  Line 12:13:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+src/Post.js
+  Line 7:11:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                 jsx-a11y/alt-text
+  Line 12:13:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+src/Post.js
+  Line 7:11:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                 jsx-a11y/alt-text
+  Line 12:13:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+webpack compiled with 1 warning
+Compiling...
+Failed to compile.
+
+[eslint] 
+src/Post.js
+Syntax error: Unterminated regular expression. (12:43) (12:43)
+WARNING in [eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+ERROR in ./src/Post.js
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+SyntaxError: /data/data/com.termux/files/home/my-blog/frontend/src/Post.js: Unterminated regular expression. (12:43)
+
+  10 |           <h2>{title}</h2>
+  11 |           <p className="info">
+> 12 |             <a className="author">{author</a>
+     |                                            ^
+  13 |             <time dateTime={formatISO9075(new Date(createdAt))}>
+  14 |             {format(new Date(createdAt), 'MMMM d, yyyy h:mm a')}
+  15 |           </time>
+    at constructor (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:365:19)
+    at FlowParserMixin.raise (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+    at FlowParserMixin.readRegexp (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:6328:20)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11313:16)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+    at FlowParserMixin.parseExprSubscripts (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+    at FlowParserMixin.parseUpdate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+    at FlowParserMixin.parseMaybeUnary (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+    at FlowParserMixin.parseExprOpBaseRightExpr (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10986:34)
+    at FlowParserMixin.parseExprOpRightExpr (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10981:21)
+    at FlowParserMixin.parseExprOp (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10947:27)
+    at FlowParserMixin.parseExprOps (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10908:17)
+    at FlowParserMixin.parseMaybeConditional (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3549:18)
+    at FlowParserMixin.parseExpressionBase (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10784:23)
+    at /data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10780:39
+    at FlowParserMixin.allowInAnd (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:12426:12)
+    at FlowParserMixin.parseExpression (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10780:17)
+    at FlowParserMixin.jsxParseExpressionContainer (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4632:31)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4711:36)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4698:32)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4698:32)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4698:32)
+    at FlowParserMixin.jsxParseElement (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4749:17)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4759:19)
+    at FlowParserMixin.parseExprSubscripts (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+    at FlowParserMixin.parseUpdate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+    at FlowParserMixin.parseMaybeUnary (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+    at FlowParserMixin.parseExprOps (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+    at FlowParserMixin.parseMaybeConditional (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+    at /data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3498:39
+    at FlowParserMixin.tryParse (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:6907:20)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3498:18)
+    at /data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10800:39
+    at FlowParserMixin.allowInAnd (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:12426:12)
+    at FlowParserMixin.parseMaybeAssignAllowIn (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+    at FlowParserMixin.parseMaybeAssignAllowInOrVoidPattern (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:12493:17)
+    at FlowParserMixin.parseParenAndDistinguishExpression (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11675:28)
+    at FlowParserMixin.parseParenAndDistinguishExpression (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3591:18)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11331:23)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+    at FlowParserMixin.parseExprSubscripts (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+    at FlowParserMixin.parseUpdate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+    at FlowParserMixin.parseMaybeUnary (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+    at FlowParserMixin.parseExprOps (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+
+ERROR in [eslint] 
+src/Post.js
+  Line 12:43:  Parsing error: Unterminated regular expression. (12:43)
+
+webpack compiled with 2 errors and 1 warning
+Compiling...
+Failed to compile.
+
+[eslint] 
+src/Post.js
+Syntax error: Unterminated regular expression. (12:52) (12:52)
+WARNING in [eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+ERROR in ./src/Post.js
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+SyntaxError: /data/data/com.termux/files/home/my-blog/frontend/src/Post.js: Unterminated regular expression. (12:52)
+
+  10 |           <h2>{title}</h2>
+  11 |           <p className="info">
+> 12 |             <a className="author">{author.username</a>
+     |                                                     ^
+  13 |             <time dateTime={formatISO9075(new Date(createdAt))}>
+  14 |             {format(new Date(createdAt), 'MMMM d, yyyy h:mm a')}
+  15 |           </time>
+    at constructor (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:365:19)
+    at FlowParserMixin.raise (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+    at FlowParserMixin.readRegexp (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:6328:20)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11313:16)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+    at FlowParserMixin.parseExprSubscripts (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+    at FlowParserMixin.parseUpdate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+    at FlowParserMixin.parseMaybeUnary (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+    at FlowParserMixin.parseExprOpBaseRightExpr (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10986:34)
+    at FlowParserMixin.parseExprOpRightExpr (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10981:21)
+    at FlowParserMixin.parseExprOp (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10947:27)
+    at FlowParserMixin.parseExprOps (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10908:17)
+    at FlowParserMixin.parseMaybeConditional (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3549:18)
+    at FlowParserMixin.parseExpressionBase (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10784:23)
+    at /data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10780:39
+    at FlowParserMixin.allowInAnd (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:12426:12)
+    at FlowParserMixin.parseExpression (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10780:17)
+    at FlowParserMixin.jsxParseExpressionContainer (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4632:31)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4711:36)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4698:32)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4698:32)
+    at FlowParserMixin.jsxParseElementAt (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4698:32)
+    at FlowParserMixin.jsxParseElement (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4749:17)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4759:19)
+    at FlowParserMixin.parseExprSubscripts (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+    at FlowParserMixin.parseUpdate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+    at FlowParserMixin.parseMaybeUnary (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+    at FlowParserMixin.parseExprOps (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+    at FlowParserMixin.parseMaybeConditional (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10881:23)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10831:21)
+    at /data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3498:39
+    at FlowParserMixin.tryParse (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:6907:20)
+    at FlowParserMixin.parseMaybeAssign (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3498:18)
+    at /data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10800:39
+    at FlowParserMixin.allowInAnd (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:12426:12)
+    at FlowParserMixin.parseMaybeAssignAllowIn (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10800:17)
+    at FlowParserMixin.parseMaybeAssignAllowInOrVoidPattern (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:12493:17)
+    at FlowParserMixin.parseParenAndDistinguishExpression (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11675:28)
+    at FlowParserMixin.parseParenAndDistinguishExpression (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:3591:18)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11331:23)
+    at FlowParserMixin.parseExprAtom (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:4764:20)
+    at FlowParserMixin.parseExprSubscripts (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11081:23)
+    at FlowParserMixin.parseUpdate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11066:21)
+    at FlowParserMixin.parseMaybeUnary (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:11046:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10899:61)
+    at FlowParserMixin.parseExprOps (/data/data/com.termux/files/home/my-blog/frontend/node_modules/@babel/parser/lib/index.js:10904:23)
+
+ERROR in [eslint] 
+src/Post.js
+  Line 12:52:  Parsing error: Unterminated regular expression. (12:52)
+
+webpack compiled with 2 errors and 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+src/Post.js
+  Line 7:11:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                 jsx-a11y/alt-text
+  Line 12:13:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/App.js
+  Line 1:8:  'Post' is defined but never used    no-unused-vars
+  Line 2:8:  'Header' is defined but never used  no-unused-vars
+
+src/Header.js
+  Line 2:31:   'useState' is defined but never used                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  Line 16:6:   React Hook useEffect has a missing dependency: 'setUserInfo'. Either include it or remove the dependency array                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  Line 36:11:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src/Layout.js
+  Line 4:1:  Unexpected default export of anonymous function  import/no-anonymous-default-export
+
+src/Post.js
+  Line 7:11:   img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                 jsx-a11y/alt-text
+  Line 12:13:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+webpack compiled with 1 warning

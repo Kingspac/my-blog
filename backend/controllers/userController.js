@@ -25,19 +25,16 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   const { username, password } = req.body;
-
   const userDoc = await User.findOne({ username });
-
-  // ✅ Guard against user not found
   if (!userDoc) return res.status(400).json("wrong credentials");
 
   const passOk = bcrypt.compareSync(password, userDoc.password);
-
   if (passOk) {
     jwt.sign({ username, id: userDoc._id }, secret, {}, (error, token) => {
       if (error) throw error;
       res.cookie("token", token).json({
-        id: userDoc._id, username,
+        id: userDoc._id,
+        username,
       });
     });
   } else {
@@ -47,8 +44,6 @@ exports.login = async (req, res) => {
 
 exports.profile = (req, res) => {
   const { token } = req.cookies;
-
-  // ✅ Guard against missing token
   if (!token) return res.status(401).json("no token");
 
   jwt.verify(token, secret, {}, (error, info) => {
@@ -61,29 +56,33 @@ exports.logout = (req, res) => {
   res.cookie("token", "").json("ok");
 };
 
-// ✅ Fixed: export as array so middleware and handler are both called
-exports.post = [
-  uploadMiddleware.single("files"), // matches frontend field name
+// ✅ Renamed: createPost handles POST /post
+exports.createPost = [
+  uploadMiddleware.single("files"),
   async (req, res) => {
-    const {originalname, path} = req.file;
+    const { originalname, path } = req.file;
     const parts = originalname.split(".");
     const ext = parts[parts.length - 1];
-    const  newPath = path + "." + ext;
+    const newPath = path + "." + ext;
     fs.renameSync(path, newPath);
-    
-    const {title, summary, content} = req.body;
-    const postDoc = await Post.create({
-      title,
-      summary,
-      content,
-      cover:newPath,
+
+    const { token } = req.cookies;
+    jwt.verify(token, secret, {}, async (error, info) => {
+      if (error) return res.status(403).json("invalid token");
+      const { title, summary, content } = req.body;
+      const postDoc = await Post.create({
+        title,
+        summary,
+        content,
+        cover: newPath,
+        author: info.id,
+      });
+      res.json({ postDoc });
     });
-    
-    res.json({postDoc});
   }
 ];
 
-exports.post = async (req,res)=>{
-  res.json(await Post.find());
-}
-
+// ✅ Renamed: getPosts handles GET /post
+exports.getPosts = async (req, res) => {
+  res.json(await Post.find().populate("author",["username"]));
+};
