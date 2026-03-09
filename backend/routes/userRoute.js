@@ -11,4 +11,7 @@ router.post("/post", userController.createPost);
 router.get("/post", userController.getPosts);
 router.get("/post/:id", userController.getPostId);
 router.put("/post", userController.editPost);
+router.delete("/post/:id", userController.deletePost);
+router.put("/post/:id/like", userController.likePost);
+router.post("/post/:id/comment", userController.addComment);
 module.exports = router; 
