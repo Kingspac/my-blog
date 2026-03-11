@@ -222,3 +222,61 @@ exports.addComment = async (req, res) => {
     res.json(newComment); // send back the new comment to display immediately
   });
 };
+// GET USER PROFILE — fetch user info and their posts
+exports.getProfile = async (req, res) => {
+  const { id } = req.params; // user ID from URL
+
+  try {
+    // Find the user but exclude password
+    const user = await User.findById(id).select("-password");
+    if (!user) return res.status(404).json("user not found");
+
+    // Find all posts by this user
+    const posts = await Post.find({ author: id })
+      .populate("author", ["username"])
+      .sort({ createdAt: -1 });
+
+    res.json({ user, posts });
+
+  } catch (e) {
+    res.status(500).json({ message: "Failed to get profile", error: e.message });
+  }
+};
+
+// UPDATE PROFILE — update bio and profile photo
+exports.updateProfile = [
+  uploadMiddleware.single("profilePhoto"),
+  async (req, res) => {
+    const { token } = req.cookies;
+
+    jwt.verify(token, secret, {}, async (error, info) => {
+      if (error) return res.status(403).json("invalid token");
+
+      try {
+        const { bio } = req.body;
+        const updateData = { bio };
+
+        // If a new photo was uploaded
+        if (req.file) {
+          const { originalname, path } = req.file;
+          const parts = originalname.split(".");
+          const ext = parts[parts.length - 1];
+          const newPath = path + "." + ext;
+          fs.renameSync(path, newPath);
+          updateData.profilePhoto = newPath;
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+          info.id,
+          updateData,
+          { new: true } // return updated document
+        ).select("-password");
+
+        res.json(updatedUser);
+
+      } catch (e) {
+        res.status(500).json({ message: "Failed to update profile", error: e.message });
+      }
+    });
+  }
+]; 

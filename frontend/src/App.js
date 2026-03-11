@@ -5,6 +5,7 @@ import RegisterPage from "./pages/RegisterPage.js";
 import PostPage from "./pages/PostPage.js";
 import EditPost from "./pages/EditPost.js";
 import CreatePost from "./CreatePost.js";
+import UserProfilePage from "./pages/UserProfilePage.js";
 import {Routes, Route} from "react-router-dom";
 import {UserContextProvider} from "./UserContext.js";
 import './App.css';
@@ -20,6 +21,7 @@ function App() {
           <Route path="/create" element={<CreatePost />} />
           <Route path="/post/:id" element={<PostPage />} />
           <Route path="/edit/:id" element={<EditPost />} />
+          <Route path="/profile/:id" element={<UserProfilePage />} />
         </Route>
       </Routes>
     </UserContextProvider>
