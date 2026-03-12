@@ -1,10 +1,9 @@
-
 const User = require('../models/User');
 const Post = require('../models/Post');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const multer = require("multer");
-const uploadMiddleware = multer({ dest: "uploads" });
+const uploadMiddleware = multer({ dest: "uploads", limits: { fileSize: 20 * 1024 * 1024 } }); // ✅ fixed: fileSize not cover
 const fs = require("fs");
 
 const salt = bcrypt.genSaltSync(10);
@@ -57,36 +56,48 @@ exports.logout = (req, res) => {
 };
 
 exports.createPost = [
-  uploadMiddleware.single("files"),
+  uploadMiddleware.single("cover"), // ✅ fixed: matches frontend data.append("cover")
   async (req, res) => {
-    const { originalname, path } = req.file;
-    const parts = originalname.split(".");
-    const ext = parts[parts.length - 1];
-    const newPath = path + "." + ext;
-    fs.renameSync(path, newPath);
-
     const { token } = req.cookies;
+
     jwt.verify(token, secret, {}, async (error, info) => {
       if (error) return res.status(403).json("invalid token");
-      const { title, summary, content } = req.body;
-      const postDoc = await Post.create({
-        title,
-        summary,
-        content,
-        cover: newPath,
-        author: info.id,
-      });
-      res.json({ postDoc });
+
+      try {
+        const { title, summary, content } = req.body;
+
+        let newPath = null;
+
+        // ✅ fixed: only process file if one was uploaded (cover is optional)
+        if (req.file) {
+          const { originalname, path } = req.file;
+          const parts = originalname.split(".");
+          const ext = parts[parts.length - 1];
+          newPath = path + "." + ext;
+          fs.renameSync(path, newPath);
+        }
+
+        const postDoc = await Post.create({
+          title,
+          summary,
+          content,
+          cover: newPath, // null if no cover uploaded
+          author: info.id,
+        });
+
+        res.json({ postDoc });
+      } catch (e) {
+        res.status(500).json({ message: "Failed to create post", error: e.message });
+      }
     });
   }
 ];
 
-// ✅ Fixed: array syntax, req.file typo, JSON.stringify, isAuthor check, updateOne
 exports.editPost = [
-  uploadMiddleware.single("file"),
+  uploadMiddleware.single("cover"), // ✅ fixed: consistent field name
   async (req, res) => {
     let newPath = null;
-    if (req.file) {                                         // ✅ was req.fil
+    if (req.file) {
       const { originalname, path } = req.file;
       const parts = originalname.split(".");
       const ext = parts[parts.length - 1];
@@ -103,13 +114,12 @@ exports.editPost = [
 
       if (!postDoc) return res.status(404).json("post not found");
 
-      // ✅ was JSON.Stringify(...) === JSON.Stringify() — wrong case, missing arg
       const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
-      if (!isAuthor) {                                      // ✅ was !author
+      if (!isAuthor) {
         return res.status(400).json("you are not the author");
       }
 
-      await postDoc.updateOne({                            // ✅ was postDoc.update()
+      await postDoc.updateOne({
         title,
         summary,
         content,
@@ -138,33 +148,7 @@ exports.getPostId = async (req, res) => {
 
 // DELETE POST — only the author can delete their post
 exports.deletePost = async (req, res) => {
-  const { id } = req.params; // get post ID from the URL
-
-  const { token } = req.cookies; // get the logged in user's token
-
-  // verify the token to know who is making the request
-  jwt.verify(token, secret, {}, async (error, info) => {
-    if (error) return res.status(403).json("invalid token");
-
-    // find the post in MongoDB
-    const postDoc = await Post.findById(id);
-    if (!postDoc) return res.status(404).json("post not found");
-
-    // check if the logged in user is the author
-    const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
-    if (!isAuthor) {
-      return res.status(403).json("you are not the author");
-    }
-
-    // if all checks pass — delete the post
-    await postDoc.deleteOne();
-    res.json("post deleted successfully");
-  });
-};
-
-// LIKE / UNLIKE a post — toggles like on and off
-exports.likePost = async (req, res) => {
-  const { id } = req.params; // post ID from URL
+  const { id } = req.params;
   const { token } = req.cookies;
 
   jwt.verify(token, secret, {}, async (error, info) => {
@@ -173,32 +157,50 @@ exports.likePost = async (req, res) => {
     const postDoc = await Post.findById(id);
     if (!postDoc) return res.status(404).json("post not found");
 
-    // Check if the user already liked this post
+    const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
+    if (!isAuthor) {
+      return res.status(403).json("you are not the author");
+    }
+
+    await postDoc.deleteOne();
+    res.json("post deleted successfully");
+  });
+};
+
+// LIKE / UNLIKE a post
+exports.likePost = async (req, res) => {
+  const { id } = req.params;
+  const { token } = req.cookies;
+
+  jwt.verify(token, secret, {}, async (error, info) => {
+    if (error) return res.status(403).json("invalid token");
+
+    const postDoc = await Post.findById(id);
+    if (!postDoc) return res.status(404).json("post not found");
+
     const alreadyLiked = postDoc.likes.includes(info.id);
 
     if (alreadyLiked) {
-      // User already liked — so remove their ID (unlike)
       postDoc.likes = postDoc.likes.filter(
         userId => userId.toString() !== info.id.toString()
       );
     } else {
-      // User hasn't liked — so add their ID (like)
       postDoc.likes.push(info.id);
     }
 
     await postDoc.save();
 
     res.json({
-      likes: postDoc.likes.length,       // total like count
-      liked: !alreadyLiked,              // did the user just like or unlike?
+      likes: postDoc.likes.length,
+      liked: !alreadyLiked,
     });
   });
 };
 
 // ADD COMMENT to a post
 exports.addComment = async (req, res) => {
-  const { id } = req.params; // post ID from URL
-  const { content } = req.body; // comment text from request body
+  const { id } = req.params;
+  const { content } = req.body;
   const { token } = req.cookies;
 
   jwt.verify(token, secret, {}, async (error, info) => {
@@ -207,7 +209,6 @@ exports.addComment = async (req, res) => {
     const postDoc = await Post.findById(id);
     if (!postDoc) return res.status(404).json("post not found");
 
-    // Create the new comment object
     const newComment = {
       content,
       author: info.id,
@@ -215,23 +216,21 @@ exports.addComment = async (req, res) => {
       createdAt: new Date(),
     };
 
-    // Push the comment into the comments array
     postDoc.comments.push(newComment);
     await postDoc.save();
 
-    res.json(newComment); // send back the new comment to display immediately
+    res.json(newComment);
   });
 };
-// GET USER PROFILE — fetch user info and their posts
+
+// GET USER PROFILE
 exports.getProfile = async (req, res) => {
-  const { id } = req.params; // user ID from URL
+  const { id } = req.params;
 
   try {
-    // Find the user but exclude password
     const user = await User.findById(id).select("-password");
     if (!user) return res.status(404).json("user not found");
 
-    // Find all posts by this user
     const posts = await Post.find({ author: id })
       .populate("author", ["username"])
       .sort({ createdAt: -1 });
@@ -243,7 +242,7 @@ exports.getProfile = async (req, res) => {
   }
 };
 
-// UPDATE PROFILE — update bio and profile photo
+// UPDATE PROFILE
 exports.updateProfile = [
   uploadMiddleware.single("profilePhoto"),
   async (req, res) => {
@@ -256,7 +255,6 @@ exports.updateProfile = [
         const { bio } = req.body;
         const updateData = { bio };
 
-        // If a new photo was uploaded
         if (req.file) {
           const { originalname, path } = req.file;
           const parts = originalname.split(".");
@@ -269,7 +267,7 @@ exports.updateProfile = [
         const updatedUser = await User.findByIdAndUpdate(
           info.id,
           updateData,
-          { new: true } // return updated document
+          { new: true }
         ).select("-password");
 
         res.json(updatedUser);
@@ -279,4 +277,4 @@ exports.updateProfile = [
       }
     });
   }
-]; 
+];

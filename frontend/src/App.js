@@ -10,6 +10,9 @@ import EntertainmentPage from "./pages/EntertainmentPage.js";
 import UploadMusic from "./pages/UploadMusic.js";
 import ProfilePage from "./pages/ProfilePage.js";
 import RoomPage from "./pages/RoomPage.js";
+import EducationPage from "./pages/EducationPage.js";
+import CreateEducation from "./pages/CreateEducation.js";
+import EducationPostPage from "./pages/EducationPostPage.js";
 import { Routes, Route } from "react-router-dom";
 import { UserContextProvider } from "./UserContext.js";
 import './App.css';
@@ -25,9 +28,14 @@ function App() {
           {/* Blog - only posts */}
           <Route path="/blog" element={<BlogPage />} />
 
-          {/* Entertainment - music/videos */}
+          {/* Entertainment */}
           <Route path="/entertainment" element={<EntertainmentPage />} />
           <Route path="/entertainment/upload" element={<UploadMusic />} />
+
+          {/* Education */}
+          <Route path="/education" element={<EducationPage />} />
+          <Route path="/education/create" element={<CreateEducation />} />
+          <Route path="/education/:id" element={<EducationPostPage />} />
 
           {/* Community Room */}
           <Route path="/room" element={<RoomPage />} />

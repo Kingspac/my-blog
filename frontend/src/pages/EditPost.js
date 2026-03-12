@@ -1,42 +1,90 @@
-import {useState, useEffect} from "react";
-import {Navigate, useParams} from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom"; // ✅ useNavigate not Navigate
 import Editor from "../Editor";
 
-export default function EditPost(){
-  const {id} = useParams();
+export default function EditPost() {
+  const { id } = useParams();
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
-  const [files, setFiles] = useState("");
-  const [redirect, setRedirect] = useState(false);
+  const [files, setFiles] = useState(null);
   const [existingCover, setExistingCover] = useState("");
+  const [coverPreview, setCoverPreview] = useState(null); // ← new cover preview
+  const [fileError, setFileError] = useState("");
+
+  const navigate = useNavigate(); // ✅ useNavigate hook
 
   useEffect(() => {
     fetch("http://localhost:4000/api/post/" + id, {
       credentials: "include",
     })
-      .then(response => {
+      .then((response) => {
         if (!response.ok) throw new Error("Failed to fetch post");
         return response.json();
       })
-      .then(postInfo => {
+      .then((postInfo) => {
         setTitle(postInfo.title);
         setContent(postInfo.content);
         setSummary(postInfo.summary);
         setExistingCover(postInfo.cover);
       })
-      .catch(err => console.error(err));
+      .catch((err) => console.error(err));
   }, []);
+
+  // Handle new cover image selection
+  function handleFileChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const maxSize = 20 * 1024 * 1024; // 20MB
+    if (file.size > maxSize) {
+      setFileError("Image too large! Max 20MB.");
+      e.target.value = "";
+      setFiles(null);
+      setCoverPreview(null);
+      return;
+    }
+
+    setFileError("");
+    setFiles(e.target.files);
+
+    // Show preview of new image
+    const previewURL = URL.createObjectURL(file);
+    setCoverPreview(previewURL);
+  }
+
+  // Remove newly selected cover image
+  function removeNewCover() {
+    setFiles(null);
+    setCoverPreview(null);
+    setFileError("");
+    const fileInput = document.getElementById("cover-input");
+    if (fileInput) fileInput.value = "";
+  }
+
+  // Remove images inside editor
+  function removeEditorImages() {
+    const confirmed = window.confirm(
+      "This will remove all images inside the editor. Continue?"
+    );
+    if (!confirmed) return;
+    const stripped = content.replace(/<img[^>]*>/g, "");
+    setContent(stripped);
+  }
 
   async function updatePost(e) {
     e.preventDefault();
+    if (fileError) return;
+
     const data = new FormData();
-    data.set("title", title);
-    data.set("summary", summary);
-    data.set("content", content);
-    data.set("id", id);
+    data.append("title", title);       // ✅ append not set
+    data.append("summary", summary);   // ✅ append not set
+    data.append("content", content);   // ✅ append not set
+    data.append("id", id);             // ✅ append not set
+
+    // Only append cover if new one was selected
     if (files?.[0]) {
-      data.set("file", files[0]);
+      data.append("cover", files[0]);  // ✅ "cover" matches backend
     }
 
     const response = await fetch("http://localhost:4000/api/post", {
@@ -46,12 +94,8 @@ export default function EditPost(){
     });
 
     if (response.ok) {
-      setRedirect(true);
+      navigate("/post/" + id); // ✅ useNavigate not Navigate component
     }
-  }
-
-  if (redirect) {
-    return <Navigate to={"/post/" + id} />;
   }
 
   return (
@@ -60,35 +104,69 @@ export default function EditPost(){
         type="text"
         placeholder="Title"
         value={title}
-        onChange={e => setTitle(e.target.value)}
+        onChange={(e) => setTitle(e.target.value)}
+        required
       />
       <input
         type="text"
         placeholder="Summary"
         value={summary}
-        onChange={e => setSummary(e.target.value)}
+        onChange={(e) => setSummary(e.target.value)}
       />
-      {existingCover && (
-        <div>
-          <p>Current image:</p>
+
+      {/* EXISTING COVER - show current image */}
+      {existingCover && !coverPreview && (
+        <div className="cover-preview">
+          <p style={{ fontSize: "0.85rem", color: "#666" }}>Current cover image:</p>
           <img
             src={"http://localhost:4000/" + existingCover}
             alt="current cover"
-            style={{width: "200px", marginBottom: "10px"}}
           />
         </div>
       )}
-      <input
-        type="file"
-        onChange={e => setFiles(e.target.files)}
-      />
-      {files?.[0] && (
-        <p style={{fontSize: "12px", color: "gray"}}>
-          New image selected: {files[0].name}
-        </p>
+
+      {/* NEW COVER - show preview with remove button */}
+      {coverPreview && (
+        <div className="cover-preview">
+          <p style={{ fontSize: "0.85rem", color: "#666" }}>New cover image:</p>
+          <img src={coverPreview} alt="new cover preview" />
+          <button
+            type="button"
+            className="remove-cover-btn"
+            onClick={removeNewCover}
+          >
+            ❌ Remove New Image
+          </button>
+        </div>
       )}
-      <Editor onChange={setContent} value={content} />
-      <button style={{marginTop: "5px"}}>Update Post</button>
+
+      {/* FILE INPUT */}
+      <input
+        id="cover-input"
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+      />
+      {fileError && (
+        <p style={{ color: "red", fontSize: "0.85rem" }}>{fileError}</p>
+      )}
+
+      {/* EDITOR with remove images button */}
+      <div className="editor-wrapper">
+        <Editor onChange={setContent} value={content} />
+
+        {content.includes("<img") && (
+          <button
+            type="button"
+            className="remove-images-btn"
+            onClick={removeEditorImages}
+          >
+            🗑️ Remove All Images from Editor
+          </button>
+        )}
+      </div>
+
+      <button style={{ marginTop: "5px" }}>Update Post</button>
     </form>
   );
 }

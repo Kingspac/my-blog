@@ -1,23 +1,30 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const db = require('./config/db');
-const User = require('./models/User');
 const mongoose = require('mongoose');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+
 const userRoutes = require("./routes/userRoute");
 const musicRoutes = require("./routes/musicRoute");
+const messageRoutes = require("./routes/messageRoute");
+const educationRoutes = require("./routes/educationRoute");
+
 const app = express();
 
 // middlewares
-app.use(cors({credentials:true, origin:"http://localhost:3000"}));
-app.use(express.json());
-app.use(cookieParser()); 
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+app.use(express.json({ limit: "100mb" }));
+app.use(express.urlencoded({ limit: "100mb", extended: true }));
+app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
-app.use('/api', userRoutes); 
-app.use("/api/music", musicRoutes); 
+
+// routes
+app.use('/api', userRoutes);
+app.use("/api/music", musicRoutes);
+app.use("/api/room", messageRoutes);
+app.use("/api/education", educationRoutes);
 
 // variable from .env
 const mongoURI = process.env.MONGO_URI;
@@ -29,5 +36,5 @@ mongoose.connect(mongoURI)
     console.error("❌ Connection Error:");
     console.error(err);
   });
-  
+
 app.listen(PORT, () => console.log(`🚀 Server on port ${PORT}`));

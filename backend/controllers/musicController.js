@@ -5,7 +5,7 @@ const fs = require("fs");
 
 const uploadMiddleware = multer({
   dest: "uploads",
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB for audio/video
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB for audio
 });
 
 const secret = process.env.JWT_SECRET;
