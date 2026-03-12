@@ -27,7 +27,7 @@ export default function IndexPage() {
       .then((data) => setMusic(data));
   }, []);
 
-  // Mix posts and music together sorted by date newest first
+  // Mix posts and music together and sort by date (newest first)
   const mixedFeed = [
     ...posts.map((p) => ({ ...p, itemType: "post" })),
     ...music.map((m) => ({ ...m, itemType: "media" })),
@@ -35,30 +35,21 @@ export default function IndexPage() {
 
   return (
     <div className="index-page">
-
-      {/* FEED HEADER */}
       <div className="feed-header">
         <h2>Welcome to Enchwra 🪨</h2>
         <p>Voice, Culture & Entertainment of the Adara People</p>
       </div>
 
-      {/* ROOM BANNER - invites users to join the room */}
-      <Link to="/room" className="room-banner">
-        🪨 Join the Enchwra Community Room — Come talk with your people!
-      </Link>
-
-      {/* MIXED FEED */}
       {mixedFeed.length === 0 && (
         <p className="no-content">No content yet. Be the first to post!</p>
       )}
 
       {mixedFeed.map((item) => (
         <div key={item._id}>
-
-          {/* Blog Post */}
+          {/* Render blog post */}
           {item.itemType === "post" && <Post {...item} />}
 
-          {/* Media Card */}
+          {/* Render entertainment/media card */}
           {item.itemType === "media" && (
             <div className="media-card">
               {/* Cover Photo */}
@@ -102,7 +93,7 @@ export default function IndexPage() {
                 <p className="media-artist">
                   🎤{" "}
                   <Link to={`/profile/${item.uploadedBy?._id}`}>
-                    {item.artist || item.uploadedBy?.username}
+                    {item.uploadedBy?.username}
                   </Link>
                 </p>
                 {item.description && (

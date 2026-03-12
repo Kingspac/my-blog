@@ -37,7 +37,7 @@ export default function CreatePost(){
     data.append("title", title);     // ← changed from set() to append()
     data.append("summary", summary);
     data.append("content", content);
-    data.append("files", files[0]);
+     
 
     const response = await fetch("http://localhost:4000/api/post", {
       method: "POST",

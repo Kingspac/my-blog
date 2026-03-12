@@ -1,5 +1,5 @@
 import {useContext,useState} from "react";
-import {Navigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom"; 
 import {UserContext} from "../UserContext.js";
 
 export default function LoginPage(){
@@ -7,7 +7,7 @@ export default function LoginPage(){
   const [password,setPassword] = useState("");
   const [redirect, setRedirect] = useState(false);
   const {setUserInfo} = useContext(UserContext);
-  
+  const navigate = useNavigate();
   async function login(e){
     e.preventDefault();
     const response = await fetch("http://localhost:4000/api/login", {
@@ -19,15 +19,13 @@ export default function LoginPage(){
     if(response.ok){
       response.json().then(userInfo =>{
         setUserInfo(userInfo);
-        setRedirect(true);
+        navigate("/");
       });
     }else{
       alert("wrong credentials");
     }
   }
-  if(redirect){
-    return <Navigate to={"/"} />
-  }
+  
   return(
     <form className="form" onSubmit={login}>
       <h1>Login</h1>

@@ -8,6 +8,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const userRoutes = require("./routes/userRoute");
+const musicRoutes = require("./routes/musicRoute");
 const app = express();
 
 // middlewares
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(cookieParser()); 
 app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use('/api', userRoutes); 
+app.use("/api/music", musicRoutes); 
 
 // variable from .env
 const mongoURI = process.env.MONGO_URI;
