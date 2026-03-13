@@ -1,0 +1,147 @@
+/* ===== GLOBAL STYLES ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: #222;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+}
+
+img {
+  max-width: 100%;
+}
+
+main {
+  padding: 10px 15px;
+  max-width: 960px;
+  margin: 0 auto;
+  background: rgb(232, 232, 227);
+}
+
+/* ===== GLOBAL INPUTS ===== */
+input {
+  display: block;
+  margin-bottom: 12px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+  font-size: 0.95rem;
+}
+
+input:focus {
+  outline: none;
+  border-color: #555;
+}
+
+textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  resize: vertical;
+  font-family: Arial, sans-serif;
+}
+
+/* ===== GLOBAL BUTTON ===== */
+button {
+  width: 100%;
+  display: block;
+  background-color: #555;
+  border: 0;
+  color: #fff;
+  border-radius: 5px;
+  padding: 10px 0;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 5px;
+}
+
+button:hover {
+  background-color: #333;
+}
+
+/* ===== CREATE BUTTON ===== */
+.create-btn {
+  background: #333;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.create-btn.entertainment {
+  background: #666;
+}
+
+/* ===== LOGIN REQUIRED BUTTONS ===== */
+.login-required-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+/* ===== REGISTER PROMPT ===== */
+.register-prompt {
+  text-align: center;
+  padding: 30px 20px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  margin-top: 30px;
+}
+
+.register-prompt p {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+/* ===== PAGE HEADER ===== */
+.page-header {
+  text-align: center;
+  padding: 20px 0;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 20px;
+}
+
+.page-header h2 {
+  font-size: 1.6rem;
+  margin-bottom: 6px;
+}
+
+.page-header p {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 15px;
+}
+
+/* ===== NO CONTENT ===== */
+.no-content {
+  text-align: center;
+  color: #aaa;
+  font-style: italic;
+  margin-top: 40px;
+}
+
+/* ===== SVG ICONS ===== */
+a svg {
+  height: 20px;
+}
+
+/* ===== YOUTUBE EMBED ===== */
+.youtube-embed {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.youtube-embed iframe {
+  border-radius: 8px;
+}

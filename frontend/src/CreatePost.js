@@ -1,6 +1,7 @@
-import { useState } from "react";
+ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Editor from "./Editor";
+import styles from "./styles/Editor.module.css";
 
 export default function CreatePost() {
   const [title, setTitle] = useState("");
@@ -8,11 +9,10 @@ export default function CreatePost() {
   const [content, setContent] = useState("");
   const [files, setFiles] = useState(null);
   const [fileError, setFileError] = useState("");
-  const [coverPreview, setCoverPreview] = useState(null); // ← preview URL
+  const [coverPreview, setCoverPreview] = useState(null);
 
   const navigate = useNavigate();
 
-  // COVER IMAGE - handle selection with preview
   function handleFileChange(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -29,29 +29,23 @@ export default function CreatePost() {
     setFileError("");
     setFiles(e.target.files);
 
-    // Create a preview URL so user can see the image before posting
     const previewURL = URL.createObjectURL(file);
     setCoverPreview(previewURL);
   }
 
-  // COVER IMAGE - remove it before posting
   function removeCoverImage() {
     setFiles(null);
     setCoverPreview(null);
     setFileError("");
-    // Clear the actual file input
     const fileInput = document.getElementById("cover-input");
     if (fileInput) fileInput.value = "";
   }
 
-  // EDITOR - remove all images from content
   function removeEditorImages() {
     const confirmed = window.confirm(
       "This will remove all images inside the editor. Continue?"
     );
     if (!confirmed) return;
-
-    // Strip all <img> tags from the HTML content
     const stripped = content.replace(/<img[^>]*>/g, "");
     setContent(stripped);
   }
@@ -65,7 +59,6 @@ export default function CreatePost() {
     data.append("summary", summary);
     data.append("content", content);
 
-    // Only append cover if user selected one
     if (files) {
       data.append("cover", files[0]);
     }
@@ -110,13 +103,13 @@ export default function CreatePost() {
         <p style={{ color: "red", fontSize: "0.85rem" }}>{fileError}</p>
       )}
 
-      {/* COVER IMAGE PREVIEW with remove button */}
+      {/* COVER IMAGE PREVIEW */}
       {coverPreview && (
-        <div className="cover-preview">
+        <div className={styles.coverPreview}>
           <img src={coverPreview} alt="Cover preview" />
           <button
             type="button"
-            className="remove-cover-btn"
+            className={styles.removeCoverBtn}
             onClick={removeCoverImage}
           >
             ❌ Remove Cover Image
@@ -124,15 +117,14 @@ export default function CreatePost() {
         </div>
       )}
 
-      {/* EDITOR with remove images button */}
-      <div className="editor-wrapper">
+      {/* EDITOR */}
+      <div className={styles.editorWrapper}>
         <Editor onChange={setContent} value={content} />
 
-        {/* Only show this button if content has an image */}
         {content.includes("<img") && (
           <button
             type="button"
-            className="remove-images-btn"
+            className={styles.removeImagesBtn}
             onClick={removeEditorImages}
           >
             🗑️ Remove All Images from Editor
@@ -144,3 +136,4 @@ export default function CreatePost() {
     </form>
   );
 }
+ 

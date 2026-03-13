@@ -2,6 +2,7 @@ import Post from "../Post.js";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { formatISO9075 } from "date-fns";
+import styles from "../styles/IndexPage.module.css";
 
 // Helper to extract YouTube video ID
 function getYoutubeId(url) {
@@ -34,16 +35,16 @@ export default function IndexPage() {
   ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   return (
-    <div className="index-page">
+    <div>
 
       {/* FEED HEADER */}
-      <div className="feed-header">
+      <div className={styles.feedHeader}>
         <h2>Welcome to Enchwra 🪨</h2>
         <p>Voice, Culture & Entertainment of the Adara People</p>
       </div>
 
-      {/* ROOM BANNER - invites users to join the room */}
-      <Link to="/room" className="room-banner">
+      {/* ROOM BANNER */}
+      <Link to="/room" className={styles.roomBanner}>
         🪨 Join the Enchwra Community Room — Come talk with your people!
       </Link>
 
@@ -60,10 +61,11 @@ export default function IndexPage() {
 
           {/* Media Card */}
           {item.itemType === "media" && (
-            <div className="media-card">
+            <div className={styles.mediaCard}>
+
               {/* Cover Photo */}
               {item.coverPhoto && !item.youtubeLink && (
-                <div className="media-cover">
+                <div className={styles.mediaCover}>
                   <img
                     src={`http://localhost:4000/${item.coverPhoto}`}
                     alt={item.title}
@@ -96,19 +98,19 @@ export default function IndexPage() {
               )}
 
               {/* Media Info */}
-              <div className="media-info">
-                <span className="media-badge">{item.category}</span>
+              <div className={styles.mediaInfo}>
+                <span className={styles.mediaBadge}>{item.category}</span>
                 <h3>{item.title}</h3>
-                <p className="media-artist">
+                <p className={styles.mediaArtist}>
                   🎤{" "}
                   <Link to={`/profile/${item.uploadedBy?._id}`}>
                     {item.artist || item.uploadedBy?.username}
                   </Link>
                 </p>
                 {item.description && (
-                  <p className="media-description">{item.description}</p>
+                  <p className={styles.mediaDescription}>{item.description}</p>
                 )}
-                <p className="media-date">
+                <p className={styles.mediaDate}>
                   {formatISO9075(new Date(item.createdAt))}
                 </p>
               </div>

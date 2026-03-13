@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import { formatISO9075 } from "date-fns";
+import styles from "../styles/EducationPage.module.css";
 
 // Helper to extract YouTube video ID
 function getYoutubeId(url) {
@@ -40,25 +41,24 @@ export default function EducationPage() {
       .then((data) => setEducationList(data));
   }, []);
 
-  // Filter by category and language
+  // Filter by category
   let filtered = activeTab
     ? educationList.filter((e) => e.category === activeTab)
     : educationList;
 
-  // If language tab is active, filter further by language
+  // Filter further by language if language tab is active
   if (activeTab === "language" && activeLanguage) {
     filtered = filtered.filter((e) => e.language === activeLanguage);
   }
 
   return (
-    <div className="education-page">
+    <div className={styles.educationPage}>
 
-      {/* PAGE HEADER */}
+      {/* PAGE HEADER - global.css */}
       <div className="page-header">
         <h2>📚 Education</h2>
         <p>Learn about Adara history, language, health and more</p>
 
-        {/* Create button - only for logged in users */}
         {userInfo?.id && (
           <Link to="/education/create" className="create-btn">
             + Create
@@ -67,14 +67,14 @@ export default function EducationPage() {
       </div>
 
       {/* CATEGORY TABS */}
-      <div className="education-tabs">
+      <div className={styles.educationTabs}>
         {categories.map((cat) => (
           <button
             key={cat.key}
-            className={activeTab === cat.key ? "active" : ""}
+            className={activeTab === cat.key ? styles.active : ""}
             onClick={() => {
               setActiveTab(cat.key);
-              setActiveLanguage(null); // reset language filter
+              setActiveLanguage(null);
             }}
           >
             {cat.label}
@@ -82,13 +82,13 @@ export default function EducationPage() {
         ))}
       </div>
 
-      {/* LANGUAGE SUB-TABS - only show when language tab is active */}
+      {/* LANGUAGE SUB-TABS */}
       {activeTab === "language" && (
-        <div className="language-tabs">
+        <div className={styles.languageTabs}>
           {languages.map((lang) => (
             <button
               key={lang.key}
-              className={activeLanguage === lang.key ? "active" : ""}
+              className={activeLanguage === lang.key ? styles.active : ""}
               onClick={() => setActiveLanguage(lang.key)}
             >
               {lang.label}
@@ -97,8 +97,8 @@ export default function EducationPage() {
         </div>
       )}
 
-      {/* COMING SOON BANNER - Live Folklore Show */}
-      <div className="folklore-banner">
+      {/* COMING SOON BANNER */}
+      <div className={styles.folkloreBanner}>
         <p>🔴 Coming Soon: <strong>Live Folklore Show</strong> — Watch and learn Adara traditions live!</p>
       </div>
 
@@ -108,13 +108,13 @@ export default function EducationPage() {
           No content yet. Be the first to contribute!
         </p>
       ) : (
-        <div className="education-grid">
+        <div className={styles.educationGrid}>
           {filtered.map((item) => (
-            <div className="education-card" key={item._id}>
+            <div className={styles.educationCard} key={item._id}>
 
               {/* Cover Image */}
               {item.cover && !item.youtubeLink && (
-                <div className="education-cover">
+                <div className={styles.educationCover}>
                   <img
                     src={`http://localhost:4000/${item.cover}`}
                     alt={item.title}
@@ -137,26 +137,26 @@ export default function EducationPage() {
               )}
 
               {/* Content Info */}
-              <div className="education-info">
-                <div className="education-badges">
-                  <span className="education-category">{item.category}</span>
+              <div className={styles.educationInfo}>
+                <div className={styles.educationBadges}>
+                  <span className={styles.educationCategory}>{item.category}</span>
                   {item.language && (
-                    <span className="education-language">{item.language}</span>
+                    <span className={styles.educationLanguage}>{item.language}</span>
                   )}
                 </div>
                 <Link to={`/education/${item._id}`}>
                   <h3>{item.title}</h3>
                 </Link>
                 {item.summary && (
-                  <p className="education-summary">{item.summary}</p>
+                  <p className={styles.educationSummary}>{item.summary}</p>
                 )}
-                <p className="education-author">
+                <p className={styles.educationAuthor}>
                   ✍️{" "}
                   <Link to={`/profile/${item.author?._id}`}>
                     {item.author?.username}
                   </Link>
                 </p>
-                <p className="education-date">
+                <p className={styles.educationDate}>
                   {formatISO9075(new Date(item.createdAt))}
                 </p>
               </div>
@@ -175,6 +175,7 @@ export default function EducationPage() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

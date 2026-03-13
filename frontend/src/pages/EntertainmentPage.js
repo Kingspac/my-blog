@@ -1,7 +1,8 @@
- import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import { formatISO9075 } from "date-fns";
+import styles from "../styles/EntertainmentPage.module.css";
 
 // Helper to extract YouTube video ID
 function getYoutubeId(url) {
@@ -14,10 +15,11 @@ function getYoutubeId(url) {
 // Reusable media card component
 function MediaCard({ music }) {
   return (
-    <div className="music-card">
+    <div className={styles.musicCard}>
+
       {/* Cover Photo */}
       {music.coverPhoto && !music.youtubeLink && (
-        <div className="music-cover">
+        <div className={styles.musicCover}>
           <img
             src={`http://localhost:4000/${music.coverPhoto}`}
             alt={music.title}
@@ -41,7 +43,7 @@ function MediaCard({ music }) {
 
       {/* Audio Player */}
       {music.audioFile && !music.youtubeLink && (
-        <div className="audio-player">
+        <div className={styles.audioPlayer}>
           <audio controls style={{ width: "100%" }}>
             <source src={`http://localhost:4000/${music.audioFile}`} />
             Your browser does not support audio.
@@ -50,19 +52,19 @@ function MediaCard({ music }) {
       )}
 
       {/* Info */}
-      <div className="music-info">
-        <span className="music-category">{music.category}</span>
+      <div className={styles.musicInfo}>
+        <span className={styles.musicCategory}>{music.category}</span>
         <h3>{music.title}</h3>
-        <p className="music-artist">
+        <p className={styles.musicArtist}>
           🎤{" "}
           <Link to={`/profile/${music.uploadedBy?._id}`}>
             {music.artist || music.uploadedBy?.username}
           </Link>
         </p>
         {music.description && (
-          <p className="music-description">{music.description}</p>
+          <p className={styles.musicDescription}>{music.description}</p>
         )}
-        <p className="music-date">
+        <p className={styles.musicDate}>
           {formatISO9075(new Date(music.createdAt))}
         </p>
       </div>
@@ -72,7 +74,7 @@ function MediaCard({ music }) {
 
 export default function EntertainmentPage() {
   const [musicList, setMusicList] = useState([]);
-  const [activeTab, setActiveTab] = useState(null); // null = all/mixed
+  const [activeTab, setActiveTab] = useState(null);
   const { userInfo } = useContext(UserContext);
 
   useEffect(() => {
@@ -81,20 +83,18 @@ export default function EntertainmentPage() {
       .then((data) => setMusicList(data));
   }, []);
 
-  // Filter by active tab - no tab = show everything
   const filtered = activeTab
     ? musicList.filter((m) => m.category === activeTab)
     : musicList;
 
   return (
-    <div className="entertainment-page">
+    <div className={styles.entertainmentPage}>
 
-      {/* PAGE HEADER */}
+      {/* PAGE HEADER - global.css */}
       <div className="page-header">
         <h2>🎬 Entertainment</h2>
         <p>Music, videos, comedy and culture of the Adara people</p>
 
-        {/* Upload button - only for logged in users */}
         {userInfo?.id && (
           <Link to="/entertainment/upload" className="create-btn">
             + Upload
@@ -102,41 +102,41 @@ export default function EntertainmentPage() {
         )}
       </div>
 
-      {/* TABS - visible to everyone */}
-      <div className="entertainment-tabs">
+      {/* TABS */}
+      <div className={styles.entertainmentTabs}>
         <button
-          className={activeTab === null ? "active" : ""}
+          className={activeTab === null ? styles.active : ""}
           onClick={() => setActiveTab(null)}
         >
           🏠 All
         </button>
         <button
-          className={activeTab === "music" ? "active" : ""}
+          className={activeTab === "music" ? styles.active : ""}
           onClick={() => setActiveTab("music")}
         >
           🎵 Music
         </button>
         <button
-          className={activeTab === "video" ? "active" : ""}
+          className={activeTab === "video" ? styles.active : ""}
           onClick={() => setActiveTab("video")}
         >
           🎬 Video
         </button>
         <button
-          className={activeTab === "comedy" ? "active" : ""}
+          className={activeTab === "comedy" ? styles.active : ""}
           onClick={() => setActiveTab("comedy")}
         >
           😂 Comedy
         </button>
         <button
-          className={activeTab === "culture" ? "active" : ""}
+          className={activeTab === "culture" ? styles.active : ""}
           onClick={() => setActiveTab("culture")}
         >
           🏺 Culture
         </button>
       </div>
 
-      {/* CONTENT - visible to everyone, no login required */}
+      {/* CONTENT */}
       {filtered.length === 0 ? (
         <p className="no-content">
           {activeTab
@@ -144,7 +144,7 @@ export default function EntertainmentPage() {
             : "No content yet. Be the first to upload!"}
         </p>
       ) : (
-        <div className="music-grid">
+        <div className={styles.musicGrid}>
           {filtered.map((music) => (
             <MediaCard key={music._id} music={music} />
           ))}

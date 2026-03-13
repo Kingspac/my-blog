@@ -1,0 +1,106 @@
+/* ===== ENTERTAINMENT PAGE ===== */
+.entertainmentPage {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.entertainmentTabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+.entertainmentTabs button {
+  width: auto;
+  padding: 8px 14px;
+  background: #eee;
+  color: #333;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border: none;
+}
+
+.entertainmentTabs button.active {
+  background: #333;
+  color: white;
+}
+
+/* ===== MUSIC GRID ===== */
+.musicGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media screen and (min-width: 600px) {
+  .musicGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ===== MUSIC CARD ===== */
+.musicCard {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.musicCover img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.audioPlayer {
+  padding: 10px;
+  background: #f9f9f9;
+}
+
+.musicInfo {
+  padding: 12px;
+}
+
+.musicInfo h3 {
+  margin: 6px 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.musicCategory {
+  background: #eee;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  color: #555;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+.musicArtist {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.musicArtist a {
+  color: #333;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.musicDescription {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.musicDate {
+  font-size: 0.75rem;
+  color: #aaa;
+}

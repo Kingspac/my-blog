@@ -2,13 +2,14 @@ import {useContext, useEffect, useState} from "react";
 import {useParams, Link, useNavigate} from "react-router-dom";
 import {formatISO9075} from "date-fns";
 import {UserContext} from "../UserContext";
+import styles from "../styles/Post.module.css";
 
 export default function PostPage(){
   const [postInfo, setPostInfo] = useState(null);
-  const [likes, setLikes] = useState(0);         // total like count
-  const [liked, setLiked] = useState(false);     // has current user liked?
-  const [comments, setComments] = useState([]);  // all comments
-  const [comment, setComment] = useState("");    // current comment being typed
+  const [likes, setLikes] = useState(0);
+  const [liked, setLiked] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [comment, setComment] = useState("");
 
   const {userInfo} = useContext(UserContext);
   const {id} = useParams();
@@ -21,12 +22,8 @@ export default function PostPage(){
       .then(response => {
         response.json().then(data => {
           setPostInfo(data);
-
-          // Initialize likes and comments from the post data
           setLikes(data.likes?.length || 0);
           setComments(data.comments || []);
-
-          // Check if current user already liked this post
           if(userInfo?.id){
             setLiked(data.likes?.includes(userInfo.id));
           }
@@ -34,7 +31,6 @@ export default function PostPage(){
       });
   }, []);
 
-  // DELETE function
   async function deletePost() {
     const confirmDelete = window.confirm("Are you sure you want to delete this post?");
     if (!confirmDelete) return;
@@ -52,9 +48,7 @@ export default function PostPage(){
     }
   }
 
-  // LIKE / UNLIKE function
   async function handleLike() {
-    // If user is not logged in, stop
     if (!userInfo?.id) {
       alert("Please login to like this post");
       return;
@@ -67,22 +61,20 @@ export default function PostPage(){
 
     if (response.ok) {
       const data = await response.json();
-      setLikes(data.likes);   // update like count
-      setLiked(data.liked);   // update liked status
+      setLikes(data.likes);
+      setLiked(data.liked);
     }
   }
 
-  // ADD COMMENT function
   async function handleComment(e) {
     e.preventDefault();
 
-    // If user is not logged in, stop
     if (!userInfo?.id) {
       alert("Please login to comment");
       return;
     }
 
-    if (!comment.trim()) return; // stop if comment is empty
+    if (!comment.trim()) return;
 
     const response = await fetch(`http://localhost:4000/api/post/${id}/comment`, {
       method: "POST",
@@ -93,12 +85,11 @@ export default function PostPage(){
 
     if (response.ok) {
       const newComment = await response.json();
-      setComments([...comments, newComment]); // add new comment to list
-      setComment(""); // clear the input field
+      setComments([...comments, newComment]);
+      setComment("");
     }
   }
 
-  // SHARE functions
   function shareToWhatsApp() {
     const message = `Check out this post on Enchwra: ${postInfo.title} - ${postURL}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank");
@@ -121,32 +112,37 @@ export default function PostPage(){
   if (!postInfo) return "";
 
   return (
-    <div className="post-page">
-      <div className="image">
+    <div className={styles.postPage}>
+
+      {/* COVER IMAGE */}
+      <div className={styles.image}>
         <img src={`http://localhost:4000/${postInfo.cover}`} alt="post-image"/>
       </div>
+
       <h1>{postInfo.title}</h1>
       <time>{formatISO9075(new Date(postInfo.createdAt))}</time>
-      <div className="author">
-  By <Link to={`/profile/${postInfo.author._id}`} style={{color: "#333"}}>
-    {postInfo.author.username}
-  </Link>
-</div>
 
-      {/* Edit and Delete buttons — only for the author */}
+      <div className={styles.author}>
+        By <Link to={`/profile/${postInfo.author._id}`} style={{color: "#333"}}>
+          {postInfo.author.username}
+        </Link>
+      </div>
+
+      {/* Edit and Delete — only for the author */}
       {userInfo?.id === postInfo.author._id && (
-        <div className="edit-row">
-          <Link className="edit-btn" to={`/edit/${postInfo._id}`}>Edit Post</Link>
-          <button className="delete-btn" onClick={deletePost}>Delete Post</button>
+        <div className={styles.editRow}>
+          <Link className={styles.editBtn} to={`/edit/${postInfo._id}`}>Edit Post</Link>
+          <button className={styles.deleteBtn} onClick={deletePost}>Delete Post</button>
         </div>
       )}
 
-      <div className="content" dangerouslySetInnerHTML={{__html: postInfo.content}}/>
+      {/* POST CONTENT */}
+      <div className={styles.content} dangerouslySetInnerHTML={{__html: postInfo.content}}/>
 
       {/* LIKE BUTTON */}
-      <div className="like-section">
+      <div className={styles.likeSection}>
         <button
-          className={`like-btn ${liked ? "liked" : ""}`}
+          className={`${styles.likeBtn} ${liked ? styles.liked : ""}`}
           onClick={handleLike}
         >
           {liked ? "❤️" : "🤍"} {likes} {likes === 1 ? "Like" : "Likes"}
@@ -154,31 +150,31 @@ export default function PostPage(){
       </div>
 
       {/* SHARE BUTTONS */}
-      <div className="share-section">
+      <div className={styles.shareSection}>
         <h4>Share this post:</h4>
-        <div className="share-buttons">
-          <button className="share-btn whatsapp" onClick={shareToWhatsApp}>
+        <div className={styles.shareButtons}>
+          <button className={`${styles.shareBtn} ${styles.whatsapp}`} onClick={shareToWhatsApp}>
             📱 WhatsApp
           </button>
-          <button className="share-btn facebook" onClick={shareToFacebook}>
+          <button className={`${styles.shareBtn} ${styles.facebook}`} onClick={shareToFacebook}>
             📘 Facebook
           </button>
-          <button className="share-btn twitter" onClick={shareToTwitter}>
+          <button className={`${styles.shareBtn} ${styles.twitter}`} onClick={shareToTwitter}>
             🐦 Twitter
           </button>
-          <button className="share-btn copy" onClick={copyLink}>
+          <button className={`${styles.shareBtn} ${styles.copy}`} onClick={copyLink}>
             🔗 Copy Link
           </button>
         </div>
       </div>
 
       {/* COMMENTS SECTION */}
-      <div className="comments-section">
+      <div className={styles.commentsSection}>
         <h4>{comments.length} {comments.length === 1 ? "Comment" : "Comments"}</h4>
 
         {/* Comment form — only for logged in users */}
         {userInfo?.id && (
-          <form className="comment-form" onSubmit={handleComment}>
+          <form className={styles.commentForm} onSubmit={handleComment}>
             <input
               type="text"
               placeholder="Write a comment..."
@@ -189,15 +185,15 @@ export default function PostPage(){
           </form>
         )}
 
-        {/* Display all comments */}
+        {/* All comments */}
         {comments.length === 0 ? (
-          <p className="no-comments">No comments yet. Be the first to comment!</p>
+          <p className={styles.noComments}>No comments yet. Be the first to comment!</p>
         ) : (
           comments.map((c, index) => (
-            <div className="comment" key={index}>
-              <div className="comment-author">👤 {c.username}</div>
-              <div className="comment-content">{c.content}</div>
-              <div className="comment-date">
+            <div className={styles.comment} key={index}>
+              <div className={styles.commentAuthor}>👤 {c.username}</div>
+              <div className={styles.commentContent}>{c.content}</div>
+              <div className={styles.commentDate}>
                 {formatISO9075(new Date(c.createdAt))}
               </div>
             </div>

@@ -1,20 +1,21 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // ← useNavigate instead of Navigate
+ import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "../styles/Auth.module.css";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState(""); // ← new state
-  const [error, setError] = useState(""); // ← to show error message
-  const navigate = useNavigate(); // ← cleaner redirect
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   async function register(e) {
     e.preventDefault();
 
     // Check if passwords match BEFORE sending to backend
     if (password !== confirmPassword) {
-      setError("Passwords do not match!"); // show error
-      return; // stop here, don't submit
+      setError("Passwords do not match!");
+      return;
     }
 
     const response = await fetch("http://localhost:4000/api/register", {
@@ -25,14 +26,14 @@ export default function RegisterPage() {
 
     if (response.status === 200) {
       alert("Registration successful!");
-      navigate("/login"); // ← useNavigate instead of Navigate component
+      navigate("/login");
     } else {
       alert("Registration failed");
     }
   }
 
   return (
-    <form className="form" onSubmit={register}>
+    <form className={styles.authForm} onSubmit={register}>
       <h1>Register</h1>
 
       <input
@@ -51,7 +52,6 @@ export default function RegisterPage() {
         required
       />
 
-      {/* New confirm password field */}
       <input
         type="password"
         placeholder="Confirm Password"
@@ -60,10 +60,11 @@ export default function RegisterPage() {
         required
       />
 
-      {/* Show error message if passwords don't match */}
-      {error && <p style={{color: "red"}}>{error}</p>}
+      {/* Show error if passwords don't match */}
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
       <button type="submit">Register</button>
     </form>
   );
 }
+ 

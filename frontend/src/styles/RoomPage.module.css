@@ -1,0 +1,146 @@
+/* ===== ROOM PAGE ===== */
+.roomPage {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 15px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 80px);
+}
+
+.roomHeader {
+  text-align: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 10px;
+}
+
+.roomHeader h2 {
+  font-size: 1.4rem;
+  margin-bottom: 4px;
+}
+
+.roomHeader p {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.messagesContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.messageBubble {
+  background: #f4f4f4;
+  border-radius: 10px;
+  padding: 10px 14px;
+  max-width: 80%;
+  align-self: flex-start;
+}
+
+.ownMessage {
+  background: #333;
+  color: white;
+  align-self: flex-end;
+}
+
+.ownMessage .messageUsername a {
+  color: #ddd;
+}
+
+.ownMessage .messageTime {
+  color: #aaa;
+}
+
+.messageUsername {
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.messageUsername a {
+  color: #333;
+  text-decoration: none;
+}
+
+.messageContent {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.messageTime {
+  font-size: 0.7rem;
+  color: #999;
+}
+
+.deleteMessageBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0;
+  width: auto;
+}
+
+.noMessages {
+  text-align: center;
+  color: #aaa;
+  font-style: italic;
+  margin-top: 40px;
+}
+
+.messageForm {
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid #eee;
+  margin-top: 10px;
+}
+
+.messageForm input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.messageForm button {
+  width: auto;
+  padding: 8px 20px;
+}
+
+.roomLoginPrompt {
+  text-align: center;
+  padding: 40px 20px;
+  border-top: 1px solid #eee;
+}
+
+.roomLoginPrompt p {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+/* ===== ROOM BANNER on home page ===== */
+.roomBanner {
+  display: block;
+  background: #333;
+  color: white;
+  border-radius: 8px;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.roomBanner:hover {
+  background: #555;
+}

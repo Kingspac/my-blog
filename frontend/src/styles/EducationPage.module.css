@@ -1,0 +1,195 @@
+/* ===== EDUCATION PAGE ===== */
+.educationPage {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.educationTabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+.educationTabs button {
+  width: auto;
+  padding: 8px 14px;
+  background: #eee;
+  color: #333;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border: none;
+}
+
+.educationTabs button.active {
+  background: #333;
+  color: white;
+}
+
+/* LANGUAGE SUB-TABS */
+.languageTabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.languageTabs button {
+  width: auto;
+  padding: 5px 12px;
+  background: #f4f4f4;
+  color: #333;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: 1px solid #ddd;
+}
+
+.languageTabs button.active {
+  background: #666;
+  color: white;
+  border-color: #666;
+}
+
+/* FOLKLORE BANNER */
+.folkloreBanner {
+  background: linear-gradient(135deg, #333, #666);
+  color: white;
+  border-radius: 8px;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* EDUCATION GRID */
+.educationGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media screen and (min-width: 600px) {
+  .educationGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* EDUCATION CARD */
+.educationCard {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.educationCover img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.educationInfo {
+  padding: 12px;
+}
+
+.educationInfo h3 {
+  margin: 6px 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.educationInfo h3:hover {
+  text-decoration: underline;
+}
+
+.educationInfo a {
+  text-decoration: none;
+  color: #333;
+}
+
+.educationBadges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
+}
+
+.educationCategory {
+  background: #333;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+}
+
+.educationLanguage {
+  background: #666;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+}
+
+.educationSummary {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.educationAuthor {
+  font-size: 0.8rem;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.educationAuthor a {
+  color: #333;
+  font-weight: bold;
+}
+
+.educationDate {
+  font-size: 0.75rem;
+  color: #aaa;
+}
+
+/* EDUCATION POST PAGE */
+.educationPostPage {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.educationPostCover img {
+  width: 100%;
+  max-height: 350px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+/* CREATE EDUCATION PAGE */
+.createEducationPage {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.createEducationPage h1 {
+  margin-bottom: 20px;
+}
+
+.createEducationPage label {
+  display: block;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+  margin-top: 12px;
+}

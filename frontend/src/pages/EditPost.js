@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom"; // ✅ useNavigate not Navigate
+ import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import Editor from "../Editor";
+import styles from "../styles/Editor.module.css";
 
 export default function EditPost() {
   const { id } = useParams();
@@ -9,10 +10,10 @@ export default function EditPost() {
   const [content, setContent] = useState("");
   const [files, setFiles] = useState(null);
   const [existingCover, setExistingCover] = useState("");
-  const [coverPreview, setCoverPreview] = useState(null); // ← new cover preview
+  const [coverPreview, setCoverPreview] = useState(null);
   const [fileError, setFileError] = useState("");
 
-  const navigate = useNavigate(); // ✅ useNavigate hook
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:4000/api/post/" + id, {
@@ -31,7 +32,6 @@ export default function EditPost() {
       .catch((err) => console.error(err));
   }, []);
 
-  // Handle new cover image selection
   function handleFileChange(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -48,12 +48,10 @@ export default function EditPost() {
     setFileError("");
     setFiles(e.target.files);
 
-    // Show preview of new image
     const previewURL = URL.createObjectURL(file);
     setCoverPreview(previewURL);
   }
 
-  // Remove newly selected cover image
   function removeNewCover() {
     setFiles(null);
     setCoverPreview(null);
@@ -62,7 +60,6 @@ export default function EditPost() {
     if (fileInput) fileInput.value = "";
   }
 
-  // Remove images inside editor
   function removeEditorImages() {
     const confirmed = window.confirm(
       "This will remove all images inside the editor. Continue?"
@@ -77,14 +74,13 @@ export default function EditPost() {
     if (fileError) return;
 
     const data = new FormData();
-    data.append("title", title);       // ✅ append not set
-    data.append("summary", summary);   // ✅ append not set
-    data.append("content", content);   // ✅ append not set
-    data.append("id", id);             // ✅ append not set
+    data.append("title", title);
+    data.append("summary", summary);
+    data.append("content", content);
+    data.append("id", id);
 
-    // Only append cover if new one was selected
     if (files?.[0]) {
-      data.append("cover", files[0]);  // ✅ "cover" matches backend
+      data.append("cover", files[0]);
     }
 
     const response = await fetch("http://localhost:4000/api/post", {
@@ -94,7 +90,7 @@ export default function EditPost() {
     });
 
     if (response.ok) {
-      navigate("/post/" + id); // ✅ useNavigate not Navigate component
+      navigate("/post/" + id);
     }
   }
 
@@ -114,9 +110,9 @@ export default function EditPost() {
         onChange={(e) => setSummary(e.target.value)}
       />
 
-      {/* EXISTING COVER - show current image */}
+      {/* EXISTING COVER */}
       {existingCover && !coverPreview && (
-        <div className="cover-preview">
+        <div className={styles.coverPreview}>
           <p style={{ fontSize: "0.85rem", color: "#666" }}>Current cover image:</p>
           <img
             src={"http://localhost:4000/" + existingCover}
@@ -125,14 +121,14 @@ export default function EditPost() {
         </div>
       )}
 
-      {/* NEW COVER - show preview with remove button */}
+      {/* NEW COVER PREVIEW */}
       {coverPreview && (
-        <div className="cover-preview">
+        <div className={styles.coverPreview}>
           <p style={{ fontSize: "0.85rem", color: "#666" }}>New cover image:</p>
           <img src={coverPreview} alt="new cover preview" />
           <button
             type="button"
-            className="remove-cover-btn"
+            className={styles.removeCoverBtn}
             onClick={removeNewCover}
           >
             ❌ Remove New Image
@@ -151,14 +147,14 @@ export default function EditPost() {
         <p style={{ color: "red", fontSize: "0.85rem" }}>{fileError}</p>
       )}
 
-      {/* EDITOR with remove images button */}
-      <div className="editor-wrapper">
+      {/* EDITOR */}
+      <div className={styles.editorWrapper}>
         <Editor onChange={setContent} value={content} />
 
         {content.includes("<img") && (
           <button
             type="button"
-            className="remove-images-btn"
+            className={styles.removeImagesBtn}
             onClick={removeEditorImages}
           >
             🗑️ Remove All Images from Editor

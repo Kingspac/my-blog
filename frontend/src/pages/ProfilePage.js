@@ -2,6 +2,8 @@ import { useState, useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import { formatISO9075 } from "date-fns";
 import { UserContext } from "../UserContext";
+import styles from "../styles/ProfilePage.module.css";
+import mediaStyles from "../styles/IndexPage.module.css";
 
 // Helper to extract YouTube video ID
 function getYoutubeId(url) {
@@ -22,11 +24,9 @@ export default function ProfilePage() {
   const { id } = useParams();
   const { userInfo } = useContext(UserContext);
 
-  // Is the logged in user viewing their OWN profile?
   const isOwnProfile = userInfo?.id === id;
 
   useEffect(() => {
-    // Fetch user profile + their posts
     fetch(`http://localhost:4000/api/profile/${id}`)
       .then((res) => res.json())
       .then((data) => {
@@ -34,11 +34,9 @@ export default function ProfilePage() {
         setBio(data.user.bio || "");
       });
 
-    // Fetch all music and filter by this user on frontend
     fetch("http://localhost:4000/api/music")
       .then((res) => res.json())
       .then((data) => {
-        // Only keep music uploaded by this user
         const userMusic = data.filter(
           (m) => m.uploadedBy?._id === id || m.uploadedBy === id
         );
@@ -46,10 +44,9 @@ export default function ProfilePage() {
       });
   }, [id]);
 
-  // FILE VALIDATION for profile photo
   function handlePhotoChange(e) {
     const file = e.target.files[0];
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       setFileError("Photo too large! Max 5MB.");
       e.target.value = "";
@@ -59,7 +56,6 @@ export default function ProfilePage() {
     setProfilePhoto(e.target.files);
   }
 
-  // UPDATE PROFILE
   async function handleUpdateProfile(e) {
     e.preventDefault();
 
@@ -89,48 +85,48 @@ export default function ProfilePage() {
 
   const { user, posts } = profileData;
 
-  // Mix posts and music together sorted by date
   const mixedContent = [
     ...posts.map((p) => ({ ...p, itemType: "post" })),
     ...music.map((m) => ({ ...m, itemType: "media" })),
   ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   return (
-    <div className="profile-page">
+    <div className={styles.profilePage}>
 
       {/* PROFILE HEADER */}
-      <div className="profile-header">
+      <div className={styles.profileHeader}>
+
         {/* Profile Photo */}
-        <div className="profile-photo">
+        <div className={styles.profilePhoto}>
           {user.profilePhoto ? (
             <img
               src={`http://localhost:4000/${user.profilePhoto}`}
               alt="profile"
             />
           ) : (
-            <div className="profile-photo-placeholder">👤</div>
+            <div className={styles.profilePhotoPlaceholder}>👤</div>
           )}
         </div>
 
         {/* Username */}
-        <h2>{user.username}</h2>
+        <h2 className={styles.profileUsername}>{user.username}</h2>
 
         {/* Bio */}
-        <p className="profile-bio">{user.bio || "No bio yet."}</p>
+        <p className={styles.profileBio}>{user.bio || "No bio yet."}</p>
 
-        {/* Edit button - only on own profile */}
+        {/* Edit button */}
         {isOwnProfile && !isEditing && (
           <button
-            className="edit-profile-btn"
+            className={styles.editProfileBtn}
             onClick={() => setIsEditing(true)}
           >
             ✏️ Edit Profile
           </button>
         )}
 
-        {/* Create buttons - only on own profile */}
+        {/* Create buttons */}
         {isOwnProfile && (
-          <div className="profile-create-buttons">
+          <div className={styles.profileCreateButtons}>
             <Link to="/create" className="create-btn">
               📝 Create Post
             </Link>
@@ -143,7 +139,7 @@ export default function ProfilePage() {
 
       {/* EDIT PROFILE FORM */}
       {isOwnProfile && isEditing && (
-        <form className="edit-profile-form" onSubmit={handleUpdateProfile}>
+        <form className={styles.editProfileForm} onSubmit={handleUpdateProfile}>
           <h3>Edit Profile</h3>
 
           <label>Profile Photo</label>
@@ -206,9 +202,9 @@ export default function ProfilePage() {
 
               {/* Media Card */}
               {item.itemType === "media" && (
-                <div className="media-card">
+                <div className={mediaStyles.mediaCard}>
                   {item.coverPhoto && !item.youtubeLink && (
-                    <div className="media-cover">
+                    <div className={mediaStyles.mediaCover}>
                       <img
                         src={`http://localhost:4000/${item.coverPhoto}`}
                         alt={item.title}
@@ -232,17 +228,15 @@ export default function ProfilePage() {
                   {item.audioFile && !item.youtubeLink && (
                     <div className="audio-player">
                       <audio controls style={{ width: "100%" }}>
-                        <source
-                          src={`http://localhost:4000/${item.audioFile}`}
-                        />
+                        <source src={`http://localhost:4000/${item.audioFile}`} />
                       </audio>
                     </div>
                   )}
 
-                  <div className="media-info">
-                    <span className="media-badge">{item.category}</span>
+                  <div className={mediaStyles.mediaInfo}>
+                    <span className={mediaStyles.mediaBadge}>{item.category}</span>
                     <h3>{item.title}</h3>
-                    <p className="media-date">
+                    <p className={mediaStyles.mediaDate}>
                       {formatISO9075(new Date(item.createdAt))}
                     </p>
                   </div>

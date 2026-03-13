@@ -14,14 +14,14 @@ export default function BlogPage() {
   }, []);
 
   return (
-    <div className="blog-page">
+    <div>
 
-      {/* PAGE HEADER */}
+      {/* PAGE HEADER - uses global.css classes */}
       <div className="page-header">
         <h2>📝 Blog</h2>
         <p>Stories, thoughts and voices of the Adara people</p>
 
-        {/* Create post button - only for logged in users */}
+        {/* Create post button - uses global.css class */}
         {userInfo?.id && (
           <Link to="/create" className="create-btn">
             + Create Post

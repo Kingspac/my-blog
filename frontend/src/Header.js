@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
+import styles from "./styles/Header.module.css";
 
 export default function Header() {
   const { setUserInfo, userInfo } = useContext(UserContext);
@@ -61,19 +62,20 @@ export default function Header() {
   const id = userInfo?.id;
 
   return (
-    <header>
-      <Link to="/" className="logo">Enchwra</Link>
-      <nav>
+    <header className={styles.header}>
+      <Link to="/" className={styles.logo}>Enchwra</Link>
+      <nav className={styles.nav}>
+
         {/* Visible to everyone */}
         <Link to="/blog">Blog</Link>
         <Link to="/entertainment">Entertainment</Link>
         <Link to="/education">📚 Education</Link>
 
         {/* Room with notification badge */}
-        <Link to="/room" className="room-link" onClick={handleRoomClick}>
+        <Link to="/room" className={styles.roomLink} onClick={handleRoomClick}>
           🪨 Room
           {newMessageCount > 0 && (
-            <span className="notification-badge">
+            <span className={styles.notificationBadge}>
               {newMessageCount > 99 ? "99+" : newMessageCount}
             </span>
           )}
@@ -83,7 +85,7 @@ export default function Header() {
         {username && (
           <>
             <Link to={`/profile/${id}`}>👤 {username}</Link>
-            <a onClick={logout}>Logout</a>
+            <a onClick={logout} style={{ cursor: "pointer" }}>Logout</a>
           </>
         )}
 
