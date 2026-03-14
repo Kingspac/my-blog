@@ -17,18 +17,15 @@ export default function IndexPage() {
   const [music, setMusic] = useState([]);
 
   useEffect(() => {
-    // Fetch blog posts
     fetch("http://localhost:4000/api/post")
       .then((res) => res.json())
       .then((data) => setPosts(data));
 
-    // Fetch entertainment content
     fetch("http://localhost:4000/api/music")
       .then((res) => res.json())
       .then((data) => setMusic(data));
   }, []);
 
-  // Mix posts and music together sorted by date newest first
   const mixedFeed = [
     ...posts.map((p) => ({ ...p, itemType: "post" })),
     ...music.map((m) => ({ ...m, itemType: "media" })),
@@ -87,7 +84,7 @@ export default function IndexPage() {
                 </div>
               )}
 
-              {/* Audio Player */}
+              {/* Audio/Video Player */}
               {item.audioFile && !item.youtubeLink && (
                 <div className="audio-player">
                   <audio controls style={{ width: "100%" }}>

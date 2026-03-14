@@ -7,7 +7,7 @@ import PostPage from "./pages/PostPage.js";
 import EditPost from "./pages/EditPost.js";
 import CreatePost from "./CreatePost.js";
 import EntertainmentPage from "./pages/EntertainmentPage.js";
-import UploadMusic from "./pages/UploadMusic.js";
+import UploadMedia from "./pages/UploadMedia.js";
 import ProfilePage from "./pages/ProfilePage.js";
 import RoomPage from "./pages/RoomPage.js";
 import EducationPage from "./pages/EducationPage.js";
@@ -30,7 +30,7 @@ function App() {
 
           {/* Entertainment */}
           <Route path="/entertainment" element={<EntertainmentPage />} />
-          <Route path="/entertainment/upload" element={<UploadMusic />} />
+          <Route path="/entertainment/upload" element={<UploadMedia />} />
 
           {/* Education */}
           <Route path="/education" element={<EducationPage />} />

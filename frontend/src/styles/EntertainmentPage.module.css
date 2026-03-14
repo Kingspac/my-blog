@@ -25,12 +25,12 @@
   border: none;
 }
 
-.entertainmentTabs button.active {
-  background: #333;
-  color: white;
+.active {
+  background: #333 !important;
+  color: white !important;
 }
 
-/* ===== MUSIC GRID ===== */
+/* ===== MEDIA GRID ===== */
 .musicGrid {
   display: grid;
   grid-template-columns: 1fr;
@@ -43,7 +43,7 @@
   }
 }
 
-/* ===== MUSIC CARD ===== */
+/* ===== MEDIA CARD ===== */
 .musicCard {
   background: white;
   border-radius: 8px;
@@ -55,6 +55,17 @@
   width: 100%;
   height: 180px;
   object-fit: cover;
+}
+
+.videoPlayer {
+  width: 100%;
+  background: #000;
+}
+
+.videoPlayer video {
+  width: 100%;
+  display: block;
+  max-height: 260px;
 }
 
 .audioPlayer {
@@ -103,4 +114,187 @@
 .musicDate {
   font-size: 0.75rem;
   color: #aaa;
+}
+
+/* ===== ACTIONS ROW ===== */
+.mediaActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  border-top: 1px solid #eee;
+  flex-wrap: wrap;
+}
+
+.likeBtn {
+  background: none;
+  border: 2px solid #ddd;
+  border-radius: 20px;
+  padding: 5px 14px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  width: auto;
+  color: #333;
+}
+
+.likeBtn.liked {
+  border-color: red;
+  color: red;
+}
+
+.commentToggleBtn {
+  background: none;
+  border: 2px solid #ddd;
+  border-radius: 20px;
+  padding: 5px 14px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  width: auto;
+  color: #333;
+}
+
+.deleteMediaBtn {
+  background: #cc0000;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 5px 14px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  width: auto;
+  margin-left: auto;
+}
+
+/* ===== SHARE ROW ===== */
+.shareRow {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  border-top: 1px solid #eee;
+}
+
+.shareBtn {
+  padding: 5px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: white;
+  width: auto;
+}
+
+.whatsapp { background-color: #25D366; }
+.facebook { background-color: #1877F2; }
+.twitter  { background-color: #1DA1F2; }
+.copy     { background-color: #555555; }
+
+/* ===== COMMENTS MODAL ===== */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalBox {
+  background: white;
+  width: 100%;
+  max-width: 600px;
+  border-radius: 16px 16px 0 0;
+  padding: 20px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.modalHeader h3 {
+  font-size: 1rem;
+  color: #333;
+}
+
+.modalCloseBtn {
+  background: #eee;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  padding: 5px 10px;
+}
+
+.modalCommentsList {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+/* ===== COMMENTS ===== */
+.commentForm {
+  display: flex;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.commentForm input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.commentForm button {
+  width: auto;
+  padding: 8px 16px;
+}
+
+.comment {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.commentAuthor {
+  font-weight: bold;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.commentContent {
+  font-size: 0.9rem;
+  color: #444;
+  margin-bottom: 4px;
+}
+
+.commentDate {
+  font-size: 0.7rem;
+  color: #aaa;
+}
+
+.noComments {
+  color: #aaa;
+  font-size: 0.85rem;
+  font-style: italic;
+  text-align: center;
+  padding: 20px 0;
 }

@@ -2,12 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 
 const userRoutes = require("./routes/userRoute");
-const musicRoutes = require("./routes/musicRoute");
+const mediaRoutes = require("./routes/mediaRoute");
 const messageRoutes = require("./routes/messageRoute");
 const educationRoutes = require("./routes/educationRoute");
 
@@ -22,7 +20,7 @@ app.use('/uploads', express.static(__dirname + '/uploads'));
 
 // routes
 app.use('/api', userRoutes);
-app.use("/api/music", musicRoutes);
+app.use("/api/music", mediaRoutes);  // kept /api/music so frontend still works
 app.use("/api/room", messageRoutes);
 app.use("/api/education", educationRoutes);
 
