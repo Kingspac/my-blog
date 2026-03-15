@@ -32,7 +32,7 @@ function CommentsModal({ media, currentUser, onClose }) {
     }
     if (!comment.trim()) return;
 
-    const res = await fetch(`http://localhost:4000/api/music/${media._id}/comment`, {
+    const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/music/${media._id}/comment`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -112,7 +112,7 @@ function MediaCard({ media, currentUser, onDelete }) {
       alert("Please login to like");
       return;
     }
-    const res = await fetch(`http://localhost:4000/api/music/${media._id}/like`, {
+    const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/music/${media._id}/like`, {
       method: "PUT",
       credentials: "include",
     });
@@ -126,7 +126,7 @@ function MediaCard({ media, currentUser, onDelete }) {
   async function handleDelete() {
     const confirmed = window.confirm("Delete this media?");
     if (!confirmed) return;
-    const res = await fetch(`http://localhost:4000/api/music/${media._id}`, {
+    const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/music/${media._id}`, {
       method: "DELETE",
       credentials: "include",
     });
@@ -158,7 +158,7 @@ function MediaCard({ media, currentUser, onDelete }) {
         {/* Cover Photo */}
         {media.coverPhoto && !media.youtubeLink && !hasVideo && (
           <div className={styles.musicCover}>
-            <img src={`http://localhost:4000/${media.coverPhoto}`} alt={media.title} />
+            <img src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/${media.coverPhoto}`} alt={media.title} />
           </div>
         )}
 
@@ -180,7 +180,7 @@ function MediaCard({ media, currentUser, onDelete }) {
         {media.audioFile && !media.youtubeLink && hasVideo && (
           <div className={styles.videoPlayer}>
             <video controls style={{ width: "100%" }}>
-              <source src={`http://localhost:4000/${media.audioFile}`} type="video/mp4" />
+              <source src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/${media.audioFile}`} type="video/mp4" />
               Your browser does not support video.
             </video>
           </div>
@@ -190,7 +190,7 @@ function MediaCard({ media, currentUser, onDelete }) {
         {media.audioFile && !media.youtubeLink && !hasVideo && (
           <div className={styles.audioPlayer}>
             <audio controls style={{ width: "100%" }}>
-              <source src={`http://localhost:4000/${media.audioFile}`} />
+              <source src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/${media.audioFile}`} />
               Your browser does not support audio.
             </audio>
           </div>
@@ -270,7 +270,7 @@ export default function EntertainmentPage() {
   const { userInfo } = useContext(UserContext);
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/music")
+    fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/music`)
       .then((res) => res.json())
       .then((data) => setMediaList(data));
   }, []);

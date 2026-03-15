@@ -38,7 +38,7 @@ export default function CreateEducation() {
     if (youtubeLink) formData.append("youtubeLink", youtubeLink);
     if (cover) formData.append("cover", cover[0]);
 
-    const response = await fetch("http://localhost:4000/api/education/create", {
+    const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/education/create`, {
       method: "POST",
       credentials: "include",
       body: formData,

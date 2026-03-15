@@ -1,4 +1,4 @@
- import { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Editor from "./Editor";
 import styles from "./styles/Editor.module.css";
@@ -63,7 +63,7 @@ export default function CreatePost() {
       data.append("cover", files[0]);
     }
 
-    const response = await fetch("http://localhost:4000/api/post", {
+    const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/post`, {
       method: "POST",
       body: data,
       credentials: "include",
@@ -136,4 +136,3 @@ export default function CreatePost() {
     </form>
   );
 }
- 

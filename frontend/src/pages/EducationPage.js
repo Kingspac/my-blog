@@ -1,10 +1,8 @@
 import { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
-import { UserContext } from "../UserContext";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { formatISO9075 } from "date-fns";
-import styles from "../styles/EducationPage.module.css";
+import { UserContext } from "../UserContext";
 
-// Helper to extract YouTube video ID
 function getYoutubeId(url) {
   const match = url.match(
     /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/
@@ -12,170 +10,139 @@ function getYoutubeId(url) {
   return match ? match[1] : null;
 }
 
-// Category labels and icons
-const categories = [
-  { key: null, label: "🏠 All" },
-  { key: "history", label: "📜 History & Culture" },
-  { key: "language", label: "🗣️ Language" },
-  { key: "health", label: "🏥 Health & Wellbeing" },
-  { key: "career", label: "🎓 Career & Education" },
-];
-
-// Language sub-tabs for language category
-const languages = [
-  { key: null, label: "All" },
-  { key: "adara", label: "🪨 Adara" },
-  { key: "hausa", label: "Hausa" },
-  { key: "english", label: "🇬🇧 English" },
-];
-
-export default function EducationPage() {
-  const [educationList, setEducationList] = useState([]);
-  const [activeTab, setActiveTab] = useState(null);
-  const [activeLanguage, setActiveLanguage] = useState(null);
+export default function EducationPostPage() {
+  const [postInfo, setPostInfo] = useState(null);
+  const [likes, setLikes] = useState(0);
+  const [liked, setLiked] = useState(false);
   const { userInfo } = useContext(UserContext);
+  const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/education")
+    fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/education/${id}`)
       .then((res) => res.json())
-      .then((data) => setEducationList(data));
-  }, []);
+      .then((data) => {
+        setPostInfo(data);
+        setLikes(data.likes?.length || 0);
+        if (userInfo?.id) {
+          setLiked(data.likes?.includes(userInfo.id));
+        }
+      });
+  }, [id]);
 
-  // Filter by category
-  let filtered = activeTab
-    ? educationList.filter((e) => e.category === activeTab)
-    : educationList;
-
-  // Filter further by language if language tab is active
-  if (activeTab === "language" && activeLanguage) {
-    filtered = filtered.filter((e) => e.language === activeLanguage);
+  async function handleLike() {
+    if (!userInfo?.id) {
+      alert("Please login to like this content");
+      return;
+    }
+    const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/education/${id}/like`, {
+      method: "PUT",
+      credentials: "include",
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setLikes(data.likes);
+      setLiked(data.liked);
+    }
   }
 
+  async function handleDelete() {
+    const confirmed = window.confirm("Are you sure you want to delete this?");
+    if (!confirmed) return;
+
+    const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/education/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    if (res.ok) {
+      alert("Deleted successfully!");
+      navigate("/education");
+    } else {
+      alert("Failed to delete");
+    }
+  }
+
+  if (!postInfo) return "";
+
   return (
-    <div className={styles.educationPage}>
+    <div className="education-post-page">
 
-      {/* PAGE HEADER - global.css */}
-      <div className="page-header">
-        <h2>📚 Education</h2>
-        <p>Learn about Adara history, language, health and more</p>
+      {/* Cover Image */}
+      {postInfo.cover && !postInfo.youtubeLink && (
+        <div className="education-post-cover">
+          <img
+            src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/${postInfo.cover}`}
+            alt={postInfo.title}
+          />
+        </div>
+      )}
 
-        {userInfo?.id && (
-          <Link to="/education/create" className="create-btn">
-            + Create
-          </Link>
+      {/* YouTube Embed */}
+      {postInfo.youtubeLink && (
+        <div className="youtube-embed">
+          <iframe
+            width="100%"
+            height="300"
+            src={`https://www.youtube.com/embed/${getYoutubeId(postInfo.youtubeLink)}`}
+            title={postInfo.title}
+            frameBorder="0"
+            allowFullScreen
+          />
+        </div>
+      )}
+
+      {/* Badges */}
+      <div className="education-badges" style={{ marginTop: "15px" }}>
+        <span className="education-category">{postInfo.category}</span>
+        {postInfo.language && (
+          <span className="education-language">{postInfo.language}</span>
         )}
       </div>
 
-      {/* CATEGORY TABS */}
-      <div className={styles.educationTabs}>
-        {categories.map((cat) => (
-          <button
-            key={cat.key}
-            className={activeTab === cat.key ? styles.active : ""}
-            onClick={() => {
-              setActiveTab(cat.key);
-              setActiveLanguage(null);
-            }}
-          >
-            {cat.label}
+      <h1>{postInfo.title}</h1>
+      <time>{formatISO9075(new Date(postInfo.createdAt))}</time>
+      <div className="author">
+        ✍️ By{" "}
+        <Link to={`/profile/${postInfo.author?._id}`}>
+          {postInfo.author?.username}
+        </Link>
+      </div>
+
+      {/* Edit and Delete - only for author */}
+      {userInfo?.id === postInfo.author?._id && (
+        <div className="edit-row">
+          <Link className="edit-btn" to={`/education/edit/${postInfo._id}`}>
+            Edit
+          </Link>
+          <button className="delete-btn" onClick={handleDelete}>
+            Delete
           </button>
-        ))}
+        </div>
+      )}
+
+      {/* Content */}
+      <div
+        className="content"
+        dangerouslySetInnerHTML={{ __html: postInfo.content }}
+      />
+
+      {/* Like Button */}
+      <div className="like-section">
+        <button
+          className={`like-btn ${liked ? "liked" : ""}`}
+          onClick={handleLike}
+        >
+          {liked ? "❤️" : "🤍"} {likes} {likes === 1 ? "Like" : "Likes"}
+        </button>
       </div>
 
-      {/* LANGUAGE SUB-TABS */}
-      {activeTab === "language" && (
-        <div className={styles.languageTabs}>
-          {languages.map((lang) => (
-            <button
-              key={lang.key}
-              className={activeLanguage === lang.key ? styles.active : ""}
-              onClick={() => setActiveLanguage(lang.key)}
-            >
-              {lang.label}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* COMING SOON BANNER */}
-      <div className={styles.folkloreBanner}>
-        <p>🔴 Coming Soon: <strong>Live Folklore Show</strong> — Watch and learn Adara traditions live!</p>
+      {/* Back to Education */}
+      <div style={{ marginTop: "20px" }}>
+        <Link to="/education" style={{ color: "#333", fontSize: "0.9rem" }}>
+          ← Back to Education
+        </Link>
       </div>
-
-      {/* CONTENT */}
-      {filtered.length === 0 ? (
-        <p className="no-content">
-          No content yet. Be the first to contribute!
-        </p>
-      ) : (
-        <div className={styles.educationGrid}>
-          {filtered.map((item) => (
-            <div className={styles.educationCard} key={item._id}>
-
-              {/* Cover Image */}
-              {item.cover && !item.youtubeLink && (
-                <div className={styles.educationCover}>
-                  <img
-                    src={`http://localhost:4000/${item.cover}`}
-                    alt={item.title}
-                  />
-                </div>
-              )}
-
-              {/* YouTube Embed */}
-              {item.youtubeLink && (
-                <div className="youtube-embed">
-                  <iframe
-                    width="100%"
-                    height="200"
-                    src={`https://www.youtube.com/embed/${getYoutubeId(item.youtubeLink)}`}
-                    title={item.title}
-                    frameBorder="0"
-                    allowFullScreen
-                  />
-                </div>
-              )}
-
-              {/* Content Info */}
-              <div className={styles.educationInfo}>
-                <div className={styles.educationBadges}>
-                  <span className={styles.educationCategory}>{item.category}</span>
-                  {item.language && (
-                    <span className={styles.educationLanguage}>{item.language}</span>
-                  )}
-                </div>
-                <Link to={`/education/${item._id}`}>
-                  <h3>{item.title}</h3>
-                </Link>
-                {item.summary && (
-                  <p className={styles.educationSummary}>{item.summary}</p>
-                )}
-                <p className={styles.educationAuthor}>
-                  ✍️{" "}
-                  <Link to={`/profile/${item.author?._id}`}>
-                    {item.author?.username}
-                  </Link>
-                </p>
-                <p className={styles.educationDate}>
-                  {formatISO9075(new Date(item.createdAt))}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Encourage non-logged in users to register */}
-      {!userInfo?.id && (
-        <div className="register-prompt">
-          <p>🪨 Want to contribute? Join the Adara community!</p>
-          <div className="login-required-buttons">
-            <Link to="/register" className="create-btn">Register</Link>
-            <Link to="/login" className="create-btn entertainment">Login</Link>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }

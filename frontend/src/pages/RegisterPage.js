@@ -1,4 +1,4 @@
- import { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/Auth.module.css";
 
@@ -18,7 +18,7 @@ export default function RegisterPage() {
       return;
     }
 
-    const response = await fetch("http://localhost:4000/api/register", {
+    const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/register`, {
       method: "POST",
       body: JSON.stringify({ username, password }),
       headers: { "Content-Type": "application/json" },
@@ -67,4 +67,3 @@ export default function RegisterPage() {
     </form>
   );
 }
- 

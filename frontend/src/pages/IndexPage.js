@@ -24,11 +24,11 @@ export default function IndexPage() {
   const [music, setMusic] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/post")
+    fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/post`)
       .then((res) => res.json())
       .then((data) => setPosts(data));
 
-    fetch("http://localhost:4000/api/music")
+    fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/music`)
       .then((res) => res.json())
       .then((data) => setMusic(data));
   }, []);
@@ -71,7 +71,7 @@ export default function IndexPage() {
               {item.coverPhoto && !item.youtubeLink && !isVideoFile(item.audioFile) && (
                 <div className={styles.mediaCover}>
                   <img
-                    src={`http://localhost:4000/${item.coverPhoto}`}
+                    src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/${item.coverPhoto}`}
                     alt={item.title}
                   />
                 </div>
@@ -94,7 +94,7 @@ export default function IndexPage() {
               {/* VIDEO player - mp4 and other video files */}
               {item.audioFile && !item.youtubeLink && isVideoFile(item.audioFile) && (
                 <video controls style={{ width: "100%", display: "block", background: "#000" }}>
-                  <source src={`http://localhost:4000/${item.audioFile}`} type="video/mp4" />
+                  <source src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/${item.audioFile}`} type="video/mp4" />
                   Your browser does not support video.
                 </video>
               )}
@@ -103,7 +103,7 @@ export default function IndexPage() {
               {item.audioFile && !item.youtubeLink && !isVideoFile(item.audioFile) && (
                 <div style={{ padding: "10px", background: "#f9f9f9" }}>
                   <audio controls style={{ width: "100%" }}>
-                    <source src={`http://localhost:4000/${item.audioFile}`} />
+                    <source src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/${item.audioFile}`} />
                     Your browser does not support audio.
                   </audio>
                 </div>

@@ -1,4 +1,4 @@
- import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Editor from "../Editor";
 import styles from "../styles/Editor.module.css";
@@ -16,7 +16,7 @@ export default function EditPost() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/post/" + id, {
+    fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/post/` + id, {
       credentials: "include",
     })
       .then((response) => {
@@ -83,7 +83,7 @@ export default function EditPost() {
       data.append("cover", files[0]);
     }
 
-    const response = await fetch("http://localhost:4000/api/post", {
+    const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/post`, {
       method: "PUT",
       body: data,
       credentials: "include",
@@ -115,7 +115,7 @@ export default function EditPost() {
         <div className={styles.coverPreview}>
           <p style={{ fontSize: "0.85rem", color: "#666" }}>Current cover image:</p>
           <img
-            src={"http://localhost:4000/" + existingCover}
+            src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/` + existingCover}
             alt="current cover"
           />
         </div>

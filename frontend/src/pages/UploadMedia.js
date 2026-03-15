@@ -66,7 +66,7 @@ export default function UploadMedia() {
 
     if (coverPhoto?.[0]) data.append("coverPhoto", coverPhoto[0]);
 
-    const res = await fetch("http://localhost:4000/api/music", {
+    const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/music`, {
       method: "POST",
       credentials: "include",
       body: data,

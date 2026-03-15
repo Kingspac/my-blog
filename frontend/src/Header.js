@@ -9,7 +9,7 @@ export default function Header() {
   const location = useLocation();
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/profile", {
+    fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/profile`, {
       credentials: "include",
     }).then((response) => {
       response.json().then((userInfo) => {
@@ -30,7 +30,7 @@ export default function Header() {
       return;
     }
     try {
-      const res = await fetch("http://localhost:4000/api/room/count");
+      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/room/count`);
       const data = await res.json();
       const totalCount = data.count;
       const lastSeen = parseInt(
@@ -51,7 +51,7 @@ export default function Header() {
   }
 
   function logout() {
-    fetch("http://localhost:4000/api/logout", {
+    fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/logout`, {
       credentials: "include",
       method: "POST",
     });

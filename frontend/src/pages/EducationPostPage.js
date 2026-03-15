@@ -1,136 +1,148 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Editor from "../Editor";
+import { useState, useEffect, useContext } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { formatISO9075 } from "date-fns";
+import { UserContext } from "../UserContext";
 
-export default function CreateEducation() {
-  const [title, setTitle] = useState("");
-  const [summary, setSummary] = useState("");
-  const [content, setContent] = useState("");
-  const [category, setCategory] = useState("history");
-  const [language, setLanguage] = useState("");
-  const [youtubeLink, setYoutubeLink] = useState("");
-  const [cover, setCover] = useState(null);
-  const [fileError, setFileError] = useState("");
+function getYoutubeId(url) {
+  const match = url.match(
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+  );
+  return match ? match[1] : null;
+}
 
+export default function EducationPostPage() {
+  const [postInfo, setPostInfo] = useState(null);
+  const [likes, setLikes] = useState(0);
+  const [liked, setLiked] = useState(false);
+  const { userInfo } = useContext(UserContext);
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  function handleCoverChange(e) {
-    const file = e.target.files[0];
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSize) {
-      setFileError("Image too large! Max 5MB.");
-      e.target.value = "";
+  useEffect(() => {
+    fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/education/${id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setPostInfo(data);
+        setLikes(data.likes?.length || 0);
+        if (userInfo?.id) {
+          setLiked(data.likes?.includes(userInfo.id));
+        }
+      });
+  }, [id]);
+
+  async function handleLike() {
+    if (!userInfo?.id) {
+      alert("Please login to like this content");
       return;
     }
-    setFileError("");
-    setCover(e.target.files);
-  }
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("summary", summary);
-    formData.append("content", content);
-    formData.append("category", category);
-    if (language) formData.append("language", language);
-    if (youtubeLink) formData.append("youtubeLink", youtubeLink);
-    if (cover) formData.append("cover", cover[0]);
-
-    const response = await fetch("http://localhost:4000/api/education/create", {
-      method: "POST",
+    const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/education/${id}/like`, {
+      method: "PUT",
       credentials: "include",
-      body: formData,
     });
-
-    if (response.ok) {
-      navigate("/education");
-    } else {
-      alert("Failed to create content. Please try again.");
+    if (res.ok) {
+      const data = await res.json();
+      setLikes(data.likes);
+      setLiked(data.liked);
     }
   }
 
+  async function handleDelete() {
+    const confirmed = window.confirm("Are you sure you want to delete this?");
+    if (!confirmed) return;
+
+    const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/education/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    if (res.ok) {
+      alert("Deleted successfully!");
+      navigate("/education");
+    } else {
+      alert("Failed to delete");
+    }
+  }
+
+  if (!postInfo) return "";
+
   return (
-    <div className="create-education-page">
-      <h1>📚 Create Educational Content</h1>
+    <div className="education-post-page">
 
-      <form onSubmit={handleSubmit}>
+      {/* Cover Image */}
+      {postInfo.cover && !postInfo.youtubeLink && (
+        <div className="education-post-cover">
+          <img
+            src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/${postInfo.cover}`}
+            alt={postInfo.title}
+          />
+        </div>
+      )}
 
-        <label>Title *</label>
-        <input
-          type="text"
-          placeholder="Title of your content"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
+      {/* YouTube Embed */}
+      {postInfo.youtubeLink && (
+        <div className="youtube-embed">
+          <iframe
+            width="100%"
+            height="300"
+            src={`https://www.youtube.com/embed/${getYoutubeId(postInfo.youtubeLink)}`}
+            title={postInfo.title}
+            frameBorder="0"
+            allowFullScreen
+          />
+        </div>
+      )}
 
-        <label>Summary</label>
-        <input
-          type="text"
-          placeholder="Brief description of your content"
-          value={summary}
-          onChange={(e) => setSummary(e.target.value)}
-        />
+      {/* Badges */}
+      <div className="education-badges" style={{ marginTop: "15px" }}>
+        <span className="education-category">{postInfo.category}</span>
+        {postInfo.language && (
+          <span className="education-language">{postInfo.language}</span>
+        )}
+      </div>
 
-        <label>Category *</label>
-        <select
-          value={category}
-          onChange={(e) => {
-            setCategory(e.target.value);
-            setLanguage(""); // reset language when category changes
-          }}
-          required
+      <h1>{postInfo.title}</h1>
+      <time>{formatISO9075(new Date(postInfo.createdAt))}</time>
+      <div className="author">
+        ✍️ By{" "}
+        <Link to={`/profile/${postInfo.author?._id}`}>
+          {postInfo.author?.username}
+        </Link>
+      </div>
+
+      {/* Edit and Delete - only for author */}
+      {userInfo?.id === postInfo.author?._id && (
+        <div className="edit-row">
+          <Link className="edit-btn" to={`/education/edit/${postInfo._id}`}>
+            Edit
+          </Link>
+          <button className="delete-btn" onClick={handleDelete}>
+            Delete
+          </button>
+        </div>
+      )}
+
+      {/* Content */}
+      <div
+        className="content"
+        dangerouslySetInnerHTML={{ __html: postInfo.content }}
+      />
+
+      {/* Like Button */}
+      <div className="like-section">
+        <button
+          className={`like-btn ${liked ? "liked" : ""}`}
+          onClick={handleLike}
         >
-          <option value="history">📜 History & Culture</option>
-          <option value="language">🗣️ Language</option>
-          <option value="health">🏥 Health & Wellbeing</option>
-          <option value="career">🎓 Career & Education</option>
-        </select>
-
-        {/* Language sub-selection - only show if language category */}
-        {category === "language" && (
-          <>
-            <label>Language *</label>
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              required
-            >
-              <option value="">Select language...</option>
-              <option value="adara">🪨 Adara</option>
-              <option value="hausa">Hausa</option>
-              <option value="english">🇬🇧 English</option>
-            </select>
-          </>
-        )}
-
-        <label>Cover Image (Max 5MB)</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleCoverChange}
-        />
-        {fileError && (
-          <p style={{ color: "red", fontSize: "0.85rem" }}>{fileError}</p>
-        )}
-
-        <label>YouTube Link (optional)</label>
-        <input
-          type="url"
-          placeholder="https://www.youtube.com/watch?v=..."
-          value={youtubeLink}
-          onChange={(e) => setYoutubeLink(e.target.value)}
-        />
-
-        <label>Content</label>
-        <Editor onChange={setContent} value={content} />
-
-        <button type="submit" style={{ marginTop: "15px" }}>
-          Publish 📚
+          {liked ? "❤️" : "🤍"} {likes} {likes === 1 ? "Like" : "Likes"}
         </button>
-      </form>
+      </div>
+
+      {/* Back to Education */}
+      <div style={{ marginTop: "20px" }}>
+        <Link to="/education" style={{ color: "#333", fontSize: "0.9rem" }}>
+          ← Back to Education
+        </Link>
+      </div>
     </div>
   );
 }

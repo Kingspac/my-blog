@@ -27,14 +27,14 @@ export default function ProfilePage() {
   const isOwnProfile = userInfo?.id === id;
 
   useEffect(() => {
-    fetch(`http://localhost:4000/api/profile/${id}`)
+    fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/profile/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setProfileData(data);
         setBio(data.user.bio || "");
       });
 
-    fetch("http://localhost:4000/api/music")
+    fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/music`)
       .then((res) => res.json())
       .then((data) => {
         const userMusic = data.filter(
@@ -65,7 +65,7 @@ export default function ProfilePage() {
       formData.append("profilePhoto", profilePhoto[0]);
     }
 
-    const response = await fetch(`http://localhost:4000/api/profile/${id}`, {
+    const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/profile/${id}`, {
       method: "PUT",
       credentials: "include",
       body: formData,
@@ -100,7 +100,7 @@ export default function ProfilePage() {
         <div className={styles.profilePhoto}>
           {user.profilePhoto ? (
             <img
-              src={`http://localhost:4000/${user.profilePhoto}`}
+              src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/${user.profilePhoto}`}
               alt="profile"
             />
           ) : (
@@ -184,7 +184,7 @@ export default function ProfilePage() {
                 <div className="post">
                   <div>
                     <img
-                      src={`http://localhost:4000/${item.cover}`}
+                      src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/${item.cover}`}
                       alt="post cover"
                     />
                   </div>
@@ -206,7 +206,7 @@ export default function ProfilePage() {
                   {item.coverPhoto && !item.youtubeLink && (
                     <div className={mediaStyles.mediaCover}>
                       <img
-                        src={`http://localhost:4000/${item.coverPhoto}`}
+                        src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/${item.coverPhoto}`}
                         alt={item.title}
                       />
                     </div>
@@ -228,7 +228,7 @@ export default function ProfilePage() {
                   {item.audioFile && !item.youtubeLink && (
                     <div className="audio-player">
                       <audio controls style={{ width: "100%" }}>
-                        <source src={`http://localhost:4000/${item.audioFile}`} />
+                        <source src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/${item.audioFile}`} />
                       </audio>
                     </div>
                   )}

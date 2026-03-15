@@ -18,7 +18,7 @@ export default function PostPage(){
   const postURL = window.location.href;
 
   useEffect(() => {
-    fetch(`http://localhost:4000/api/post/${id}`)
+    fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/post/${id}`)
       .then(response => {
         response.json().then(data => {
           setPostInfo(data);
@@ -35,7 +35,7 @@ export default function PostPage(){
     const confirmDelete = window.confirm("Are you sure you want to delete this post?");
     if (!confirmDelete) return;
 
-    const response = await fetch(`http://localhost:4000/api/post/${id}`, {
+    const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/post/${id}`, {
       method: "DELETE",
       credentials: "include",
     });
@@ -54,7 +54,7 @@ export default function PostPage(){
       return;
     }
 
-    const response = await fetch(`http://localhost:4000/api/post/${id}/like`, {
+    const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/post/${id}/like`, {
       method: "PUT",
       credentials: "include",
     });
@@ -76,7 +76,7 @@ export default function PostPage(){
 
     if (!comment.trim()) return;
 
-    const response = await fetch(`http://localhost:4000/api/post/${id}/comment`, {
+    const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/post/${id}/comment`, {
       method: "POST",
       credentials: "include",
       headers: {"Content-Type": "application/json"},
@@ -116,7 +116,7 @@ export default function PostPage(){
 
       {/* COVER IMAGE */}
       <div className={styles.image}>
-        <img src={`http://localhost:4000/${postInfo.cover}`} alt="post-image"/>
+        <img src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/${postInfo.cover}`} alt="post-image"/>
       </div>
 
       <h1>{postInfo.title}</h1>
