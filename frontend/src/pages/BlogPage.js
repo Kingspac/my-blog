@@ -8,7 +8,7 @@ export default function BlogPage() {
   const { userInfo } = useContext(UserContext);
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/post")
+    fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/post`)
       .then((res) => res.json())
       .then((data) => setPosts(data));
   }, []);
@@ -16,12 +16,11 @@ export default function BlogPage() {
   return (
     <div>
 
-      {/* PAGE HEADER - uses global.css classes */}
+      {/* PAGE HEADER */}
       <div className="page-header">
         <h2>📝 Blog</h2>
         <p>Stories, thoughts and voices of the Adara people</p>
 
-        {/* Create post button - uses global.css class */}
         {userInfo?.id && (
           <Link to="/create" className="create-btn">
             + Create Post
@@ -29,7 +28,7 @@ export default function BlogPage() {
         )}
       </div>
 
-      {/* POSTS ONLY - no media */}
+      {/* POSTS ONLY */}
       {posts.length === 0 && (
         <p className="no-content">No posts yet. Be the first to write!</p>
       )}
