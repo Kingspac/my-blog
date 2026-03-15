@@ -12,7 +12,11 @@ const educationRoutes = require("./routes/educationRoute");
 const app = express();
 
 // middlewares
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+const allowedOrigins = [process.env.FRONTEND_URI || "http://localhost:3000"];
+app.use(cors({ 
+  credentials: true, 
+  origin: allowedOrigins
+}));
 app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ limit: "100mb", extended: true }));
 app.use(cookieParser());

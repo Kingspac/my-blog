@@ -12,6 +12,13 @@ function getYoutubeId(url) {
   return match ? match[1] : null;
 }
 
+// Check if file is a video by extension
+function isVideoFile(filename) {
+  if (!filename) return false;
+  const ext = filename.split(".").pop().toLowerCase();
+  return ["mp4", "webm", "ogg", "mov", "mkv"].includes(ext);
+}
+
 export default function IndexPage() {
   const [posts, setPosts] = useState([]);
   const [music, setMusic] = useState([]);
@@ -60,8 +67,8 @@ export default function IndexPage() {
           {item.itemType === "media" && (
             <div className={styles.mediaCard}>
 
-              {/* Cover Photo */}
-              {item.coverPhoto && !item.youtubeLink && (
+              {/* Cover Photo - only for audio (not video files) */}
+              {item.coverPhoto && !item.youtubeLink && !isVideoFile(item.audioFile) && (
                 <div className={styles.mediaCover}>
                   <img
                     src={`http://localhost:4000/${item.coverPhoto}`}
@@ -84,9 +91,17 @@ export default function IndexPage() {
                 </div>
               )}
 
-              {/* Audio/Video Player */}
-              {item.audioFile && !item.youtubeLink && (
-                <div className="audio-player">
+              {/* VIDEO player - mp4 and other video files */}
+              {item.audioFile && !item.youtubeLink && isVideoFile(item.audioFile) && (
+                <video controls style={{ width: "100%", display: "block", background: "#000" }}>
+                  <source src={`http://localhost:4000/${item.audioFile}`} type="video/mp4" />
+                  Your browser does not support video.
+                </video>
+              )}
+
+              {/* AUDIO player - mp3 and other audio files only */}
+              {item.audioFile && !item.youtubeLink && !isVideoFile(item.audioFile) && (
+                <div style={{ padding: "10px", background: "#f9f9f9" }}>
                   <audio controls style={{ width: "100%" }}>
                     <source src={`http://localhost:4000/${item.audioFile}`} />
                     Your browser does not support audio.
