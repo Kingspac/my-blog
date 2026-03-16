@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
 import styles from "./styles/Header.module.css";
 
-export default function Header() {
+export default function Header({cover, title}) {
   const { setUserInfo, userInfo } = useContext(UserContext);
   const [newMessageCount, setNewMessageCount] = useState(0);
   const location = useLocation();
@@ -67,13 +67,13 @@ export default function Header() {
       <nav className={styles.nav}>
 
         {/* Visible to everyone */}
-        <Link to="/blog">Blog</Link>
-        <Link to="/entertainment">Entertainment</Link>
-        <Link to="/education">📚 Education</Link>
+        <Link to="/blog">📑</Link>
+        <Link to="/entertainment">🎬</Link>
+        <Link to="/education">📚</Link>
 
         {/* Room with notification badge */}
         <Link to="/room" className={styles.roomLink} onClick={handleRoomClick}>
-          🪨 Room
+               🏪
           {newMessageCount > 0 && (
             <span className={styles.notificationBadge}>
               {newMessageCount > 99 ? "99+" : newMessageCount}
@@ -84,7 +84,9 @@ export default function Header() {
         {/* Logged in */}
         {username && (
           <>
-            <Link to={`/profile/${id}`}>👤 {username}</Link>
+            <Link to={`/profile/${id}`}>
+               <img src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/${cover}`} alt={title} />{username}
+               </Link>
             <a onClick={logout} style={{ cursor: "pointer" }}>Logout</a>
           </>
         )}

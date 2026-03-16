@@ -3,9 +3,11 @@ import {Outlet} from "react-router-dom";
 
 export default function(){
   return(
+    <>
+    <Header />
     <main>
-      <Header />
       <Outlet />
     </main>
+    </>
     );
 }
