@@ -58,6 +58,25 @@
   cursor: pointer;
   width: auto;
   font-size: 0.9rem;
+  margin-right: 8px;
+}
+
+.logoutBtn {
+  background: none;
+  color: #cc0000;
+  border: 2px solid #cc0000;
+  padding: 8px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: auto;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+
+.logoutBtn:hover {
+  background: #cc0000;
+  color: white;
 }
 
 .editProfileForm {

@@ -33,7 +33,7 @@
 
 /* ===== EDITOR WRAPPER ===== */
 .editorWrapper {
-  margin: 10px 0;
+  margin: 0; /* removed top margin - no extra space */
 }
 
 .removeImagesBtn {
@@ -55,31 +55,38 @@
 
 /* ===== EDITOR IMAGE MANAGER ===== */
 .editorImageManager {
-  margin-top: 10px;
-  padding: 10px;
+  margin-top: 8px;
+  padding: 10px 12px;
   background: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 8px;
 }
 
 .editorImageManagerTitle {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #555;
   margin-bottom: 8px;
   font-weight: bold;
 }
 
+/* Images in a horizontal scrollable row */
 .editorImageList {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: row;
+  flex-wrap: nowrap;
   gap: 10px;
+  overflow-x: auto; /* scroll horizontally if many images */
+  padding-bottom: 6px;
 }
 
+/* Each image item - fixed small size */
 .editorImageItem {
   position: relative;
   display: inline-block;
+  flex-shrink: 0; /* don't shrink */
 }
 
+/* Small thumbnail - 80x80px */
 .editorImageItem img {
   width: 80px;
   height: 80px;
@@ -97,13 +104,14 @@
   color: white;
   border: none;
   border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  font-size: 10px;
+  width: 22px;
+  height: 22px;
+  font-size: 9px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
   z-index: 10;
+  padding: 0;
 }

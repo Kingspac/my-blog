@@ -62,6 +62,16 @@ export default function RoomPage() {
     }
   }
 
+  // Hide home button when input is focused
+  // Show it again when input is blurred
+  function handleInputFocus() {
+    window.dispatchEvent(new CustomEvent("hideHomeBtn"));
+  }
+
+  function handleInputBlur() {
+    window.dispatchEvent(new CustomEvent("showHomeBtn"));
+  }
+
   return (
     <div className={styles.roomPage}>
 
@@ -125,13 +135,15 @@ export default function RoomPage() {
             <div ref={bottomRef} />
           </div>
 
-          {/* MESSAGE INPUT */}
+          {/* MESSAGE INPUT - hides home button on focus */}
           <form className={styles.messageForm} onSubmit={handleSend}>
             <input
               type="text"
               placeholder="Say something to the community..."
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
+              onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
             />
             <button type="submit">Send</button>
           </form>

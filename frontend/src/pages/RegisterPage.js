@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useRef } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import styles from "../styles/Auth.module.css";
 
 export default function RegisterPage() {
@@ -7,63 +7,106 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const wrapperRef = useRef(null);
 
   async function register(e) {
     e.preventDefault();
+    setError("");
 
-    // Check if passwords match BEFORE sending to backend
     if (password !== confirmPassword) {
       setError("Passwords do not match!");
       return;
     }
 
-    const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/register`, {
-      method: "POST",
-      body: JSON.stringify({ username, password }),
-      headers: { "Content-Type": "application/json" },
-    });
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/register`,
+      {
+        method: "POST",
+        body: JSON.stringify({ username, password }),
+        headers: { "Content-Type": "application/json" },
+      }
+    );
 
     if (response.status === 200) {
-      alert("Registration successful!");
-      navigate("/login");
+      // Trigger vanish animation then navigate
+      wrapperRef.current?.classList.add(styles.vanish);
+      setTimeout(() => {
+        navigate("/login");
+      }, 450);
     } else {
-      alert("Registration failed");
+      setIsSubmitting(false);
+      const data = await response.json().catch(() => ({}));
+      setError(data.message || "Registration failed. Username may already exist.");
     }
   }
 
   return (
-    <form className={styles.authForm} onSubmit={register}>
-      <h1>Register</h1>
+    <div className={styles.authPage}>
+      <div className={styles.formWrapper} ref={wrapperRef}>
 
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
-      />
+        {/* Rotating border */}
+        <div className={styles.borderRotator}></div>
 
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
+        {/* Form card */}
+        <div className={styles.authForm}>
 
-      <input
-        type="password"
-        placeholder="Confirm Password"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        required
-      />
+          {/* Logo */}
+          <div className={styles.authLogo}>
+            <h1>🪨 Enchwra</h1>
+            <p>Voice of the Adara People</p>
+          </div>
 
-      {/* Show error if passwords don't match */}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+          <p className={styles.authTitle}>Join the community</p>
 
-      <button type="submit">Register</button>
-    </form>
+          <form onSubmit={register}>
+            <input
+              type="text"
+              placeholder="Choose a username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Create a password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Confirm password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+
+            {error && <p className={styles.authError}>{error}</p>}
+
+            <button
+              type="submit"
+              className={styles.authBtn}
+              disabled={isSubmitting}
+            >
+              <span>{isSubmitting ? "Creating account..." : "Create Account"}</span>
+            </button>
+          </form>
+
+          <p className={styles.authFooter}>
+            Already have an account?{" "}
+            <Link to="/login">Sign in</Link>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { formatISO9075 } from "date-fns";
 import { UserContext } from "../UserContext";
 import styles from "../styles/ProfilePage.module.css";
@@ -13,6 +13,15 @@ function getYoutubeId(url) {
   return match ? match[1] : null;
 }
 
+// Check if file is a video by extension
+function isVideoFile(filename) {
+  if (!filename) return false;
+  const ext = filename.split(".").pop().toLowerCase();
+  return ["mp4", "webm", "ogg", "mov", "mkv"].includes(ext);
+}
+
+const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
+
 export default function ProfilePage() {
   const [profileData, setProfileData] = useState(null);
   const [bio, setBio] = useState("");
@@ -22,19 +31,20 @@ export default function ProfilePage() {
   const [music, setMusic] = useState([]);
 
   const { id } = useParams();
-  const { userInfo } = useContext(UserContext);
+  const { userInfo, setUserInfo } = useContext(UserContext);
+  const navigate = useNavigate();
 
   const isOwnProfile = userInfo?.id === id;
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/profile/${id}`)
+    fetch(`${apiUrl}/api/profile/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setProfileData(data);
         setBio(data.user.bio || "");
       });
 
-    fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/music`)
+    fetch(`${apiUrl}/api/music`)
       .then((res) => res.json())
       .then((data) => {
         const userMusic = data.filter(
@@ -65,7 +75,7 @@ export default function ProfilePage() {
       formData.append("profilePhoto", profilePhoto[0]);
     }
 
-    const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/profile/${id}`, {
+    const response = await fetch(`${apiUrl}/api/profile/${id}`, {
       method: "PUT",
       credentials: "include",
       body: formData,
@@ -79,6 +89,16 @@ export default function ProfilePage() {
     } else {
       alert("Failed to update profile");
     }
+  }
+
+  // LOGOUT from profile page
+  function logout() {
+    fetch(`${apiUrl}/api/logout`, {
+      credentials: "include",
+      method: "POST",
+    });
+    setUserInfo(null);
+    navigate("/");
   }
 
   if (!profileData) return "";
@@ -100,7 +120,7 @@ export default function ProfilePage() {
         <div className={styles.profilePhoto}>
           {user.profilePhoto ? (
             <img
-              src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/${user.profilePhoto}`}
+              src={`${apiUrl}/${user.profilePhoto}`}
               alt="profile"
             />
           ) : (
@@ -124,6 +144,16 @@ export default function ProfilePage() {
           </button>
         )}
 
+        {/* Logout button - only on own profile */}
+        {isOwnProfile && (
+          <button
+            className={styles.logoutBtn}
+            onClick={logout}
+          >
+            🚪 Logout
+          </button>
+        )}
+
         {/* Create buttons */}
         {isOwnProfile && (
           <div className={styles.profileCreateButtons}>
@@ -131,7 +161,7 @@ export default function ProfilePage() {
               📝 Create Post
             </Link>
             <Link to="/entertainment/upload" className="create-btn entertainment">
-              🎵 Upload Entertainment
+              🎵 Upload Media
             </Link>
           </div>
         )}
@@ -184,7 +214,7 @@ export default function ProfilePage() {
                 <div className="post">
                   <div>
                     <img
-                      src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/${item.cover}`}
+                      src={`${apiUrl}/${item.cover}`}
                       alt="post cover"
                     />
                   </div>
@@ -203,15 +233,18 @@ export default function ProfilePage() {
               {/* Media Card */}
               {item.itemType === "media" && (
                 <div className={mediaStyles.mediaCard}>
-                  {item.coverPhoto && !item.youtubeLink && (
+
+                  {/* Cover photo - only for audio */}
+                  {item.coverPhoto && !item.youtubeLink && !isVideoFile(item.audioFile) && (
                     <div className={mediaStyles.mediaCover}>
                       <img
-                        src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/${item.coverPhoto}`}
+                        src={`${apiUrl}/${item.coverPhoto}`}
                         alt={item.title}
                       />
                     </div>
                   )}
 
+                  {/* YouTube embed */}
                   {item.youtubeLink && (
                     <div className="youtube-embed">
                       <iframe
@@ -225,10 +258,22 @@ export default function ProfilePage() {
                     </div>
                   )}
 
-                  {item.audioFile && !item.youtubeLink && (
-                    <div className="audio-player">
+                  {/* VIDEO player - fixed! */}
+                  {item.audioFile && !item.youtubeLink && isVideoFile(item.audioFile) && (
+                    <video
+                      controls
+                      style={{ width: "100%", display: "block", background: "#000" }}
+                    >
+                      <source src={`${apiUrl}/${item.audioFile}`} type="video/mp4" />
+                      Your browser does not support video.
+                    </video>
+                  )}
+
+                  {/* AUDIO player */}
+                  {item.audioFile && !item.youtubeLink && !isVideoFile(item.audioFile) && (
+                    <div style={{ padding: "10px", background: "#f9f9f9" }}>
                       <audio controls style={{ width: "100%" }}>
-                        <source src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/${item.audioFile}`} />
+                        <source src={`${apiUrl}/${item.audioFile}`} />
                       </audio>
                     </div>
                   )}

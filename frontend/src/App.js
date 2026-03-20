@@ -13,6 +13,7 @@ import RoomPage from "./pages/RoomPage.js";
 import EducationPage from "./pages/EducationPage.js";
 import CreateEducation from "./pages/CreateEducation.js";
 import EducationPostPage from "./pages/EducationPostPage.js";
+import ForgotPassword from "./pages/ForgotPassword.js";
 import { Routes, Route } from "react-router-dom";
 import { UserContextProvider } from "./UserContext.js";
 import './App.css';
@@ -43,6 +44,7 @@ function App() {
           {/* Auth */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* Posts */}
           <Route path="/create" element={<CreatePost />} />
