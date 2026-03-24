@@ -1,0 +1,183 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" width="200" height="160">
+  <defs>
+    <!-- Amber gradient for big stone -->
+    <linearGradient id="bigStoneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B4513;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#CD853F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6B3410;stop-opacity:1" />
+    </linearGradient>
+    <!-- Small stone gradient -->
+    <linearGradient id="smallStoneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#A0522D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B4513;stop-opacity:1" />
+    </linearGradient>
+    <!-- Ground gradient -->
+    <linearGradient id="groundGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#CD853F;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#8B4513;stop-opacity:0.1" />
+    </linearGradient>
+    <!-- Glow filter -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Stone texture shadow -->
+    <filter id="stoneShadow">
+      <feDropShadow dx="2" dy="3" stdDeviation="2" flood-color="#3d1a00" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- ===== GROUND / BASE ===== -->
+  <ellipse cx="100" cy="105" rx="78" ry="8" fill="url(#groundGrad)" />
+
+  <!-- ===== PEOPLE SITTING AROUND ===== -->
+
+  <!-- Far left sitting -->
+  <g fill="#3a1500" opacity="0.70">
+    <ellipse cx="22" cy="88" rx="4" ry="4.5"/>
+    <rect x="20.5" y="92" width="3" height="3" rx="1"/>
+    <path d="M16 95 Q14 100 15 105 Q18 107 22 107 Q26 107 27 105 Q28 100 26 95 Q24 93 22 93 Q20 93 16 95Z"/>
+    <path d="M16 95 Q13 98 12 102 Q14 104 15 103 Q16 99 17 96Z"/>
+    <path d="M26 95 Q29 98 30 102 Q28 104 27 103 Q26 99 25 96Z"/>
+    <path d="M15 107 Q11 110 12 114 Q16 115 18 112 Q18 109 18 107Z"/>
+    <path d="M27 107 Q31 110 30 114 Q26 115 24 112 Q24 109 24 107Z"/>
+    <path d="M11 114 Q10 116 14 116 Q18 115 18 112Z"/>
+    <path d="M30 114 Q31 116 27 116 Q23 115 24 112Z"/>
+  </g>
+
+  <!-- Left sitting -->
+  <g fill="#4a2000" opacity="0.82">
+    <ellipse cx="40" cy="84" rx="4.5" ry="5"/>
+    <path d="M36 83 Q38 78 44 83" fill="none" stroke="#2d1000" stroke-width="2" stroke-linecap="round"/>
+    <rect x="38" y="89" width="4" height="4" rx="1"/>
+    <path d="M33 93 Q31 99 32 106 Q35 109 40 109 Q45 109 47 106 Q48 99 46 93 Q44 91 40 91 Q36 91 33 93Z"/>
+    <path d="M33 95 Q28 99 27 104 Q29 106 31 105 Q32 100 34 96Z"/>
+    <path d="M47 95 Q52 99 53 104 Q51 106 49 105 Q48 100 46 96Z"/>
+    <path d="M32 109 Q28 113 29 117 Q33 118 37 115 Q37 112 37 109Z"/>
+    <path d="M48 109 Q52 113 51 117 Q47 118 43 115 Q43 112 43 109Z"/>
+    <ellipse cx="30" cy="117" rx="4" ry="1.8" transform="rotate(8,30,117)"/>
+    <ellipse cx="50" cy="117" rx="4" ry="1.8" transform="rotate(-8,50,117)"/>
+  </g>
+
+  <!-- Front left sitting - most detailed -->
+  <g fill="#5C2E00" opacity="0.92">
+    <ellipse cx="62" cy="79" rx="5.5" ry="6"/>
+    <path d="M56 78 Q59 71 65 77" fill="#3a1500"/>
+    <rect x="60" y="85" width="4" height="5" rx="1.5"/>
+    <path d="M54 90 Q52 98 53 107 Q56 110 62 112 Q68 110 71 107 Q72 98 70 90 Q67 88 62 88 Q57 88 54 90Z"/>
+    <line x1="55" y1="98" x2="69" y2="98" stroke="#7A3B10" stroke-width="1.2" opacity="0.5"/>
+    <line x1="54" y1="105" x2="70" y2="105" stroke="#7A3B10" stroke-width="1" opacity="0.4"/>
+    <path d="M54 92 Q48 96 46 103 Q48 106 51 104 Q52 99 55 94Z"/>
+    <ellipse cx="46" cy="104" rx="3" ry="2"/>
+    <path d="M70 92 Q76 96 78 103 Q76 106 73 104 Q72 99 69 94Z"/>
+    <ellipse cx="78" cy="104" rx="3" ry="2"/>
+    <path d="M53 112 Q49 117 50 122 Q54 124 58 121 Q58 117 58 112Z"/>
+    <path d="M71 112 Q75 117 74 122 Q70 124 66 121 Q66 117 66 112Z"/>
+    <path d="M49 122 Q47 125 52 125 Q58 124 58 121Z"/>
+    <path d="M75 122 Q77 125 72 125 Q66 124 66 121Z"/>
+    <ellipse cx="51" cy="125" rx="5" ry="2" transform="rotate(8,51,125)"/>
+    <ellipse cx="73" cy="125" rx="5" ry="2" transform="rotate(-8,73,125)"/>
+  </g>
+
+  <!-- Front right sitting -->
+  <g fill="#5C2E00" opacity="0.92">
+    <ellipse cx="138" cy="79" rx="5.5" ry="6"/>
+    <path d="M132 78 Q135 71 141 77" fill="#3a1500"/>
+    <rect x="136" y="85" width="4" height="5" rx="1.5"/>
+    <path d="M126 90 Q124 98 125 107 Q128 110 138 112 Q144 110 147 107 Q148 98 146 90 Q143 88 138 88 Q133 88 126 90Z"/>
+    <line x1="127" y1="98" x2="145" y2="98" stroke="#7A3B10" stroke-width="1.2" opacity="0.5"/>
+    <line x1="126" y1="105" x2="146" y2="105" stroke="#7A3B10" stroke-width="1" opacity="0.4"/>
+    <path d="M126 92 Q120 96 118 103 Q120 106 123 104 Q124 99 127 94Z"/>
+    <ellipse cx="118" cy="104" rx="3" ry="2"/>
+    <path d="M146 92 Q152 96 154 103 Q152 106 149 104 Q148 99 145 94Z"/>
+    <ellipse cx="154" cy="104" rx="3" ry="2"/>
+    <path d="M125 112 Q121 117 122 122 Q126 124 130 121 Q130 117 130 112Z"/>
+    <path d="M147 112 Q151 117 150 122 Q146 124 142 121 Q142 117 142 112Z"/>
+    <ellipse cx="123" cy="124" rx="5" ry="2" transform="rotate(8,123,124)"/>
+    <ellipse cx="149" cy="124" rx="5" ry="2" transform="rotate(-8,149,124)"/>
+  </g>
+
+  <!-- Right sitting -->
+  <g fill="#4a2000" opacity="0.82">
+    <ellipse cx="160" cy="84" rx="4.5" ry="5"/>
+    <path d="M156 83 Q158 78 164 83" fill="none" stroke="#2d1000" stroke-width="2" stroke-linecap="round"/>
+    <rect x="158" y="89" width="4" height="4" rx="1"/>
+    <path d="M153 93 Q151 99 152 106 Q155 109 160 109 Q165 109 167 106 Q168 99 166 93 Q164 91 160 91 Q156 91 153 93Z"/>
+    <path d="M153 95 Q148 99 147 104 Q149 106 151 105 Q152 100 154 96Z"/>
+    <path d="M167 95 Q172 99 173 104 Q171 106 169 105 Q168 100 166 96Z"/>
+    <path d="M152 109 Q148 113 149 117 Q153 118 157 115 Q157 112 157 109Z"/>
+    <path d="M168 109 Q172 113 171 117 Q167 118 163 115 Q163 112 163 109Z"/>
+    <ellipse cx="150" cy="117" rx="4" ry="1.8" transform="rotate(8,150,117)"/>
+    <ellipse cx="170" cy="117" rx="4" ry="1.8" transform="rotate(-8,170,117)"/>
+  </g>
+
+  <!-- Far right sitting -->
+  <g fill="#3a1500" opacity="0.70">
+    <ellipse cx="178" cy="88" rx="4" ry="4.5"/>
+    <rect x="176.5" y="92" width="3" height="3" rx="1"/>
+    <path d="M172 95 Q170 100 171 105 Q174 107 178 107 Q182 107 183 105 Q184 100 182 95 Q180 93 178 93 Q176 93 172 95Z"/>
+    <path d="M172 95 Q169 98 168 102 Q170 104 171 103 Q172 99 173 96Z"/>
+    <path d="M182 95 Q185 98 186 102 Q184 104 183 103 Q182 99 181 96Z"/>
+    <path d="M171 107 Q167 110 168 114 Q172 115 174 112 Q174 109 174 107Z"/>
+    <path d="M183 107 Q187 110 186 114 Q182 115 180 112 Q180 109 180 107Z"/>
+    <ellipse cx="168" cy="114" rx="4" ry="1.8" transform="rotate(8,168,114)"/>
+    <ellipse cx="186" cy="114" rx="4" ry="1.8" transform="rotate(-8,186,114)"/>
+  </g>
+
+  <!-- ===== SMALL STONES (left cluster) ===== -->
+  <g filter="url(#stoneShadow)">
+    <path d="M35 72 Q32 65 36 60 Q42 57 46 62 Q49 68 46 74 Q42 78 37 76Z" fill="url(#smallStoneGrad)"/>
+    <path d="M37 60 Q40 57 44 59 Q43 62 40 61Z" fill="#DAA520" opacity="0.4"/>
+    <path d="M50 78 Q47 72 51 67 Q56 64 60 69 Q62 74 59 79 Q55 83 51 81Z" fill="url(#smallStoneGrad)"/>
+    <path d="M52 67 Q55 64 59 66 Q58 69 55 68Z" fill="#DAA520" opacity="0.3"/>
+  </g>
+
+  <!-- ===== SMALL STONES (right cluster) ===== -->
+  <g filter="url(#stoneShadow)">
+    <path d="M150 78 Q147 72 151 67 Q156 64 160 69 Q162 74 159 79 Q155 83 151 81Z" fill="url(#smallStoneGrad)"/>
+    <path d="M152 67 Q155 64 159 66 Q158 69 155 68Z" fill="#DAA520" opacity="0.3"/>
+    <path d="M163 72 Q160 65 164 60 Q170 57 174 62 Q177 68 174 74 Q170 78 165 76Z" fill="url(#smallStoneGrad)"/>
+    <path d="M165 60 Q168 57 172 59 Q171 62 168 61Z" fill="#DAA520" opacity="0.4"/>
+  </g>
+
+  <!-- ===== BIG ORGANIC STONE (center) ===== -->
+  <g filter="url(#stoneShadow)">
+    <path d="M75 90 Q70 70 78 50 Q88 32 100 30 Q112 32 122 50 Q130 70 125 90 Q118 100 100 102 Q82 100 75 90Z"
+          fill="url(#bigStoneGrad)"/>
+    <!-- cracks -->
+    <path d="M88 55 Q92 48 100 46 Q108 48 112 55" stroke="#6B3410" stroke-width="1.5" fill="none" opacity="0.5"/>
+    <path d="M82 70 Q88 63 95 62" stroke="#6B3410" stroke-width="1" fill="none" opacity="0.4"/>
+    <path d="M115 65 Q110 60 105 61" stroke="#6B3410" stroke-width="1" fill="none" opacity="0.4"/>
+    <path d="M95 78 Q100 72 105 78" stroke="#6B3410" stroke-width="1.2" fill="none" opacity="0.3"/>
+    <!-- highlight -->
+    <path d="M85 52 Q90 40 100 38 Q108 40 114 50" stroke="#DAA520" stroke-width="1.5" fill="none" opacity="0.5" filter="url(#glow)"/>
+    <!-- sheen -->
+    <ellipse cx="92" cy="52" rx="6" ry="4" fill="#DAA520" opacity="0.15" transform="rotate(-20,92,52)"/>
+  </g>
+
+  <!-- ===== TEXT ===== -->
+  <text
+    x="100" y="138"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="18"
+    font-weight="bold"
+    fill="#CD853F"
+    letter-spacing="3"
+    filter="url(#glow)"
+  >ENCHWRA</text>
+
+  <line x1="55" y1="142" x2="145" y2="142" stroke="#CD853F" stroke-width="0.5" opacity="0.5"/>
+
+  <text
+    x="100" y="152"
+    text-anchor="middle"
+    font-family="Georgia, serif"
+    font-size="6"
+    fill="#A07850"
+    letter-spacing="2"
+  >VOICE OF THE ADARA PEOPLE</text>
+</svg>

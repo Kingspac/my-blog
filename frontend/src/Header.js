@@ -123,13 +123,19 @@ export default function Header() {
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
         {/* LOGO - just text, no link */}
-        <span className={styles.logo}>🪨 Enchwra</span>
+       <img 
+           src="/enchwra-logo.svg" 
+           alt="Enchwra" 
+           className={styles.logoImg} 
+         />
 
         <nav className={styles.nav}>
           <Link to="/blog" className={`${styles.navBtn} ${location.pathname === "/blog" ? styles.navBtnActive : ""}`} title="Blog">📑</Link>
           <Link to="/entertainment" className={`${styles.navBtn} ${location.pathname === "/entertainment" ? styles.navBtnActive : ""}`} title="Entertainment">🎬</Link>
           <Link to="/education" className={`${styles.navBtn} ${location.pathname === "/education" ? styles.navBtnActive : ""}`} title="Education">📚</Link>
-
+          <Link to="/" className={styles.navBtn} title="Search">
+  🔍
+</Link>
           {/* Room with badge */}
           <Link
             to="/room"

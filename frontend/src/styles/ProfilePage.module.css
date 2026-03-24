@@ -1,24 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap');
+
 /* ===== PROFILE PAGE ===== */
 .profilePage {
   max-width: 800px;
   margin: 0 auto;
-  padding: 0 15px;
+  padding: 0;
+  background: #f0e8de;
+  min-height: 100vh;
 }
 
+/* ===== PROFILE HEADER ===== */
 .profileHeader {
   text-align: center;
-  padding: 30px 0;
-  border-bottom: 1px solid #eee;
-  margin-bottom: 30px;
+  padding: 24px 16px 20px;
+  background: white;
+  border-bottom: 1px solid rgba(205,133,63,0.15);
+  margin-bottom: 8px;
 }
 
+/* ===== PROFILE PHOTO ===== */
 .profilePhoto {
-  width: 100px;
-  height: 100px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   overflow: hidden;
-  margin: 0 auto 15px;
-  border: 3px solid #333;
+  margin: 0 auto 12px;
+  border: 3px solid #CD853F;
+  box-shadow: 0 4px 16px rgba(139,90,43,0.2);
 }
 
 .profilePhoto img {
@@ -30,48 +38,73 @@
 .profilePhotoPlaceholder {
   width: 100%;
   height: 100%;
-  background: #eee;
+  background: linear-gradient(135deg, #8B4513, #CD853F);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3rem;
+  font-size: 2.5rem;
 }
 
+/* ===== USERNAME ===== */
 .profileUsername {
-  font-size: 1.4rem;
-  font-weight: bold;
-  margin-bottom: 5px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2d2420;
+  margin-bottom: 6px;
 }
 
+/* ===== BIO ===== */
 .profileBio {
-  color: #666;
-  font-size: 0.95rem;
-  margin: 10px 0 15px;
+  color: #6b5a4e;
+  font-size: 0.88rem;
+  font-family: 'DM Sans', sans-serif;
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+/* ===== ACTION BUTTONS ROW (Edit + Logout together) ===== */
+.profileActions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
 }
 
 .editProfileBtn {
-  background: #333;
-  color: white;
+  background: #2d2420;
+  color: #DAA520;
   border: none;
-  padding: 8px 20px;
-  border-radius: 5px;
+  padding: 8px 18px;
+  border-radius: 20px;
   cursor: pointer;
   width: auto;
-  font-size: 0.9rem;
-  margin-right: 8px;
+  font-size: 0.85rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  transition: all 0.2s;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+.editProfileBtn:hover {
+  background: #1a1209;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
 }
 
 .logoutBtn {
   background: none;
   color: #cc0000;
   border: 2px solid #cc0000;
-  padding: 8px 20px;
-  border-radius: 5px;
+  padding: 8px 18px;
+  border-radius: 20px;
   cursor: pointer;
   width: auto;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
   transition: all 0.2s;
-  margin-top: 8px;
 }
 
 .logoutBtn:hover {
@@ -79,29 +112,386 @@
   color: white;
 }
 
+/* ===== CREATE BUTTONS ROW ===== */
+.profileCreateButtons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.profileCreateButtons a {
+  background: linear-gradient(135deg, #8B4513, #CD853F);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  transition: opacity 0.2s;
+  box-shadow: 0 3px 10px rgba(139,69,19,0.3);
+}
+
+.profileCreateButtons a:hover {
+  opacity: 0.9;
+}
+
+/* ===== EDIT PROFILE FORM ===== */
 .editProfileForm {
-  background: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 30px;
+  background: white;
+  padding: 20px 16px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(205,133,63,0.15);
 }
 
 .editProfileForm h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  color: #2d2420;
   margin-bottom: 15px;
+  font-size: 1.1rem;
 }
 
 .editProfileForm label {
   display: block;
-  font-weight: bold;
-  font-size: 0.9rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  font-family: 'DM Sans', sans-serif;
+  color: #8B4513;
   margin-bottom: 5px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
-.profileCreateButtons {
+/* ===== PROFILE FEED ===== */
+.profileFeed {
+  padding-bottom: 80px;
+}
+
+.feedTitle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  color: #8B4513;
+  padding: 14px 16px 10px;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(205,133,63,0.15);
+  margin-bottom: 0;
+  background: white;
+}
+
+/* ===== DELETE ACCOUNT BUTTON ===== */
+.deleteAccountBtn {
+  background: none;
+  color: #cc0000;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  width: auto;
+  padding: 6px 0;
+  margin: 8px auto 0;
+  display: block;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.deleteAccountBtn:hover {
+  opacity: 1;
+  background: none;
+}
+
+/* ===== DELETE ACCOUNT MODAL ===== */
+.deleteModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.deleteModalBox {
+  background: white;
+  border-radius: 16px;
+  padding: 24px 20px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.deleteModalIcon {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.deleteModalTitle {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.2rem;
+  color: #cc0000;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.deleteModalText {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  color: #444;
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.deleteModalList {
+  background: #fff5f5;
+  border: 1px solid rgba(200,0,0,0.15);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.deleteModalList span {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  color: #cc0000;
+}
+
+/* Confirmation code box */
+.deleteCodeBox {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.deleteCodeLabel {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.deleteCode {
+  font-family: 'Courier New', monospace;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #cc0000;
+  letter-spacing: 6px;
+  background: white;
+  border: 2px dashed rgba(200,0,0,0.3);
+  border-radius: 8px;
+  padding: 8px 16px;
+  display: inline-block;
+  user-select: all;
+}
+
+/* Input for typing code */
+.deleteCodeInput {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  text-align: center;
+  letter-spacing: 4px;
+  color: #2d2420;
+  margin-bottom: 8px;
+  transition: border-color 0.2s;
+  display: block;
+}
+
+.deleteCodeInput:focus {
+  outline: none;
+  border-color: #cc0000;
+}
+
+.deleteError {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  color: #cc0000;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* Buttons row */
+.deleteModalButtons {
   display: flex;
   gap: 10px;
-  justify-content: center;
-  margin-top: 15px;
-  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.deleteCancelBtn {
+  flex: 1;
+  padding: 10px;
+  background: #f0e8de;
+  color: #8B4513;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  width: auto;
+  margin: 0;
+  transition: background 0.2s;
+}
+
+.deleteCancelBtn:hover {
+  background: #e0d0c0;
+}
+
+.deleteConfirmBtn {
+  flex: 1;
+  padding: 10px;
+  background: #ddd;
+  color: #999;
+  border: none;
+  border-radius: 10px;
+  cursor: not-allowed;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  width: auto;
+  margin: 0;
+  transition: all 0.2s;
+}
+
+/* Button turns red only when code matches */
+.deleteConfirmActive {
+  background: #cc0000 !important;
+  color: white !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 12px rgba(200,0,0,0.3);
+}
+
+.deleteConfirmActive:hover {
+  background: #aa0000 !important;
+}
+
+/* ===== ADMIN PANEL ===== */
+.adminPanel {
+  margin: 8px 0;
+  background: white;
+  border-left: 4px solid #CD853F;
+}
+
+.adminPanelTitle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #8B4513;
+  padding: 12px 16px 8px;
+  border-bottom: 1px solid #f0e8de;
+}
+
+.adminPanelEmpty {
+  padding: 10px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  color: #aaa;
+  background: white;
+  border-left: 4px solid rgba(205,133,63,0.3);
+  margin: 8px 0;
+}
+
+.pendingCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #f0e8de;
+}
+
+.pendingCard:last-child {
+  border-bottom: none;
+}
+
+.pendingInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pendingCategory {
+  font-size: 0.65rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  color: #CD853F;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pendingTitle {
+  font-size: 0.88rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  color: #2d2420;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pendingAuthor {
+  font-size: 0.75rem;
+  font-family: 'DM Sans', sans-serif;
+  color: #aaa;
+}
+
+.pendingActions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.approveBtn {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  width: auto;
+  margin: 0;
+  transition: background 0.2s;
+}
+
+.approveBtn:hover {
+  background: #c8e6c9;
+}
+
+.rejectBtn {
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  width: auto;
+  margin: 0;
+  transition: background 0.2s;
+}
+
+.rejectBtn:hover {
+  background: #ffcdd2;
 }

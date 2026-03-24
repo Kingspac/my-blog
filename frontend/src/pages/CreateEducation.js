@@ -26,6 +26,8 @@ export default function CreateEducation() {
     setCover(e.target.files);
   }
 
+  const [submitted, setSubmitted] = useState(false);
+
   async function handleSubmit(e) {
     e.preventDefault();
 
@@ -49,6 +51,32 @@ export default function CreateEducation() {
     } else {
       alert("Failed to create content. Please try again.");
     }
+  }
+
+  if (submitted) {
+    return (
+      <div style={{ maxWidth: 500, margin: "40px auto", padding: "30px 20px", textAlign: "center" }}>
+        <div style={{ fontSize: "3rem", marginBottom: 16 }}>⏳</div>
+        <h2 style={{ fontFamily: "Georgia, serif", color: "#8B4513", marginBottom: 12 }}>
+          Submitted for Review!
+        </h2>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", color: "#666", lineHeight: 1.6, marginBottom: 20 }}>
+          Your education post has been submitted and is <strong>pending approval</strong>.
+          An admin will review it shortly. Once approved, it will appear in the Education section.
+        </p>
+        <button
+          onClick={() => navigate("/education")}
+          style={{
+            background: "linear-gradient(135deg, #8B4513, #CD853F)",
+            color: "white", border: "none", borderRadius: 10,
+            padding: "10px 24px", cursor: "pointer",
+            fontFamily: "'DM Sans', sans-serif", fontSize: "0.95rem"
+          }}
+        >
+          Back to Education
+        </button>
+      </div>
+    );
   }
 
   return (

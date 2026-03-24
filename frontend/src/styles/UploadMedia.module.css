@@ -1,0 +1,216 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap');
+
+/* ===== PAGE ===== */
+.uploadPage {
+  max-width: 600px;
+  margin: 0 auto;
+  padding-bottom: 80px;
+  background: #f0e8de;
+  min-height: 100vh;
+}
+
+/* ===== HERO ===== */
+.uploadHero {
+  background: linear-gradient(135deg, #1a1209, #3d2410);
+  padding: 30px 20px 24px;
+  text-align: center;
+  border-bottom: 2px solid rgba(205,133,63,0.3);
+}
+
+.uploadHero h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  color: #CD853F;
+  font-size: 1.6rem;
+  margin-bottom: 6px;
+  text-shadow: 0 0 20px rgba(205,133,63,0.3);
+}
+
+.uploadHero p {
+  color: #a07850;
+  font-size: 0.85rem;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ===== FORM ===== */
+.uploadForm {
+  padding: 20px 16px;
+}
+
+.uploadField {
+  margin-bottom: 18px;
+}
+
+.uploadLabel {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #8B4513;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.uploadInput {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid rgba(205,133,63,0.2);
+  border-radius: 10px;
+  background: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  color: #2d2420;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  display: block;
+  margin-bottom: 0;
+  resize: vertical;
+}
+
+.uploadInput:focus {
+  outline: none;
+  border-color: #CD853F;
+  box-shadow: 0 0 0 3px rgba(205,133,63,0.1);
+}
+
+/* ===== DIVIDER ===== */
+.divider {
+  border: none;
+  border-top: 1px solid rgba(205,133,63,0.15);
+  margin: 4px 0 18px;
+}
+
+/* ===== CATEGORY TABS ===== */
+.categoryTabs {
+  display: flex;
+  gap: 8px;
+}
+
+.catTab {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid rgba(205,133,63,0.2);
+  border-radius: 10px;
+  background: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  width: auto;
+  color: #8B4513;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ===== TYPE TOGGLE ===== */
+.typeToggle {
+  display: flex;
+  gap: 8px;
+}
+
+.typeBtn {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid rgba(205,133,63,0.2);
+  border-radius: 10px;
+  background: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  width: auto;
+  color: #8B4513;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ===== ACTIVE STATE (shared) ===== */
+.active {
+  background: linear-gradient(135deg, #8B4513, #CD853F) !important;
+  color: white !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 12px rgba(139,69,19,0.3);
+}
+
+.typeBtn.active {
+  background: #2d2420 !important;
+  color: #DAA520 !important;
+  border-color: transparent !important;
+}
+
+/* ===== PLATFORM PILLS ===== */
+.platformGrid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.platformPill {
+  padding: 7px 14px;
+  border: 2px solid rgba(205,133,63,0.2);
+  border-radius: 20px;
+  background: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: auto;
+  color: #8B4513;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ===== COVER PREVIEW ===== */
+.coverPreviewBox {
+  width: 100%;
+  height: 160px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  border: 2px solid rgba(205,133,63,0.2);
+}
+
+.coverPreviewBox img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ===== ERROR ===== */
+.errorText {
+  color: #cc0000;
+  font-size: 0.82rem;
+  font-family: 'DM Sans', sans-serif;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: rgba(200,0,0,0.08);
+  border-radius: 8px;
+}
+
+/* ===== SUBMIT BUTTON ===== */
+.submitBtn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #8B4513, #CD853F);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: opacity 0.2s;
+  box-shadow: 0 6px 20px rgba(139,69,19,0.35);
+  letter-spacing: 0.5px;
+}
+
+.submitBtn:hover {
+  opacity: 0.9;
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

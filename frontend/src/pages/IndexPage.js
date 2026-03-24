@@ -1,6 +1,6 @@
 import Post from "../Post.js";
 import { useEffect, useState, useRef, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { format, formatISO9075 } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserContext } from "../UserContext";
@@ -30,7 +30,6 @@ function CommentsModal({ mediaId, comments: initialComments, onClose, currentUse
     e.preventDefault();
     if (!currentUser?.id) { alert("Please login to comment"); return; }
     if (!comment.trim()) return;
-
     const res = await fetch(`${apiUrl}/api/music/${mediaId}/comment`, {
       method: "POST",
       credentials: "include",
@@ -45,26 +44,17 @@ function CommentsModal({ mediaId, comments: initialComments, onClose, currentUse
   }
 
   return (
-    <motion.div
-      className="modal-overlay"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
-    >
-      <motion.div
-        className="modal-box"
-        initial={{ y: "100%" }}
-        animate={{ y: 0 }}
-        exit={{ y: "100%" }}
+    <motion.div className="modal-overlay"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      onClick={onClose}>
+      <motion.div className="modal-box"
+        initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        onClick={(e) => e.stopPropagation()}
-      >
+        onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h3>💬 Comments ({comments.length})</h3>
           <button className="modal-close-btn" onClick={onClose}>✕</button>
         </div>
-
         <div className="modal-comments-list">
           {comments.length === 0 ? (
             <p className="no-comments-text">No comments yet. Be the first!</p>
@@ -73,28 +63,19 @@ function CommentsModal({ mediaId, comments: initialComments, onClose, currentUse
               <div className="modal-comment" key={i}>
                 <div className="modal-comment-author">👤 {c.username}</div>
                 <div className="modal-comment-content">{c.content}</div>
-                <div className="modal-comment-date">
-                  {formatISO9075(new Date(c.createdAt))}
-                </div>
+                <div className="modal-comment-date">{formatISO9075(new Date(c.createdAt))}</div>
               </div>
             ))
           )}
         </div>
-
         {currentUser?.id ? (
           <form className="modal-comment-form" onSubmit={handleComment}>
-            <input
-              type="text"
-              placeholder="Write a comment..."
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-            />
+            <input type="text" placeholder="Write a comment..."
+              value={comment} onChange={(e) => setComment(e.target.value)} />
             <button type="submit">Post</button>
           </form>
         ) : (
-          <p className="modal-login-prompt">
-            <Link to="/login">Login</Link> to comment
-          </p>
+          <p className="modal-login-prompt"><Link to="/login">Login</Link> to comment</p>
         )}
       </motion.div>
     </motion.div>
@@ -107,16 +88,12 @@ function MediaCard({ item }) {
   const cardRef = useRef(null);
   const { userInfo } = useContext(UserContext);
   const [likes, setLikes] = useState(item.likes?.length || 0);
-  const [liked, setLiked] = useState(
-    userInfo?.id ? item.likes?.includes(userInfo.id) : false
-  );
+  const [liked, setLiked] = useState(userInfo?.id ? item.likes?.includes(userInfo.id) : false);
   const [showModal, setShowModal] = useState(false);
   const [comments, setComments] = useState(item.comments || []);
 
   function handlePlay() {
-    if (currentlyPlaying && currentlyPlaying !== mediaRef.current) {
-      currentlyPlaying.pause();
-    }
+    if (currentlyPlaying && currentlyPlaying !== mediaRef.current) currentlyPlaying.pause();
     currentlyPlaying = mediaRef.current;
   }
 
@@ -124,19 +101,14 @@ function MediaCard({ item }) {
     const card = cardRef.current;
     const media = mediaRef.current;
     if (!card || !media) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting && !media.paused) {
-            media.pause();
-            if (currentlyPlaying === media) currentlyPlaying = null;
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting && !media.paused) {
+          media.pause();
+          if (currentlyPlaying === media) currentlyPlaying = null;
+        }
+      });
+    }, { threshold: 0.2 });
     observer.observe(card);
     return () => observer.disconnect();
   }, []);
@@ -144,8 +116,7 @@ function MediaCard({ item }) {
   async function handleLike() {
     if (!userInfo?.id) { alert("Please login to like"); return; }
     const res = await fetch(`${apiUrl}/api/music/${item._id}/like`, {
-      method: "PUT",
-      credentials: "include",
+      method: "PUT", credentials: "include",
     });
     if (res.ok) {
       const data = await res.json();
@@ -156,12 +127,8 @@ function MediaCard({ item }) {
 
   function shareMedia() {
     const url = `${window.location.origin}/entertainment`;
-    if (navigator.share) {
-      navigator.share({ title: item.title, url });
-    } else {
-      navigator.clipboard.writeText(url);
-      alert("Link copied!");
-    }
+    if (navigator.share) navigator.share({ title: item.title, url });
+    else { navigator.clipboard.writeText(url); alert("Link copied!"); }
   }
 
   const hasVideo = isVideoFile(item.audioFile);
@@ -169,166 +136,161 @@ function MediaCard({ item }) {
 
   return (
     <>
-      <motion.div
-        ref={cardRef}
-        className="fb-card tiktok-card"
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.45 }}
-        whileHover={{ y: -2 }}
-      >
-        {/* CARD HEADER */}
+      <motion.div ref={cardRef} className="fb-card tiktok-card"
+        initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.45 }}
+        whileHover={{ y: -2 }}>
         <div className="fb-card-header">
-          <div className="fb-avatar">
-            {item.uploadedBy?.username?.charAt(0).toUpperCase()}
-          </div>
+          <div className="fb-avatar">{item.uploadedBy?.username?.charAt(0).toUpperCase()}</div>
           <div className="fb-author-info">
             <Link to={`/profile/${item.uploadedBy?._id}`} className="fb-author-name">
               {item.artist || item.uploadedBy?.username}
             </Link>
-            <time className="fb-time">
-              {format(new Date(item.createdAt), "MMM d, yyyy • h:mm a")}
-            </time>
+            <time className="fb-time">{format(new Date(item.createdAt), "MMM d, yyyy • h:mm a")}</time>
           </div>
-          <span className="fb-badge">
-            {item.category === "music" ? "🎵 Music" : "🎬 Video"}
-          </span>
+          <span className="fb-badge">{item.category === "music" ? "🎵 Music" : "🎬 Video"}</span>
         </div>
-
-        {/* TITLE */}
         <div className="fb-card-body">
           <p className="fb-title">{item.title}</p>
           {item.description && <p className="fb-summary">{item.description}</p>}
         </div>
-
-        {/* MEDIA + TIKTOK BUTTONS */}
         <div className="tiktok-media-wrapper">
-
-          {/* Cover Photo */}
           {item.coverPhoto && !item.youtubeLink && !hasVideo && (
             <div className="fb-card-image">
               <img src={`${apiUrl}/${item.coverPhoto}`} alt={item.title} />
             </div>
           )}
-
-          {/* YouTube */}
           {item.youtubeLink && (
             <div className="fb-card-image">
-              <iframe
-                width="100%"
-                height="280"
+              <iframe width="100%" height="280"
                 src={`https://www.youtube.com/embed/${getYoutubeId(item.youtubeLink)}`}
-                title={item.title}
-                frameBorder="0"
-                allowFullScreen
-                style={{ display: "block" }}
-              />
+                title={item.title} frameBorder="0" allowFullScreen style={{ display: "block" }} />
             </div>
           )}
-
-          {/* Video */}
           {item.audioFile && !item.youtubeLink && hasVideo && (
             <div className="fb-card-image" style={{ background: "#000" }}>
-              <video
-                ref={mediaRef}
-                controls
-                onPlay={handlePlay}
-                style={{ width: "100%", display: "block", maxHeight: "360px" }}
-              >
+              <video ref={mediaRef} controls onPlay={handlePlay}
+                style={{ width: "100%", display: "block", maxHeight: "360px" }}>
                 <source src={`${apiUrl}/${item.audioFile}`} type="video/mp4" />
               </video>
             </div>
           )}
-
-          {/* Audio */}
           {item.audioFile && !item.youtubeLink && !hasVideo && (
             <div className="fb-audio-player">
               <div className="fb-audio-icon">🎵</div>
-              <audio
-                ref={mediaRef}
-                controls
-                onPlay={handlePlay}
-                style={{ flex: 1 }}
-              >
+              <audio ref={mediaRef} controls onPlay={handlePlay} style={{ flex: 1 }}>
                 <source src={`${apiUrl}/${item.audioFile}`} />
               </audio>
             </div>
           )}
-
-          {/* TIKTOK FLOATING BUTTONS */}
           {hasMedia && (
             <div className="tiktok-actions">
-              <motion.button
-                className={`tiktok-btn ${liked ? "tiktok-liked" : ""}`}
-                onClick={handleLike}
-                whileTap={{ scale: 1.3 }}
-                transition={{ type: "spring", stiffness: 400 }}
-              >
+              <motion.button className={`tiktok-btn ${liked ? "tiktok-liked" : ""}`}
+                onClick={handleLike} whileTap={{ scale: 1.3 }}
+                transition={{ type: "spring", stiffness: 400 }}>
                 <span>{liked ? "❤️" : "🤍"}</span>
                 <span className="tiktok-count">{likes}</span>
               </motion.button>
-
-              <motion.button
-                className="tiktok-btn"
-                onClick={() => setShowModal(true)}
-                whileTap={{ scale: 1.2 }}
-              >
+              <motion.button className="tiktok-btn"
+                onClick={() => setShowModal(true)} whileTap={{ scale: 1.2 }}>
                 <span>💬</span>
                 <span className="tiktok-count">{comments.length}</span>
               </motion.button>
-
-              <motion.button
-                className="tiktok-btn"
-                onClick={shareMedia}
-                whileTap={{ scale: 1.2 }}
-              >
+              <motion.button className="tiktok-btn"
+                onClick={shareMedia} whileTap={{ scale: 1.2 }}>
                 <span>📤</span>
                 <span className="tiktok-count">Share</span>
               </motion.button>
             </div>
           )}
         </div>
-
-        {/* FOOTER for audio (no floating buttons space) */}
         {item.audioFile && !hasVideo && (
           <div className="fb-card-footer">
-            <motion.button
-              className={`fb-action-btn ${liked ? "fb-liked" : ""}`}
-              onClick={handleLike}
-              whileTap={{ scale: 1.2 }}
-            >
+            <motion.button className={`fb-action-btn ${liked ? "fb-liked" : ""}`}
+              onClick={handleLike} whileTap={{ scale: 1.2 }}>
               <span>{liked ? "❤️" : "🤍"}</span> {likes}
             </motion.button>
-            <motion.button
-              className="fb-action-btn"
-              onClick={() => setShowModal(true)}
-              whileTap={{ scale: 1.1 }}
-            >
+            <motion.button className="fb-action-btn"
+              onClick={() => setShowModal(true)} whileTap={{ scale: 1.1 }}>
               <span>💬</span> {comments.length}
             </motion.button>
-            <motion.button
-              className="fb-action-btn"
-              onClick={shareMedia}
-              whileTap={{ scale: 1.1 }}
-            >
+            <motion.button className="fb-action-btn"
+              onClick={shareMedia} whileTap={{ scale: 1.1 }}>
               <span>📤</span> Share
             </motion.button>
           </div>
         )}
       </motion.div>
-
       <AnimatePresence>
         {showModal && (
-          <CommentsModal
-            mediaId={item._id}
-            comments={comments}
-            currentUser={userInfo}
-            onClose={() => setShowModal(false)}
-          />
+          <CommentsModal mediaId={item._id} comments={comments}
+            currentUser={userInfo} onClose={() => setShowModal(false)} />
         )}
       </AnimatePresence>
     </>
+  );
+}
+
+// Search Result Card
+function SearchResultCard({ item, onSelect }) {
+  const navigate = useNavigate();
+
+  function goTo() {
+    onSelect(); // close dropdown
+    if (item.itemType === "post") navigate(`/post/${item._id}`);
+    else if (item.itemType === "media") navigate("/entertainment");
+    else if (item.itemType === "user") navigate(`/profile/${item._id}`);
+  }
+
+  const icon = item.itemType === "post" ? "📝"
+    : item.itemType === "media" ? (item.category === "music" ? "🎵" : "🎬")
+    : "👤";
+
+  // Avatar for users
+  const avatar = item.itemType === "user" && item.profilePhoto
+    ? `${apiUrl}/${item.profilePhoto}`
+    : null;
+
+  const subtitle = item.itemType === "post"
+    ? item.summary
+    : item.itemType === "media"
+    ? (item.artist || item.description || item.uploadedBy?.username)
+    : item.bio || "Adara community member";
+
+  return (
+    <motion.div className={styles.searchResult} onClick={goTo}
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      whileTap={{ scale: 0.98 }}>
+
+      {/* Icon / Avatar */}
+      <div className={styles.searchResultIcon}>
+        {item.itemType === "user" ? (
+          avatar
+            ? <img src={avatar} alt={item.username} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "10px" }} />
+            : <div className={styles.searchResultAvatar}>{item.username?.charAt(0).toUpperCase()}</div>
+        ) : (
+          icon
+        )}
+      </div>
+
+      {/* Info */}
+      <div className={styles.searchResultInfo}>
+        <span className={styles.searchResultTitle}>
+          {item.title || item.username}
+        </span>
+        {subtitle && (
+          <span className={styles.searchResultSub}>
+            {subtitle?.slice(0, 55)}{subtitle?.length > 55 ? "..." : ""}
+          </span>
+        )}
+        <span className={styles.searchResultType}>
+          {item.itemType === "post" ? "📝 Blog Post"
+            : item.itemType === "media" ? (item.category === "music" ? "🎵 Music" : "🎬 Video")
+            : "👤 User"}
+        </span>
+      </div>
+    </motion.div>
   );
 }
 
@@ -336,17 +298,86 @@ function MediaCard({ item }) {
 export default function IndexPage() {
   const [posts, setPosts] = useState([]);
   const [music, setMusic] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loaded, setLoaded] = useState(false);
+
+  // Search state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const searchRef = useRef(null);
 
   useEffect(() => {
     Promise.all([
       fetch(`${apiUrl}/api/post`).then((r) => r.json()),
       fetch(`${apiUrl}/api/music`).then((r) => r.json()),
-    ]).then(([postsData, musicData]) => {
+      fetch(`${apiUrl}/api/users`).then((r) => r.json()), // ← fetch users
+    ]).then(([postsData, musicData, usersData]) => {
       setPosts(postsData);
       setMusic(musicData);
+      setUsers(Array.isArray(usersData) ? usersData : []);
       setLoaded(true);
     });
+  }, []);
+
+  // Search across posts + media + users
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      setShowResults(false);
+      return;
+    }
+
+    setIsSearching(true);
+    const q = searchQuery.toLowerCase();
+
+    const delay = setTimeout(() => {
+      // Posts
+      const postResults = posts
+        .filter(p =>
+          p.title?.toLowerCase().includes(q) ||
+          p.summary?.toLowerCase().includes(q) ||
+          p.author?.username?.toLowerCase().includes(q)
+        )
+        .map(p => ({ ...p, itemType: "post" }));
+
+      // Media
+      const mediaResults = music
+        .filter(m =>
+          m.title?.toLowerCase().includes(q) ||
+          m.artist?.toLowerCase().includes(q) ||
+          m.description?.toLowerCase().includes(q) ||
+          m.uploadedBy?.username?.toLowerCase().includes(q)
+        )
+        .map(m => ({ ...m, itemType: "media" }));
+
+      // Users ← NEW
+      const userResults = users
+        .filter(u =>
+          u.username?.toLowerCase().includes(q) ||
+          u.bio?.toLowerCase().includes(q)
+        )
+        .map(u => ({ ...u, itemType: "user" }));
+
+      // Users first, then posts, then media
+      setSearchResults([...userResults, ...postResults, ...mediaResults]);
+      setShowResults(true);
+      setIsSearching(false);
+    }, 300);
+
+    return () => clearTimeout(delay);
+  }, [searchQuery, posts, music, users]);
+
+  // Close on outside click
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setShowResults(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const mixedFeed = [
@@ -358,22 +389,74 @@ export default function IndexPage() {
     <div className={styles.feedPage}>
 
       {/* FEED HEADER */}
-      <motion.div
-        className={styles.feedHeader}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
+      <motion.div className={styles.feedHeader}
+        initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}>
         <h2>Welcome to Enchwra 🪨</h2>
         <p>Voice, Culture & Entertainment of the Adara People</p>
       </motion.div>
 
+      {/* SEARCH BAR */}
+      <motion.div className={styles.searchWrapper} ref={searchRef}
+        initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.15 }}>
+
+        <div className={styles.searchBar}>
+          <span className={styles.searchIcon}>🔍</span>
+          <input
+            className={styles.searchInput}
+            type="text"
+            placeholder="Search posts, music, videos, users..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => searchQuery && setShowResults(true)}
+          />
+          {searchQuery && (
+            <motion.button className={styles.searchClear}
+              onClick={() => { setSearchQuery(""); setShowResults(false); }}
+              whileTap={{ scale: 0.9 }}>✕</motion.button>
+          )}
+        </div>
+
+        {/* DROPDOWN */}
+        <AnimatePresence>
+          {showResults && (
+            <motion.div className={styles.searchDropdown}
+              initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+
+              {isSearching && (
+                <p className={styles.searchStatus}>Searching...</p>
+              )}
+
+              {!isSearching && searchResults.length === 0 && (
+                <p className={styles.searchStatus}>
+                  No results for "<strong>{searchQuery}</strong>"
+                </p>
+              )}
+
+              {!isSearching && searchResults.length > 0 && (
+                <>
+                  <p className={styles.searchCount}>
+                    {searchResults.length} result{searchResults.length !== 1 ? "s" : ""} found
+                  </p>
+                  {searchResults.map((item) => (
+                    <SearchResultCard
+                      key={item._id}
+                      item={item}
+                      onSelect={() => setShowResults(false)}
+                    />
+                  ))}
+                </>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
       {/* ROOM BANNER */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      >
+      <motion.div initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.2 }}>
         <Link to="/room" className={styles.roomBanner}>
           🪨 Join the Enchwra Community Room — Come talk with your people!
         </Link>
@@ -386,7 +469,7 @@ export default function IndexPage() {
         )}
         {loaded && mixedFeed.map((item) => (
           <div key={item._id}>
-            {item.itemType === "post" && <Post {...item} />}
+            {item.itemType === "post" && <Post {...item} variant="feed" />}
             {item.itemType === "media" && <MediaCard item={item} />}
           </div>
         ))}
