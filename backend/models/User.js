@@ -1,11 +1,10 @@
 const mongoose = require("mongoose");
-const {Schema, model} = mongoose;
+const { Schema, model } = mongoose;
 
-const userSchema = new Schema({
+const UserSchema = new Schema({
   username: {
     type: String,
     required: true,
-    min: 4,
     unique: true,
   },
   password: {
@@ -14,13 +13,18 @@ const userSchema = new Schema({
   },
   bio: {
     type: String,
-    default: "",       // empty by default
+    default: "",
   },
   profilePhoto: {
     type: String,
-    default: "",       // empty by default
+    default: null,
+  },
+  // ===== ADMIN FLAG =====
+  // Set manually in MongoDB: db.users.updateOne({username:"yourname"},{$set:{isAdmin:true}})
+  isAdmin: {
+    type: Boolean,
+    default: false,
   },
 }, { timestamps: true });
 
-const UserModel = model("User", userSchema);
-module.exports = UserModel;
+module.exports = model("User", UserSchema);

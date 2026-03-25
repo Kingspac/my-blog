@@ -432,7 +432,7 @@ a svg {
 
 /* ===== HOME PAGE CARD HEIGHT (70-80vh) ===== */
 .fb-card {
-  min-height: 75vh;
+  min-height: 65vh;
   display: flex;
   flex-direction: column;
 }

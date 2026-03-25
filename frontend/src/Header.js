@@ -1,6 +1,16 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+// --- NEW ICON IMPORTS ---
+import { 
+  Newspaper, 
+  Clapperboard, 
+  LibraryBig, 
+  Search, 
+  Store, 
+  UserPlus, 
+  Home 
+} from "lucide-react";
 import { UserContext } from "./UserContext";
 import styles from "./styles/Header.module.css";
 
@@ -8,30 +18,40 @@ export default function Header() {
   const { setUserInfo, userInfo } = useContext(UserContext);
   const [newMessageCount, setNewMessageCount] = useState(0);
   const [navVisible, setNavVisible] = useState(true);
-  const [isTyping, setIsTyping] = useState(false); // hide home btn when typing
+  const [isTyping, setIsTyping] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/profile`, {
-      credentials: "include",
-    }).then((response) => {
-      response.json().then((userInfo) => {
-        setUserInfo(userInfo);
-      });
-    });
-  }, []);
+  // Icon configuration
+  const iconSize = 22;
 
+  // 1. Fetch Profile
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/profile`, {
+          credentials: "include",
+        });
+        const data = await response.json();
+        setUserInfo(data);
+      } catch (err) {
+        console.error("Failed to fetch profile:", err);
+      }
+    };
+    fetchProfile();
+  }, [setUserInfo]);
+
+  // 2. Message Polling
   useEffect(() => {
     checkNewMessages();
     const interval = setInterval(checkNewMessages, 10000);
     return () => clearInterval(interval);
   }, [location.pathname]);
 
-  // Hide/show header on scroll
+  // 3. Scroll Logic
   useEffect(() => {
-    function handleScroll() {
+    const handleScroll = () => {
       const currentScrollY = window.scrollY;
       if (currentScrollY > lastScrollY && currentScrollY > 60) {
         setNavVisible(false);
@@ -39,15 +59,15 @@ export default function Header() {
         setNavVisible(true);
       }
       setLastScrollY(currentScrollY);
-    }
+    };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // Listen for Room page hide/show events
+  // 4. Custom Events
   useEffect(() => {
-    function hideBtn() { setNavVisible(false); }
-    function showBtn() { setNavVisible(true); }
+    const hideBtn = () => setNavVisible(false);
+    const showBtn = () => setNavVisible(true);
     window.addEventListener("hideHomeBtn", hideBtn);
     window.addEventListener("showHomeBtn", showBtn);
     return () => {
@@ -56,27 +76,18 @@ export default function Header() {
     };
   }, []);
 
-  // Hide home button when user focuses on any input or textarea
+  // 5. Input Focus Detection
   useEffect(() => {
-    function handleFocusIn(e) {
-      if (
-        e.target.tagName === "INPUT" ||
-        e.target.tagName === "TEXTAREA" ||
-        e.target.contentEditable === "true"
-      ) {
+    const handleFocusIn = (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.contentEditable === "true") {
         setIsTyping(true);
       }
-    }
-    function handleFocusOut(e) {
-      if (
-        e.target.tagName === "INPUT" ||
-        e.target.tagName === "TEXTAREA" ||
-        e.target.contentEditable === "true"
-      ) {
-        // Small delay so it doesn't flicker
+    };
+    const handleFocusOut = (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.contentEditable === "true") {
         setTimeout(() => setIsTyping(false), 300);
       }
-    }
+    };
     document.addEventListener("focusin", handleFocusIn);
     document.addEventListener("focusout", handleFocusOut);
     return () => {
@@ -91,52 +102,42 @@ export default function Header() {
       return;
     }
     try {
-      const res = await fetch(
-        `${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/room/count`
-      );
+      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/room/count`);
       const data = await res.json();
-      const totalCount = data.count;
       const lastSeen = parseInt(localStorage.getItem("lastSeenMessageCount") || "0");
-      setNewMessageCount(totalCount > lastSeen ? totalCount - lastSeen : 0);
+      setNewMessageCount(data.count > lastSeen ? data.count - lastSeen : 0);
     } catch (e) {}
   }
 
-  function handleRoomClick() {
-    setNewMessageCount(0);
-  }
+  const handleRoomClick = () => setNewMessageCount(0);
 
-  const username = userInfo?.username;
-  const id = userInfo?.id;
-  const profilePhoto = userInfo?.profilePhoto;
+  const { username, id, profilePhoto } = userInfo || {};
   const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
   const isRoom = location.pathname === "/room";
-
-  // Show home button only when nav visible AND not typing
   const showHomeBtn = navVisible && !isTyping;
 
   return (
     <>
-      {/* ===== HEADER - fixed at top ===== */}
       <motion.header
         className={styles.header}
         animate={{ y: navVisible ? 0 : -70, opacity: navVisible ? 1 : 0 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
-        {/* LOGO - just text, no link */}
-       <img 
-           src="/enchwra-logo.svg" 
-           alt="Enchwra" 
-           className={styles.logoImg} 
-         />
+        <img src="/enchwra-logo.svg" alt="Enchwra" className={styles.logoImg} />
 
         <nav className={styles.nav}>
-          <Link to="/blog" className={`${styles.navBtn} ${location.pathname === "/blog" ? styles.navBtnActive : ""}`} title="Blog">📑</Link>
-          <Link to="/entertainment" className={`${styles.navBtn} ${location.pathname === "/entertainment" ? styles.navBtnActive : ""}`} title="Entertainment">🎬</Link>
-          <Link to="/education" className={`${styles.navBtn} ${location.pathname === "/education" ? styles.navBtnActive : ""}`} title="Education">📚</Link>
+          <Link to="/blog" className={`${styles.navBtn} ${location.pathname === "/blog" ? styles.navBtnActive : ""}`} title="Blog">
+            <Newspaper size={iconSize} />
+          </Link>
+          <Link to="/entertainment" className={`${styles.navBtn} ${location.pathname === "/entertainment" ? styles.navBtnActive : ""}`} title="Entertainment">
+            <Clapperboard size={iconSize} />
+          </Link>
+          <Link to="/education" className={`${styles.navBtn} ${location.pathname === "/education" ? styles.navBtnActive : ""}`} title="Education">
+            <LibraryBig size={iconSize} />
+          </Link>
           <Link to="/" className={styles.navBtn} title="Search">
-  🔍
-</Link>
-          {/* Room with badge */}
+            <Search size={iconSize} />
+          </Link>
           <Link
             to="/room"
             className={`${styles.navBtn} ${location.pathname === "/room" ? styles.navBtnActive : ""}`}
@@ -144,7 +145,7 @@ export default function Header() {
             title="Room"
             style={{ position: "relative" }}
           >
-            🏪
+            <Store size={iconSize} />
             {newMessageCount > 0 && (
               <span className={styles.notificationBadge}>
                 {newMessageCount > 99 ? "99+" : newMessageCount}
@@ -152,34 +153,25 @@ export default function Header() {
             )}
           </Link>
 
-          {/* Logged in */}
-          {username && (
+          {username ? (
             <Link to={`/profile/${id}`} className={styles.profileLink} title={username}>
               {profilePhoto ? (
-                <img
-                  src={`${apiUrl}/${profilePhoto}`}
-                  alt={username}
-                  className={styles.profileAvatar}
-                />
+                <img src={`${apiUrl}/${profilePhoto}`} alt={username} className={styles.profileAvatar} />
               ) : (
-                <div className={styles.profileAvatarPlaceholder}>
-                  {username.charAt(0).toUpperCase()}
-                </div>
+                <div className={styles.profileAvatarPlaceholder}>{username.charAt(0).toUpperCase()}</div>
               )}
             </Link>
-          )}
-
-          {/* Logged out */}
-          {!username && (
+          ) : (
             <>
-              <Link to="/register" className={styles.navBtn} title="Register">👤</Link>
+              <Link to="/register" className={styles.navBtn} title="Register">
+                <UserPlus size={iconSize} />
+              </Link>
               <Link to="/login" className={styles.loginBtn}>Sign In</Link>
             </>
           )}
         </nav>
       </motion.header>
 
-      {/* ===== FLOATING HOME BUTTON ===== */}
       <AnimatePresence>
         {showHomeBtn && (
           <motion.button
@@ -192,10 +184,11 @@ export default function Header() {
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
             whileTap={{ scale: 0.88 }}
           >
-            🏠
+            <Home size={24} />
           </motion.button>
         )}
       </AnimatePresence>
     </>
   );
 }
+ 

@@ -47,17 +47,23 @@ export default function ProfilePage() {
         setMusic(data.filter((m) => m.uploadedBy?._id === id || m.uploadedBy === id));
       });
 
-    // Check if this is the logged-in admin viewing their own profile
+    // Only check admin if viewing own profile
     if (userInfo?.id === id) {
       fetch(`${apiUrl}/api/education/admin/pending`, {
         credentials: "include",
       })
-        .then((res) => res.ok ? res.json() : [])
+        .then((res) => {
+          // Only set admin if server confirms (200 OK)
+          // Non-admins get 403 → isAdmin stays false
+          if (res.ok) return res.json();
+          return null;
+        })
         .then((data) => {
-          if (Array.isArray(data)) {
+          if (data && Array.isArray(data)) {
             setPendingPosts(data);
-            setIsAdmin(true);
+            setIsAdmin(true); // only true if server said OK
           }
+          // If null (403), isAdmin stays false → panel hidden
         })
         .catch(() => {});
     }
@@ -337,9 +343,9 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {isAdmin && pendingPosts.length === 0 && isOwnProfile && (
+      {isAdmin && isOwnProfile && pendingPosts.length === 0 && (
         <div className={styles.adminPanelEmpty}>
-          🛡️ Admin — No pending posts to review
+          🛡️ Admin Panel — No pending posts to review ✅
         </div>
       )}
 

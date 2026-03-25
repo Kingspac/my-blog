@@ -37,6 +37,7 @@
   align-items: center;
   gap: 5px;
   flex-wrap: nowrap;
+  color: red;
 }
 
 /* ===== NEUMORPHIC NAV BUTTONS ===== */

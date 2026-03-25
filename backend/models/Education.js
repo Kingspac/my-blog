@@ -2,32 +2,16 @@ const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
 
 const EducationSchema = new Schema({
-  title: {
-    type: String,
-    required: true,
-  },
-  content: {
-    type: String,
-    default: "",
-  },
-  summary: {
-    type: String,
-    default: "",
-  },
-  cover: {
-    type: String,
-    default: null,
-  },
-  youtubeLink: {
-    type: String,
-    default: null,
-  },
+  title:      { type: String, required: true },
+  content:    { type: String, default: "" },
+  summary:    { type: String, default: "" },
+  cover:      { type: String, default: null },
+  youtubeLink:{ type: String, default: null },
   category: {
     type: String,
     enum: ["history", "language", "health", "career"],
     required: true,
   },
-  // For language category - which language
   language: {
     type: String,
     enum: ["adara", "hausa", "english", null],
@@ -39,7 +23,16 @@ const EducationSchema = new Schema({
     required: true,
   },
   likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
+
+  // ===== APPROVAL SYSTEM =====
+  status: {
+    type: String,
+    enum: ["pending", "approved", "rejected"],
+    default: "pending",
+  },
+  reviewedBy:  { type: Schema.Types.ObjectId, ref: "User", default: null },
+  reviewNote:  { type: String, default: "" },
+
 }, { timestamps: true });
 
-const EducationModel = model("Education", EducationSchema);
-module.exports = EducationModel;
+module.exports = model("Education", EducationSchema);
