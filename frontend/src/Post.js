@@ -198,29 +198,20 @@ export default function Post({
             </div>
           )}
 
-          {/* Footer for posts without cover */}
+          {/* TikTok style buttons for posts without cover */}
           {!cover && (
-            <div className="fb-card-footer">
-              <motion.button
-                className={`fb-action-btn ${liked ? "fb-liked" : ""}`}
-                onClick={handleLike}
-                whileTap={{ scale: 1.2 }}
-              >
-                <span>{liked ? "❤️" : "🤍"}</span> {likes}
+            <div style={{ display: "flex", gap: 16, padding: "10px 14px", justifyContent: "flex-end" }}>
+              <motion.button onClick={handleLike} whileTap={{ scale: 1.3 }}
+                style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.9rem", color: liked ? "#e0245e" : "#8B4513", display: "flex", alignItems: "center", gap: 4, width: "auto", margin: 0, fontFamily: "'DM Sans',sans-serif" }}>
+                {liked ? "❤️" : "🤍"} {likes}
               </motion.button>
-              <motion.button
-                className="fb-action-btn"
-                onClick={(e) => { e.preventDefault(); setShowModal(true); }}
-                whileTap={{ scale: 1.1 }}
-              >
-                <span>💬</span> {comments.length}
+              <motion.button onClick={(e) => { e.preventDefault(); setShowModal(true); }} whileTap={{ scale: 1.2 }}
+                style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.9rem", color: "#8B4513", display: "flex", alignItems: "center", gap: 4, width: "auto", margin: 0, fontFamily: "'DM Sans',sans-serif" }}>
+                💬 {comments.length}
               </motion.button>
-              <motion.button
-                className="fb-action-btn"
-                onClick={sharePost}
-                whileTap={{ scale: 1.1 }}
-              >
-                <span>📤</span> Share
+              <motion.button onClick={sharePost} whileTap={{ scale: 1.2 }}
+                style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.9rem", color: "#8B4513", display: "flex", alignItems: "center", gap: 4, width: "auto", margin: 0, fontFamily: "'DM Sans',sans-serif" }}>
+                📤 Share
               </motion.button>
             </div>
           )}
@@ -305,4 +296,3 @@ export default function Post({
     </>
   );
 }
- 

@@ -6,30 +6,13 @@ import styles from "../styles/UploadMedia.module.css";
 
 const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
-const videoPlatforms = [
-  { value: "youtube", label: "▶️ YouTube" },
-  { value: "facebook", label: "📘 Facebook" },
-  { value: "tiktok", label: "🎵 TikTok" },
-  { value: "instagram", label: "📸 Instagram" },
-  { value: "other", label: "🔗 Other" },
-];
-
-const musicPlatforms = [
-  { value: "spotify", label: "🎵 Spotify" },
-  { value: "youtube_music", label: "▶️ YouTube Music" },
-  { value: "apple_music", label: "🍎 Apple Music" },
-  { value: "audiomack", label: "🎧 Audiomack" },
-  { value: "other", label: "🔗 Other" },
-];
-
 export default function UploadMedia() {
   const [title, setTitle] = useState("");
   const [artist, setArtist] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("music");
   const [uploadType, setUploadType] = useState("file");
-  const [platform, setPlatform] = useState("spotify");
-  const [linkUrl, setLinkUrl] = useState("");
+  const [youtubeLink, setYoutubeLink] = useState("");
   const [mediaFile, setMediaFile] = useState(null);
   const [coverPhoto, setCoverPhoto] = useState(null);
   const [coverPreview, setCoverPreview] = useState(null);
@@ -41,13 +24,15 @@ export default function UploadMedia() {
 
   if (!userInfo?.id) { navigate("/login"); return null; }
 
-  const platforms = category === "music" ? musicPlatforms : videoPlatforms;
+  // Music is always file upload
+  // Video can be file OR YouTube link
+  const canUseLink = category === "video";
 
   function handleMediaFile(e) {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 50 * 1024 * 1024) {
-      setFileError("File too large! Max 50MB.");
+    if (file.size > 150 * 1024 * 1024) {
+      setFileError("File too large! Max 150MB.");
       e.target.value = "";
       return;
     }
@@ -58,8 +43,8 @@ export default function UploadMedia() {
   function handleCoverPhoto(e) {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 20 * 1024 * 1024) {
-      setFileError("Cover photo too large! Max 20MB.");
+    if (file.size > 150 * 1024 * 1024) {
+      setFileError("Cover photo too large! Max 150MB.");
       e.target.value = "";
       return;
     }
@@ -71,8 +56,18 @@ export default function UploadMedia() {
   async function handleSubmit(e) {
     e.preventDefault();
     if (fileError) return;
-    setIsUploading(true);
 
+    // Validate
+    if (uploadType === "link" && !youtubeLink.trim()) {
+      setFileError("Please enter a YouTube link.");
+      return;
+    }
+    if (uploadType === "file" && !mediaFile?.[0]) {
+      setFileError("Please select a file to upload.");
+      return;
+    }
+
+    setIsUploading(true);
     const data = new FormData();
     data.append("title", title);
     data.append("artist", artist);
@@ -80,11 +75,11 @@ export default function UploadMedia() {
     data.append("category", category);
 
     if (uploadType === "link") {
-      data.append("youtubeLink", linkUrl);
-      data.append("platform", platform);
+      data.append("youtubeLink", youtubeLink);
     } else {
       if (mediaFile?.[0]) data.append("audioFile", mediaFile[0]);
     }
+
     if (coverPhoto?.[0]) data.append("coverPhoto", coverPhoto[0]);
 
     const res = await fetch(`${apiUrl}/api/music`, {
@@ -94,11 +89,8 @@ export default function UploadMedia() {
     });
 
     setIsUploading(false);
-    if (res.ok) {
-      navigate("/entertainment");
-    } else {
-      alert("Upload failed. Please try again.");
-    }
+    if (res.ok) navigate("/entertainment");
+    else alert("Upload failed. Please try again.");
   }
 
   return (
@@ -116,17 +108,23 @@ export default function UploadMedia() {
         <div className={styles.uploadField}>
           <label className={styles.uploadLabel}>Category</label>
           <div className={styles.categoryTabs}>
-            <button
-              type="button"
+            <button type="button"
               className={`${styles.catTab} ${category === "music" ? styles.active : ""}`}
-              onClick={() => { setCategory("music"); setPlatform("spotify"); }}
-            >🎵 Music</button>
-            <button
-              type="button"
+              onClick={() => { setCategory("music"); setUploadType("file"); }}>
+              🎵 Music
+            </button>
+            <button type="button"
               className={`${styles.catTab} ${category === "video" ? styles.active : ""}`}
-              onClick={() => { setCategory("video"); setPlatform("youtube"); }}
-            >🎬 Video</button>
+              onClick={() => setCategory("video")}>
+              🎬 Video
+            </button>
           </div>
+          {/* Info text */}
+          <p style={{ fontSize: "0.75rem", color: "#8B4513", fontFamily: "'DM Sans',sans-serif", marginTop: 6 }}>
+            {category === "music"
+              ? "🎵 Upload your music file — it will play directly in the app like Spotify!"
+              : "🎬 Upload a video file or paste a YouTube link to embed it"}
+          </p>
         </div>
 
         <hr className={styles.divider} />
@@ -134,142 +132,97 @@ export default function UploadMedia() {
         {/* TITLE */}
         <div className={styles.uploadField}>
           <label className={styles.uploadLabel}>Title *</label>
-          <input
-            className={styles.uploadInput}
-            type="text"
+          <input className={styles.uploadInput} type="text"
             placeholder={category === "music" ? "Song title..." : "Video title..."}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
+            value={title} onChange={(e) => setTitle(e.target.value)} required />
         </div>
 
         {/* ARTIST */}
         <div className={styles.uploadField}>
           <label className={styles.uploadLabel}>Artist / Creator</label>
-          <input
-            className={styles.uploadInput}
-            type="text"
+          <input className={styles.uploadInput} type="text"
             placeholder="Artist or creator name (optional)"
-            value={artist}
-            onChange={(e) => setArtist(e.target.value)}
-          />
+            value={artist} onChange={(e) => setArtist(e.target.value)} />
         </div>
 
         <hr className={styles.divider} />
 
-        {/* UPLOAD TYPE */}
-        <div className={styles.uploadField}>
-          <label className={styles.uploadLabel}>Upload Type</label>
-          <div className={styles.typeToggle}>
-            <button
-              type="button"
-              className={`${styles.typeBtn} ${uploadType === "file" ? styles.active : ""}`}
-              onClick={() => setUploadType("file")}
-            >📁 Upload File</button>
-            <button
-              type="button"
-              className={`${styles.typeBtn} ${uploadType === "link" ? styles.active : ""}`}
-              onClick={() => setUploadType("link")}
-            >🔗 Paste Link</button>
-          </div>
-        </div>
-
-        {/* FILE */}
-        {uploadType === "file" && (
+        {/* UPLOAD TYPE - only show toggle for video */}
+        {canUseLink && (
           <div className={styles.uploadField}>
-            <label className={styles.uploadLabel}>
-              {category === "music" ? "Audio File (mp3, wav...)" : "Video File (mp4, mov...)"}
-            </label>
-            <input
-              className={styles.uploadInput}
-              type="file"
-              accept={category === "music" ? "audio/*" : "video/*,audio/*"}
-              onChange={handleMediaFile}
-            />
+            <label className={styles.uploadLabel}>Upload Type</label>
+            <div className={styles.typeToggle}>
+              <button type="button"
+                className={`${styles.typeBtn} ${uploadType === "file" ? styles.active : ""}`}
+                onClick={() => setUploadType("file")}>
+                📁 Upload File
+              </button>
+              <button type="button"
+                className={`${styles.typeBtn} ${uploadType === "link" ? styles.active : ""}`}
+                onClick={() => setUploadType("link")}>
+                ▶️ YouTube Link
+              </button>
+            </div>
           </div>
         )}
 
-        {/* LINK */}
-        {uploadType === "link" && (
-          <>
-            <div className={styles.uploadField}>
-              <label className={styles.uploadLabel}>Platform</label>
-              <div className={styles.platformGrid}>
-                {platforms.map((p) => (
-                  <button
-                    key={p.value}
-                    type="button"
-                    className={`${styles.platformPill} ${platform === p.value ? styles.active : ""}`}
-                    onClick={() => setPlatform(p.value)}
-                  >
-                    {p.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+        {/* FILE UPLOAD */}
+        {(uploadType === "file" || !canUseLink) && (
+          <div className={styles.uploadField}>
+            <label className={styles.uploadLabel}>
+              {category === "music" ? "🎵 Audio File (mp3, wav, m4a...)" : "🎬 Video File (mp4, mov...)"}
+            </label>
+            <input className={styles.uploadInput} type="file"
+              accept={category === "music" ? "audio/*" : "video/*,audio/*"}
+              onChange={handleMediaFile} />
+          </div>
+        )}
 
-            <div className={styles.uploadField}>
-              <label className={styles.uploadLabel}>
-                {platforms.find(p => p.value === platform)?.label} Link
-              </label>
-              <input
-                className={styles.uploadInput}
-                type="url"
-                placeholder={
-                  platform === "spotify" ? "https://open.spotify.com/track/..." :
-                  platform === "youtube" || platform === "youtube_music" ? "https://www.youtube.com/watch?v=..." :
-                  platform === "tiktok" ? "https://www.tiktok.com/@user/video/..." :
-                  platform === "facebook" ? "https://www.facebook.com/watch/?v=..." :
-                  "Paste your link here..."
-                }
-                value={linkUrl}
-                onChange={(e) => setLinkUrl(e.target.value)}
-                required
-              />
-            </div>
-          </>
+        {/* YOUTUBE LINK (video only) */}
+        {canUseLink && uploadType === "link" && (
+          <div className={styles.uploadField}>
+            <label className={styles.uploadLabel}>▶️ YouTube Link</label>
+            <input className={styles.uploadInput} type="url"
+              placeholder="https://www.youtube.com/watch?v=..."
+              value={youtubeLink}
+              onChange={(e) => setYoutubeLink(e.target.value)}
+              required />
+            <p style={{ fontSize: "0.72rem", color: "#aaa", fontFamily: "'DM Sans',sans-serif", marginTop: 4 }}>
+              Only YouTube links can be embedded. The video will play directly in the app.
+            </p>
+          </div>
         )}
 
         <hr className={styles.divider} />
 
         {/* COVER PHOTO */}
         <div className={styles.uploadField}>
-          <label className={styles.uploadLabel}>Cover Photo (optional)</label>
+          <label className={styles.uploadLabel}>
+            {category === "music" ? "🖼️ Cover Art (optional)" : "🖼️ Cover Photo (optional)"}
+          </label>
           {coverPreview && (
             <div className={styles.coverPreviewBox}>
               <img src={coverPreview} alt="cover preview" />
             </div>
           )}
-          <input
-            className={styles.uploadInput}
-            type="file"
-            accept="image/*"
-            onChange={handleCoverPhoto}
-          />
+          <input className={styles.uploadInput} type="file"
+            accept="image/*" onChange={handleCoverPhoto} />
         </div>
 
         {/* DESCRIPTION */}
         <div className={styles.uploadField}>
           <label className={styles.uploadLabel}>Description (optional)</label>
-          <textarea
-            className={styles.uploadInput}
+          <textarea className={styles.uploadInput}
             placeholder={category === "music" ? "Tell us about this song..." : "Tell us about this video..."}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-          />
+            value={description} onChange={(e) => setDescription(e.target.value)}
+            rows={3} />
         </div>
 
         {fileError && <p className={styles.errorText}>⚠️ {fileError}</p>}
 
-        <motion.button
-          type="submit"
-          className={styles.submitBtn}
-          disabled={isUploading}
-          whileTap={{ scale: 0.97 }}
-        >
-          {isUploading ? "⏳ Uploading..." : "📤 Upload Media"}
+        <motion.button type="submit" className={styles.submitBtn}
+          disabled={isUploading} whileTap={{ scale: 0.97 }}>
+          {isUploading ? "⏳ Uploading..." : `📤 Upload ${category === "music" ? "Music" : "Video"}`}
         </motion.button>
       </form>
     </div>

@@ -6,7 +6,7 @@ const path = require("path");
 
 const uploadMiddleware = multer({
   dest: "uploads",
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
+  limits: { fileSize: 200 * 1024 * 1024 }, // 200MB
 });
 
 const secret = process.env.JWT_SECRET;
@@ -20,17 +20,23 @@ function deleteFile(filePath) {
   }
 }
 
-// GET ALL MEDIA
+// GET MEDIA (With optional category filter)
 exports.getAllMedia = async (req, res) => {
   try {
-    const media = await Media.find()
+    const { category } = req.query; // Look for ?category=music in the URL
+    const filter = category ? { category } : {}; 
+
+    const media = await Media.find(filter)
       .populate("uploadedBy", ["username"])
       .sort({ createdAt: -1 });
+      
     res.json(media);
   } catch (e) {
     res.status(500).json({ message: "Failed to get media", error: e.message });
   }
 };
+
+
 
 // GET SINGLE MEDIA
 exports.getSingleMedia = async (req, res) => {
@@ -184,4 +190,20 @@ exports.addComment = async (req, res) => {
       res.status(500).json({ message: "Comment failed", error: e.message });
     }
   });
+};
+
+// INCREMENT PLAY COUNT
+exports.incrementPlayCount = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const media = await Media.findByIdAndUpdate(
+      id,
+      { $inc: { playCount: 1 } },
+      { new: true }
+    );
+    if (!media) return res.status(404).json("not found");
+    res.json({ playCount: media.playCount });
+  } catch (e) {
+    res.status(500).json({ message: "Failed to update play count", error: e.message });
+  }
 };

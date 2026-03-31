@@ -123,7 +123,7 @@ export default function Header() {
         animate={{ y: navVisible ? 0 : -70, opacity: navVisible ? 1 : 0 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
-        <img src="/enchwra-logo.svg" alt="Enchwra" className={styles.logoImg} />
+        <img src="/enchwra-logo.png" alt="Enchwra" className={styles.logoImg} />
 
         <nav className={styles.nav}>
           <Link to="/blog" className={`${styles.navBtn} ${location.pathname === "/blog" ? styles.navBtnActive : ""}`} title="Blog">

@@ -14,13 +14,16 @@ import EducationPage from "./pages/EducationPage.js";
 import CreateEducation from "./pages/CreateEducation.js";
 import EducationPostPage from "./pages/EducationPostPage.js";
 import ForgotPassword from "./pages/ForgotPassword.js";
+import MusicPlayer from "./pages/MusicPlayer.js";
 import { Routes, Route } from "react-router-dom";
 import { UserContextProvider } from "./UserContext.js";
+import { MusicProvider } from "./MusicContext";
 import './App.css';
 
 function App() {
   return (
     <UserContextProvider>
+    <MusicProvider>
       <Routes>
         <Route path="/" element={<Layout />}>
           {/* Home - mixed feed */}
@@ -53,8 +56,11 @@ function App() {
 
           {/* Profile */}
           <Route path="/profile/:id" element={<ProfilePage />} />
+          {/* music player */}
+          <Route path="/music" element={<MusicPlayer />} />
         </Route>
       </Routes>
+    </MusicProvider>
     </UserContextProvider>
   );
 }

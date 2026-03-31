@@ -43,6 +43,10 @@ const MediaSchema = new Schema({
     enum: ["music", "video"],
     default: "music",
   },
+  playCount: {
+  type: Number,
+  default: 0,
+},
 }, { timestamps: true });
 
 const MediaModel = model("Media", MediaSchema);

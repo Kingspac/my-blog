@@ -7,7 +7,7 @@ const fs = require("fs");
 
 const uploadMiddleware = multer({
   dest: "uploads",
-  limits: { fileSize: 20 * 1024 * 1024 }
+  limits: { fileSize: 200 * 1024 * 1024 }
 });
 
 const salt = bcrypt.genSaltSync(10);
@@ -32,7 +32,7 @@ exports.login = async (req, res) => {
   const { username, password } = req.body;
   const userDoc = await User.findOne({ username });
   if (!userDoc) return res.status(400).json("wrong credentials");
-
+console.log(userDoc)
   const passOk = bcrypt.compareSync(password, userDoc.password);
   if (passOk) {
     jwt.sign({ username, id: userDoc._id }, secret, {}, (error, token) => {
@@ -278,4 +278,3 @@ exports.deleteAccount = async (req, res) => {
     }
   });
 };
- 

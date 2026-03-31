@@ -19,8 +19,8 @@ app.use(cors({
   origin: allowedOrigin,
 }));
 
-app.use(express.json({ limit: "100mb" }));
-app.use(express.urlencoded({ limit: "100mb", extended: true }));
+app.use(express.json({ limit: "200mb" }));
+app.use(express.urlencoded({ limit: "200mb", extended: true }));
 app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
@@ -41,4 +41,22 @@ mongoose.connect(mongoURI)
     console.error(err);
   });
 
+// ===== GLOBAL ERROR HANDLER (catches Multer file size errors) =====
+app.use((err, req, res, next) => {
+  if (err.code === "LIMIT_FILE_SIZE") {
+    return res.status(400).json({
+      message: "File too large! Maximum allowed size is 200MB."
+    });
+  }
+  if (err.code === "LIMIT_UNEXPECTED_FILE") {
+    return res.status(400).json({
+      message: "Unexpected file field."
+    });
+  }
+  // Any other error
+  console.error("Server error:", err.message);
+  res.status(500).json({ message: "Server error", error: err.message });
+});
+
 app.listen(PORT, () => console.log(`🚀 Server on port ${PORT}`));
+ 

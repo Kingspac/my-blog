@@ -7,6 +7,7 @@ const {
   deleteMedia,
   likeMedia,
   addComment,
+  incrementPlayCount,
 } = require("../controllers/mediaController");
 
 router.get("/", getAllMedia);
@@ -15,5 +16,6 @@ router.post("/", uploadMedia);
 router.delete("/:id", deleteMedia);
 router.put("/:id/like", likeMedia);
 router.post("/:id/comment", addComment);
+router.put("/:id/play", incrementPlayCount);
 
 module.exports = router;

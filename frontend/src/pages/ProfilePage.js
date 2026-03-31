@@ -1,9 +1,12 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { formatISO9075, format } from "date-fns";
-import { motion } from "framer-motion";
+import { format, formatISO9075 } from "date-fns";
+import { motion, AnimatePresence } from "framer-motion";
 import { UserContext } from "../UserContext";
+import Post from "../Post.js";
 import styles from "../styles/ProfilePage.module.css";
+
+const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
 function getYoutubeId(url) {
   const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
@@ -16,7 +19,251 @@ function isVideoFile(filename) {
   return ["mp4", "webm", "ogg", "mov", "mkv"].includes(ext);
 }
 
-const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
+let currentlyPlaying = null;
+
+// ===== COMMENTS MODAL =====
+function CommentsModal({ mediaId, comments: initialComments, onClose, currentUser }) {
+  const [comments, setComments] = useState(initialComments || []);
+  const [comment, setComment] = useState("");
+
+  async function handleComment(e) {
+    e.preventDefault();
+    if (!currentUser?.id) { alert("Please login"); return; }
+    if (!comment.trim()) return;
+    const res = await fetch(`${apiUrl}/api/music/${mediaId}/comment`, {
+      method: "POST", credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: comment }),
+    });
+    if (res.ok) {
+      const newComment = await res.json();
+      setComments([...comments, newComment]);
+      setComment("");
+    }
+  }
+
+  return (
+    <motion.div className="modal-overlay"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      onClick={onClose}>
+      <motion.div className="modal-box"
+        initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+        onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3>💬 Comments ({comments.length})</h3>
+          <button className="modal-close-btn" onClick={onClose}>✕</button>
+        </div>
+        <div className="modal-comments-list">
+          {comments.length === 0 ? (
+            <p className="no-comments-text">No comments yet!</p>
+          ) : (
+            comments.map((c, i) => (
+              <div className="modal-comment" key={i}>
+                <div className="modal-comment-author">👤 {c.username}</div>
+                <div className="modal-comment-content">{c.content}</div>
+                <div className="modal-comment-date">{formatISO9075(new Date(c.createdAt))}</div>
+              </div>
+            ))
+          )}
+        </div>
+        {currentUser?.id ? (
+          <form className="modal-comment-form" onSubmit={handleComment}>
+            <input type="text" placeholder="Write a comment..."
+              value={comment} onChange={(e) => setComment(e.target.value)} />
+            <button type="submit">Post</button>
+          </form>
+        ) : (
+          <p className="modal-login-prompt"><Link to="/login">Login</Link> to comment</p>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ===== MEDIA CARD with full functionality =====
+function MediaCard({ item, isOwnProfile, onDelete }) {
+  const mediaRef = useRef(null);
+  const cardRef = useRef(null);
+  const { userInfo } = useContext(UserContext);
+  const [likes, setLikes] = useState(item.likes?.length || 0);
+  const [liked, setLiked] = useState(userInfo?.id ? item.likes?.includes(userInfo.id) : false);
+  const [showModal, setShowModal] = useState(false);
+  const [comments, setComments] = useState(item.comments || []);
+
+  function handlePlay() {
+    if (currentlyPlaying && currentlyPlaying !== mediaRef.current) currentlyPlaying.pause();
+    currentlyPlaying = mediaRef.current;
+  }
+
+  useEffect(() => {
+    const card = cardRef.current;
+    const media = mediaRef.current;
+    if (!card || !media) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting && !media.paused) {
+          media.pause();
+          if (currentlyPlaying === media) currentlyPlaying = null;
+        }
+      });
+    }, { threshold: 0.2 });
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, []);
+
+  async function handleLike() {
+    if (!userInfo?.id) { alert("Please login to like"); return; }
+    const res = await fetch(`${apiUrl}/api/music/${item._id}/like`, {
+      method: "PUT", credentials: "include",
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setLikes(data.likes);
+      setLiked(data.liked);
+    }
+  }
+
+  async function handleDelete() {
+    if (!window.confirm("Delete this media?")) return;
+    const res = await fetch(`${apiUrl}/api/music/${item._id}`, {
+      method: "DELETE", credentials: "include",
+    });
+    if (res.ok) onDelete(item._id);
+    else alert("Failed to delete");
+  }
+
+  function shareMedia() {
+    const url = window.location.href;
+    if (navigator.share) navigator.share({ title: item.title, url });
+    else { navigator.clipboard.writeText(url); alert("Link copied!"); }
+  }
+
+  const hasVideo = isVideoFile(item.audioFile);
+  const hasMedia = item.audioFile || item.youtubeLink;
+
+  return (
+    <>
+      <motion.div ref={cardRef} className="fb-card tiktok-card"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.1 }}
+        transition={{ duration: 0.4 }}>
+
+        <div className="fb-card-header">
+          <div className="fb-avatar">{item.uploadedBy?.username?.charAt(0).toUpperCase()}</div>
+          <div className="fb-author-info">
+            <Link to={`/profile/${item.uploadedBy?._id}`} className="fb-author-name">
+              {item.artist || item.uploadedBy?.username}
+            </Link>
+            <time className="fb-time">{format(new Date(item.createdAt), "MMM d, yyyy • h:mm a")}</time>
+          </div>
+          <span className="fb-badge">{item.category === "music" ? "🎵 Music" : "🎬 Video"}</span>
+        </div>
+
+        <div className="fb-card-body">
+          <p className="fb-title">{item.title}</p>
+          {item.description && <p className="fb-summary">{item.description}</p>}
+        </div>
+
+        <div className="tiktok-media-wrapper">
+          {item.coverPhoto && !item.youtubeLink && !hasVideo && (
+            <div className="fb-card-image">
+              <img src={`${apiUrl}/${item.coverPhoto}`} alt={item.title} />
+            </div>
+          )}
+          {item.youtubeLink && (
+            <div className="fb-card-image">
+              <iframe width="100%" height="280"
+                src={`https://www.youtube.com/embed/${getYoutubeId(item.youtubeLink)}`}
+                title={item.title} frameBorder="0" allowFullScreen style={{ display: "block" }} />
+            </div>
+          )}
+          {item.audioFile && !item.youtubeLink && hasVideo && (
+            <div className="fb-card-image" style={{ background: "#000" }}>
+              <video ref={mediaRef} controls onPlay={handlePlay}
+                style={{ width: "100%", display: "block", maxHeight: "360px" }}>
+                <source src={`${apiUrl}/${item.audioFile}`} type="video/mp4" />
+              </video>
+            </div>
+          )}
+          {item.audioFile && !item.youtubeLink && !hasVideo && (
+            <div className="fb-audio-player">
+              <div className="fb-audio-icon">🎵</div>
+              <audio ref={mediaRef} controls onPlay={handlePlay} style={{ flex: 1 }}>
+                <source src={`${apiUrl}/${item.audioFile}`} />
+              </audio>
+            </div>
+          )}
+          {hasMedia && (
+            <div className="tiktok-actions">
+              <motion.button className={`tiktok-btn ${liked ? "tiktok-liked" : ""}`}
+                onClick={handleLike} whileTap={{ scale: 1.3 }}
+                transition={{ type: "spring", stiffness: 400 }}>
+                <span>{liked ? "❤️" : "🤍"}</span>
+                <span className="tiktok-count">{likes}</span>
+              </motion.button>
+              <motion.button className="tiktok-btn"
+                onClick={() => setShowModal(true)} whileTap={{ scale: 1.2 }}>
+                <span>💬</span>
+                <span className="tiktok-count">{comments.length}</span>
+              </motion.button>
+              <motion.button className="tiktok-btn"
+                onClick={shareMedia} whileTap={{ scale: 1.2 }}>
+                <span>📤</span>
+                <span className="tiktok-count">Share</span>
+              </motion.button>
+              {isOwnProfile && (
+                <motion.button className="tiktok-btn"
+                  onClick={handleDelete} whileTap={{ scale: 1.1 }}
+                  style={{ background: "rgba(180,0,0,0.5)" }}>
+                  <span>🗑️</span>
+                  <span className="tiktok-count">Del</span>
+                </motion.button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {item.audioFile && !hasVideo && (
+          <div className="fb-card-footer">
+            <motion.button className={`fb-action-btn ${liked ? "fb-liked" : ""}`}
+              onClick={handleLike} whileTap={{ scale: 1.2 }}>
+              <span>{liked ? "❤️" : "🤍"}</span> {likes}
+            </motion.button>
+            <motion.button className="fb-action-btn"
+              onClick={() => setShowModal(true)} whileTap={{ scale: 1.1 }}>
+              <span>💬</span> {comments.length}
+            </motion.button>
+            <motion.button className="fb-action-btn"
+              onClick={shareMedia} whileTap={{ scale: 1.1 }}>
+              <span>📤</span> Share
+            </motion.button>
+            {isOwnProfile && (
+              <motion.button className="fb-action-btn"
+                onClick={handleDelete} whileTap={{ scale: 1.1 }}
+                style={{ color: "#cc0000", marginLeft: "auto" }}>
+                🗑️ Delete
+              </motion.button>
+            )}
+          </div>
+        )}
+      </motion.div>
+
+      <AnimatePresence>
+        {showModal && (
+          <CommentsModal
+            mediaId={item._id}
+            comments={comments}
+            currentUser={userInfo}
+            onClose={() => setShowModal(false)}
+          />
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
 
 export default function ProfilePage() {
   const [profileData, setProfileData] = useState(null);
@@ -146,6 +393,38 @@ export default function ProfilePage() {
     }
   }
 
+  // Delete own blog post
+  async function deletePost(postId) {
+    if (!window.confirm("Delete this post?")) return;
+    const res = await fetch(`${apiUrl}/api/post/${postId}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    if (res.ok) {
+      setProfileData(prev => ({
+        ...prev,
+        posts: prev.posts.filter(p => p._id !== postId)
+      }));
+      setMusic(prev => prev.filter(m => m._id !== postId));
+    } else {
+      alert("Failed to delete post");
+    }
+  }
+
+  // Delete own media
+  async function deleteMedia(mediaId) {
+    if (!window.confirm("Delete this media?")) return;
+    const res = await fetch(`${apiUrl}/api/music/${mediaId}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    if (res.ok) {
+      setMusic(prev => prev.filter(m => m._id !== mediaId));
+    } else {
+      alert("Failed to delete media");
+    }
+  }
+
   async function approvePost(postId) {
     const res = await fetch(`${apiUrl}/api/education/${postId}/approve`, {
       method: "PUT",
@@ -167,6 +446,10 @@ export default function ProfilePage() {
     if (res.ok) {
       setPendingPosts(pendingPosts.filter(p => p._id !== postId));
     }
+  }
+
+  function handleMediaDelete(mediaId) {
+    setMusic(prev => prev.filter(m => m._id !== mediaId));
   }
 
   if (!profileData) return "";
@@ -349,7 +632,8 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* MIXED CONTENT FEED */}
+
+      {/* MIXED CONTENT FEED - using working components */}
       <div className={styles.profileFeed}>
         <h3 className={styles.feedTitle}>
           {user.username}'s Content ({mixedContent.length})
@@ -359,139 +643,14 @@ export default function ProfilePage() {
           <p className="no-content">No content yet.</p>
         ) : (
           mixedContent.map((item) => (
-            <motion.div
-              key={item._id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.1 }}
-              transition={{ duration: 0.4 }}
-            >
-              {/* ===== BLOG POST CARD - same as home page ===== */}
+            <div key={item._id}>
               {item.itemType === "post" && (
-                <div className="fb-card tiktok-card">
-                  {/* Header */}
-                  <div className="fb-card-header">
-                    <div className="fb-avatar">
-                      {user.username?.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="fb-author-info">
-                      <span className="fb-author-name">{user.username}</span>
-                      <time className="fb-time">
-                        {format(new Date(item.createdAt), "MMM d, yyyy • h:mm a")}
-                      </time>
-                    </div>
-                    <span className="fb-badge">📝 Blog</span>
-                  </div>
-
-                  {/* Title */}
-                  <div className="fb-card-body">
-                    <Link to={`/post/${item._id}`} className="fb-title">
-                      {item.title}
-                    </Link>
-                    {item.summary && (
-                      <p className="fb-summary">{item.summary}</p>
-                    )}
-                  </div>
-
-                  {/* Cover image - wrapped in link */}
-                  {item.cover && (
-                    <Link to={`/post/${item._id}`}>
-                      <div className="fb-card-image">
-                        <img src={`${apiUrl}/${item.cover}`} alt={item.title} />
-                      </div>
-                    </Link>
-                  )}
-
-                  {/* Footer */}
-                  <div className="fb-card-footer">
-                    <Link to={`/post/${item._id}`} className="fb-action-btn">
-                      <span>👍</span> Like
-                    </Link>
-                    <Link to={`/post/${item._id}`} className="fb-action-btn">
-                      <span>💬</span> Comment
-                    </Link>
-                    <Link to={`/post/${item._id}`} className="fb-action-btn">
-                      <span>📤</span> Share
-                    </Link>
-                  </div>
-                </div>
+                <Post {...item} variant="feed" />
               )}
-
-              {/* ===== MEDIA CARD - same as home page ===== */}
               {item.itemType === "media" && (
-                <div className="fb-card">
-                  {/* Header */}
-                  <div className="fb-card-header">
-                    <div className="fb-avatar">
-                      {user.username?.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="fb-author-info">
-                      <span className="fb-author-name">{user.username}</span>
-                      <time className="fb-time">
-                        {format(new Date(item.createdAt), "MMM d, yyyy • h:mm a")}
-                      </time>
-                    </div>
-                    <span className="fb-badge">
-                      {item.category === "music" ? "🎵 Music" : "🎬 Video"}
-                    </span>
-                  </div>
-
-                  {/* Title */}
-                  <div className="fb-card-body">
-                    <p className="fb-title">{item.title}</p>
-                    {item.description && (
-                      <p className="fb-summary">{item.description}</p>
-                    )}
-                  </div>
-
-                  {/* Cover photo */}
-                  {item.coverPhoto && !item.youtubeLink && !isVideoFile(item.audioFile) && (
-                    <div className="fb-card-image">
-                      <img src={`${apiUrl}/${item.coverPhoto}`} alt={item.title} />
-                    </div>
-                  )}
-
-                  {/* YouTube */}
-                  {item.youtubeLink && (
-                    <div className="fb-card-image">
-                      <iframe
-                        width="100%" height="240"
-                        src={`https://www.youtube.com/embed/${getYoutubeId(item.youtubeLink)}`}
-                        title={item.title} frameBorder="0" allowFullScreen
-                        style={{ display: "block" }}
-                      />
-                    </div>
-                  )}
-
-                  {/* Video */}
-                  {item.audioFile && !item.youtubeLink && isVideoFile(item.audioFile) && (
-                    <div className="fb-card-image" style={{ background: "#000" }}>
-                      <video controls style={{ width: "100%", display: "block" }}>
-                        <source src={`${apiUrl}/${item.audioFile}`} type="video/mp4" />
-                        <source src={`${apiUrl}/${item.audioFile}`} />
-                      </video>
-                    </div>
-                  )}
-
-                  {/* Audio */}
-                  {item.audioFile && !item.youtubeLink && !isVideoFile(item.audioFile) && (
-                    <div className="fb-audio-player">
-                      <div className="fb-audio-icon">🎵</div>
-                      <audio controls style={{ flex: 1 }}>
-                        <source src={`${apiUrl}/${item.audioFile}`} />
-                      </audio>
-                    </div>
-                  )}
-
-                  {/* Footer */}
-                  <div className="fb-card-footer">
-                    <button className="fb-action-btn"><span>👍</span> Like</button>
-                    <button className="fb-action-btn"><span>💬</span> Comment</button>
-                    <button className="fb-action-btn"><span>📤</span> Share</button>
-                  </div>
-                </div>
+                <MediaCard item={item} isOwnProfile={isOwnProfile} onDelete={handleMediaDelete} />
               )}
-            </motion.div>
+            </div>
           ))
         )}
       </div>

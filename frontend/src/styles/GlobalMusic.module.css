@@ -1,0 +1,60 @@
+.miniPlayer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: rgba(26, 18, 9, 0.95); /* Deep Stone Black */
+  backdrop-filter: blur(10px);
+  border-top: 2px solid #CD853F; /* Terracotta Accent */
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  z-index: 1000;
+  gap: 12px;
+  box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
+}
+
+.miniCover {
+  width: 45px;
+  height: 45px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #8B4513;
+}
+
+.miniInfo {
+  flex: 1;
+  overflow: hidden;
+}
+
+.miniTitle {
+  color: #f0e8de; /* Warm Champagne */
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.miniArtist {
+  color: #CD853F;
+  font-size: 0.75rem;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.playPauseBtn {
+  background: #CD853F;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: white;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}

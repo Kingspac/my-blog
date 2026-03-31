@@ -17,9 +17,9 @@ export default function CreatePost() {
     const file = e.target.files[0];
     if (!file) return;
 
-    const maxSize = 20 * 1024 * 1024; // 20MB
+    const maxSize = 150 * 1024 * 1024; // 150MB
     if (file.size > maxSize) {
-      setFileError("Image is too large! Please upload an image smaller than 20MB.");
+      setFileError("Image is too large! Please upload an image smaller than 150MB.");
       e.target.value = "";
       setFiles(null);
       setCoverPreview(null);

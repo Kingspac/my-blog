@@ -9,13 +9,12 @@ const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
 export default function BlogPage() {
   const [posts, setPosts] = useState([]);
   const { userInfo } = useContext(UserContext);
-
   useEffect(() => {
     fetch(`${apiUrl}/api/post`)
       .then((res) => res.json())
       .then((data) => setPosts(data));
   }, []);
-
+console.log(userInfo)
   return (
     <div className="blog-page">
 

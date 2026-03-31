@@ -16,9 +16,9 @@ export default function CreateEducation() {
 
   function handleCoverChange(e) {
     const file = e.target.files[0];
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 150 * 1024 * 1024; // 150MB
     if (file.size > maxSize) {
-      setFileError("Image too large! Max 5MB.");
+      setFileError("Image too large! Max 150MB.");
       e.target.value = "";
       return;
     }
@@ -134,7 +134,7 @@ export default function CreateEducation() {
           </>
         )}
 
-        <label>Cover Image (Max 5MB)</label>
+        <label>Cover Image (Max 150MB)</label>
         <input
           type="file"
           accept="image/*"
