@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import { format, formatISO9075 } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";

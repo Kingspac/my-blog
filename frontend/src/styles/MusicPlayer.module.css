@@ -1,65 +1,506 @@
-.playerContainer {
-  display: flex;
-  flex-direction: column; /* Stack vertically on mobile */
-  width: 100vw;
-  height: 100vh;
-  background: #121212;
-  color: white;
-  overflow: hidden;
+/* ── Keyframes ─────────────────────────────────────────────────────────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes coverPop {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes slideOutLeft {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100%); }
+}
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
-/* SIDEBAR - Full width on mobile, 30% on landscape */
-.sidebar {
-  width: 100%;
-  height: 40%; /* Only takes top 40% of screen on mobile */
-  background: #181818;
-  border-bottom: 1px solid #282828;
+/* ── Loading ────────────────────────────────────────────────────────────────── */
+.loadingScreen {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: #0d0d0f;
+  gap: 16px;
+}
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid rgba(245,158,11,0.15);
+  border-top-color: #f59e0b;
+  animation: spin 0.8s linear infinite;
+}
+.loadingText {
+  color: rgba(240,237,230,0.5);
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
 }
 
-.mainView {
-  flex: 1;
+/* ── Portrait root ──────────────────────────────────────────────────────────── */
+.portraitRoot {
+  min-height: 100vh;
+  background: #0d0d0f;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  padding-bottom: 100px;
+  animation: fadeIn 0.35s ease;
+}
+.bgBlur {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(60px) saturate(1.4);
+  opacity: 0.25;
+  z-index: 0;
+  transform: scale(1.2);
+  transition: background-image 0.6s ease;
+}
+.bgOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to bottom,
+    rgba(13,13,15,0.5) 0%,
+    rgba(13,13,15,0.85) 60%,
+    rgba(13,13,15,1) 100%
+  );
+}
+
+/* ── Portrait header ────────────────────────────────────────────────────────── */
+.portraitHeader {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 52px 20px 12px;
+}
+.headerLabel {
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: rgba(240,237,230,0.5);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.backBtn {
+  background: none;
+  border: none;
+  color: #f0ede6;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.2s;
+}
+.backBtn:active { opacity: 0.5; }
+.listToggleBtn {
+  background: none;
+  border: none;
+  color: rgba(240,237,230,0.6);
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
+}
+.listToggleBtn:active {
+  background: rgba(245,158,11,0.12);
+  color: #f59e0b;
+}
+
+/* ── Cover art ──────────────────────────────────────────────────────────────── */
+.coverWrap {
+  position: relative;
+  z-index: 10;
+  margin: 20px auto;
+  width: 72vw;
+  max-width: 300px;
+  aspect-ratio: 1/1;
+  border-radius: 20px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(245,158,11,0.1);
+  overflow: hidden;
+  animation: coverPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.coverImg { width: 100%; height: 100%; object-fit: cover; }
+.coverPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: #1e1e21;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
 }
 
-/* THE MAGIC: Switch to your Sketch when phone is rotated */
-@media (min-width: 768px) or (orientation: landscape) {
-  .playerContainer {
-    flex-direction: row; /* Side-by-side */
-  }
-  
-  .sidebar {
-    width: 35%;
-    height: 100%;
-    border-bottom: none;
-    border-right: 1px solid #282828;
-  }
-  
-  .mainView {
-    width: 65%;
-  }
+/* ── Track info ─────────────────────────────────────────────────────────────── */
+.infoRow {
+  position: relative;
+  z-index: 10;
+  padding: 0 24px;
+  margin-top: 8px;
+}
+.trackTitle {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  color: #f0ede6;
+  margin: 0;
+  line-height: 1.2;
+}
+.trackArtist {
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  color: rgba(240,237,230,0.5);
+  margin: 4px 0 0;
 }
 
-/* Scrollable area for songs */
-.scrollList {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px;
-}
-
-.trackItem {
+/* ── Stats badges ───────────────────────────────────────────────────────────── */
+.statsRow {
+  position: relative;
+  z-index: 10;
   display: flex;
   align-items: center;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 5px;
+  gap: 10px;
+  padding: 10px 24px 0;
+}
+.statBadge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 5px 11px;
+}
+.statLikes { color: #f87171; }
+.statPlays { color: #f59e0b; }
+
+/* ── Progress bar ───────────────────────────────────────────────────────────── */
+.progressWrap {
+  position: relative;
+  z-index: 10;
+  padding: 20px 24px 4px;
+}
+.progressBg {
+  position: relative;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.1);
+  overflow: visible;
+}
+.progressFill {
+  position: absolute;
+  left: 0; top: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  border-radius: 4px;
+  transition: width 0.1s linear;
+  pointer-events: none;
+}
+.progressInput {
+  position: absolute;
+  inset: -8px 0;
+  width: 100%;
+  height: 20px;
+  opacity: 0;
+  cursor: pointer;
+  margin: 0;
+}
+.timeRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+.timeLbl {
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
+  color: rgba(240,237,230,0.5);
 }
 
-.active {
-  background: rgba(205, 133, 63, 0.2);
-  border-left: 4px solid #CD853F;
+/* ── Controls ───────────────────────────────────────────────────────────────── */
+.controls {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 16px 24px;
 }
+.ctrlBtn {
+  width: 44px; height: 44px;
+  background: none; border: none;
+  color: #f0ede6; cursor: pointer;
+  padding: 10px; border-radius: 50%;
+  transition: background 0.2s, transform 0.1s;
+}
+.ctrlBtn:active { transform: scale(0.88); }
+.playBtn {
+  width: 64px; height: 64px;
+  border-radius: 50%; border: none; cursor: pointer;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #0d0d0f; padding: 16px;
+  box-shadow: 0 8px 24px rgba(245,158,11,0.4);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.15s;
+}
+.playBtn:active {
+  transform: scale(0.9);
+  box-shadow: 0 4px 12px rgba(245,158,11,0.3);
+}
+
+/* ── Sliding sidebar (portrait) ─────────────────────────────────────────────── */
+.sidebarOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 40;
+  animation: overlayIn 0.25s ease;
+}
+.sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: 78vw;
+  max-width: 320px;
+  background: #161618;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(245,158,11,0.1);
+  box-shadow: 8px 0 40px rgba(0,0,0,0.7);
+  animation: slideInLeft 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.sidebarClosing {
+  animation: slideOutLeft 0.25s cubic-bezier(0.55,0,1,0.45) forwards;
+}
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 52px 16px 14px;
+  border-bottom: 1px solid rgba(245,158,11,0.08);
+}
+.sidebarTitle {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: #f59e0b;
+  text-transform: uppercase;
+}
+.sortBtn {
+  background: none; border: none;
+  color: rgba(240,237,230,0.5);
+  cursor: pointer; padding: 6px;
+  border-radius: 8px;
+  display: flex; align-items: center;
+  transition: color 0.2s;
+  position: relative;
+}
+.sortBtn:active { color: #f59e0b; }
+.sortDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 60;
+  background: #1e1e21;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  border: 1px solid rgba(245,158,11,0.12);
+  min-width: 150px;
+  animation: fadeIn 0.2s ease;
+}
+.sortOption {
+  display: block; width: 100%;
+  padding: 11px 16px; text-align: left;
+  background: none; border: none;
+  color: rgba(240,237,230,0.5);
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  text-transform: capitalize;
+  transition: background 0.15s, color 0.15s;
+}
+.sortOption:hover { background: rgba(245,158,11,0.08); color: #f0ede6; }
+.sortOptionActive { color: #f59e0b !important; background: rgba(245,158,11,0.12) !important; }
+
+/* ── Track list ─────────────────────────────────────────────────────────────── */
+.trackList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+.trackList::-webkit-scrollbar { width: 3px; }
+.trackList::-webkit-scrollbar-thumb { background: rgba(245,158,11,0.2); border-radius: 2px; }
+
+.trackItem {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; background: none; border: none;
+  padding: 10px 16px; cursor: pointer; text-align: left;
+  transition: background 0.15s;
+}
+.trackItem:active { background: rgba(245,158,11,0.08); }
+.trackItemActive { background: rgba(245,158,11,0.12) !important; }
+.trackThumb {
+  width: 44px; height: 44px;
+  border-radius: 10px; overflow: hidden;
+  flex-shrink: 0; background: #1e1e21;
+}
+.thumbImg { width: 100%; height: 100%; object-fit: cover; }
+.thumbPlaceholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.trackMeta { flex: 1; overflow: hidden; }
+.trackItemTitle {
+  display: block;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700; font-size: 13px; color: #f0ede6;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.trackItemArtist {
+  display: block;
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px; color: rgba(240,237,230,0.45);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-top: 2px;
+}
+.trackItemStats {
+  display: flex; flex-direction: column;
+  align-items: flex-end; gap: 3px; flex-shrink: 0;
+}
+.trackStatChip {
+  font-family: 'Nunito', sans-serif;
+  font-size: 10px; color: rgba(240,237,230,0.4);
+}
+.playingDot {
+  width: 6px; height: 6px;
+  border-radius: 50%; background: #f59e0b;
+  flex-shrink: 0;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+/* ── Landscape ──────────────────────────────────────────────────────────────── */
+.landscapeRoot {
+  display: flex; height: 100vh;
+  background: #0d0d0f; overflow: hidden;
+}
+.lsSidebar {
+  width: 38%; max-width: 220px;
+  background: #161618;
+  display: flex; flex-direction: column;
+  border-right: 1px solid rgba(245,158,11,0.08);
+  overflow: hidden;
+}
+.landscapePlayer {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 16px 24px; position: relative; gap: 10px;
+}
+.lsCover {
+  width: min(30vh, 160px); height: min(30vh, 160px);
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+  background: #1e1e21; flex-shrink: 0;
+  animation: coverPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.lsCoverImg { width: 100%; height: 100%; object-fit: cover; }
+.lsCoverPlaceholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.lsInfo { text-align: center; }
+.lsTitle {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800; font-size: 18px; color: #f0ede6; margin: 0;
+}
+.lsArtist {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px; color: rgba(240,237,230,0.5); margin: 4px 0 0;
+}
+.lsStats {
+  display: flex; gap: 12px; justify-content: center;
+}
+.lsProgressWrap {
+  display: flex; align-items: center;
+  gap: 8px; width: 100%; max-width: 360px;
+}
+.slider { flex: 1; accent-color: #f59e0b; cursor: pointer; height: 4px; }
+
+/* ── Like button ────────────────────────────────────────────────────────────── */
+@keyframes likePop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+.likeBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(248,113,113,0.2);
+  border-radius: 20px;
+  padding: 5px 12px;
+  color: rgba(240,237,230,0.55);
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.likeBtn:active { transform: scale(0.92); }
+.likeBtnActive {
+  color: #f87171;
+  background: rgba(248,113,113,0.12);
+  border-color: rgba(248,113,113,0.4);
+  animation: likePop 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+.likeBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Toast ──────────────────────────────────────────────────────────────────── */
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.toast {
+  position: fixed;
+  bottom: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  background: #1e1e21;
+  border: 1px solid rgba(245,158,11,0.25);
+  color: #f0ede6;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 24px;
+  white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  animation: toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+ 

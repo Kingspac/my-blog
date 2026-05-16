@@ -21,6 +21,7 @@ export function MusicProvider({ children }) {
     if (!path) return null;
     if (path.startsWith("http")) return path;
     return `${backendUrl}/${path}`;
+    console.log(path);
   };
 
   const getCoverUrl = (path) => {
