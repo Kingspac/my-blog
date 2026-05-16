@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef, useContext } from "react";
+import { useEffect, useState, useCallback, useContext } from "react";
 import { useMusic } from "../MusicContext";
 import { UserContext } from "../UserContext";
 import { useNavigate } from "react-router-dom";
@@ -15,25 +15,16 @@ const CloseIcon  = () => <svg viewBox="0 0 24 24" fill="currentColor" width="20"
 const SortIcon   = () => <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/></svg>;
 const NoteIcon   = () => <svg viewBox="0 0 24 24" fill="currentColor" width="40" height="40" opacity="0.35"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>;
 const PlayedIcon = () => <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13"><path d="M8 5v14l11-7z"/></svg>;
-
-// Heart icon — fill controlled by prop
-const HeartSVG = ({ filled }) => (
+const HeartSVG   = ({ filled }) => (
   <svg viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"}
     stroke="currentColor" strokeWidth="2" width="16" height="16">
     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
   </svg>
 );
 
-// Small filled heart for stats chip
-const HeartChip = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13">
-    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-  </svg>
-);
-
 function fmt(sec) {
   if (!sec || isNaN(sec)) return "0:00";
-  const m = Math.floor(sec / 60);
+  const m  = Math.floor(sec / 60);
   const ss = Math.floor(sec % 60);
   return `${m}:${ss.toString().padStart(2, "0")}`;
 }
@@ -61,20 +52,19 @@ export default function MusicPlayer() {
   const [isLandscape, setIsLandscape]       = useState(
     window.matchMedia("(orientation: landscape)").matches
   );
-  const [liking, setLiking]   = useState(false);
-  const [toast, setToast]     = useState("");
-  const playCountedRef        = useRef(null);
+  const [liking, setLiking] = useState(false);
+  const [toast, setToast]   = useState("");
 
   const isLoggedIn  = !!userInfo?.id;
   const isLikedByMe = currentTrack?.likes?.includes(userInfo?.id);
 
-  // ── Show toast ──────────────────────────────────────────────────────────────
+  // ── Toast ─────────────────────────────────────────────────────────────────
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 3000);
   };
 
-  // ── Handle like ─────────────────────────────────────────────────────────────
+  // ── Like ──────────────────────────────────────────────────────────────────
   const handleLike = async () => {
     if (!isLoggedIn) {
       showToast("Please log in or register to like music 🎵");
@@ -83,9 +73,8 @@ export default function MusicPlayer() {
     if (liking || !currentTrack) return;
     setLiking(true);
     try {
-      const res = await fetch(`${backendUrl}/api/music/${currentTrack._id}/like`, {
-        method: "PUT",
-        credentials: "include",
+      const res  = await fetch(`${backendUrl}/api/music/${currentTrack._id}/like`, {
+        method: "PUT", credentials: "include",
       });
       const data = await res.json();
       setTracks((prev) =>
@@ -107,6 +96,7 @@ export default function MusicPlayer() {
     }
   };
 
+  // ── Effects ───────────────────────────────────────────────────────────────
   useEffect(() => {
     setIsMiniPlayer(false);
     return () => setIsMiniPlayer(true);
@@ -114,7 +104,7 @@ export default function MusicPlayer() {
 
   useEffect(() => {
     const mq = window.matchMedia("(orientation: landscape)");
-    const h = (e) => setIsLandscape(e.matches);
+    const h  = (e) => setIsLandscape(e.matches);
     mq.addEventListener("change", h);
     return () => mq.removeEventListener("change", h);
   }, []);
@@ -126,31 +116,13 @@ export default function MusicPlayer() {
       .catch(() => setLoading(false));
   }, []);
 
-  // Increment play count once per track per session
-  useEffect(() => {
-    if (!currentTrack) return;
-    if (playCountedRef.current === currentTrack._id) return;
-    playCountedRef.current = currentTrack._id;
-    fetch(`${backendUrl}/api/music/${currentTrack._id}/play`, {
-      method: "PUT",
-      credentials: "include",
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        setTracks((prev) =>
-          prev.map((t) =>
-            t._id === currentTrack._id ? { ...t, playCount: data.playCount } : t
-          )
-        );
-      })
-      .catch(() => {});
-  }, [currentTrack?._id]);
-
+  // ── Sidebar ───────────────────────────────────────────────────────────────
   const closeSidebar = () => {
     setSidebarClosing(true);
     setTimeout(() => { setSidebarOpen(false); setSidebarClosing(false); }, 240);
   };
 
+  // ── Sort ──────────────────────────────────────────────────────────────────
   const displayed = useCallback(() => {
     const t = [...tracks];
     if (sort === "newest")      return t.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -167,7 +139,7 @@ export default function MusicPlayer() {
     <div className={s.trackList}>
       {displayed.map((track) => {
         const realIndex = tracks.indexOf(track);
-        const active = realIndex === currentIndex;
+        const active    = realIndex === currentIndex;
         return (
           <button
             key={track._id}
@@ -206,8 +178,7 @@ export default function MusicPlayer() {
           {showSort && (
             <div className={s.sortDropdown}>
               {SORT_OPTIONS.map((o) => (
-                <button
-                  key={o}
+                <button key={o}
                   className={`${s.sortOption} ${sort === o ? s.sortOptionActive : ""}`}
                   onClick={() => { setSort(o); setShowSort(false); }}
                 >
@@ -217,13 +188,12 @@ export default function MusicPlayer() {
             </div>
           )}
         </div>
-        {onClose && (
-          <button className={s.sortBtn} onClick={onClose}><CloseIcon /></button>
-        )}
+        {onClose && <button className={s.sortBtn} onClick={onClose}><CloseIcon /></button>}
       </div>
     </div>
   );
 
+  // ── Loading / empty ───────────────────────────────────────────────────────
   if (loading) return (
     <div className={s.loadingScreen}>
       <div className={s.loadingSpinner} />
@@ -259,13 +229,11 @@ export default function MusicPlayer() {
                 <h2 className={s.lsTitle}>{currentTrack.title}</h2>
                 <p className={s.lsArtist}>{currentTrack.artist || "Unknown Artist"}</p>
               </div>
-              {/* Stats + like button */}
               {toast && <div className={s.toast}>{toast}</div>}
               <div className={s.lsStats}>
                 <button
                   className={`${s.likeBtn} ${isLikedByMe ? s.likeBtnActive : ""}`}
-                  onClick={handleLike}
-                  disabled={liking}
+                  onClick={handleLike} disabled={liking}
                 >
                   <HeartSVG filled={isLikedByMe} />
                   {currentTrack.likes?.length || 0}
@@ -303,10 +271,8 @@ export default function MusicPlayer() {
       )}
       <div className={s.bgOverlay} />
 
-      {/* Toast */}
       {toast && <div className={s.toast}>{toast}</div>}
 
-      {/* Sliding sidebar */}
       {sidebarOpen && (
         <>
           <div className={s.sidebarOverlay} onClick={closeSidebar} />
@@ -317,7 +283,6 @@ export default function MusicPlayer() {
         </>
       )}
 
-      {/* Header */}
       <div className={s.portraitHeader}>
         <button className={s.backBtn} onClick={() => navigate(-1)}><BackIcon /></button>
         <span className={s.headerLabel}>Now Playing</span>
@@ -326,25 +291,21 @@ export default function MusicPlayer() {
         </button>
       </div>
 
-      {/* Cover */}
       <div className={s.coverWrap}>
         {currentTrack?.coverPhoto
           ? <img src={getCoverUrl(currentTrack.coverPhoto)} alt="cover" className={s.coverImg} />
           : <div className={s.coverPlaceholder}><NoteIcon /></div>}
       </div>
 
-      {/* Info */}
       <div className={s.infoRow}>
         <h1 className={s.trackTitle}>{currentTrack?.title || "—"}</h1>
         <p className={s.trackArtist}>{currentTrack?.artist || "Unknown Artist"}</p>
       </div>
 
-      {/* Stats + like button */}
       <div className={s.statsRow}>
         <button
           className={`${s.likeBtn} ${isLikedByMe ? s.likeBtnActive : ""}`}
-          onClick={handleLike}
-          disabled={liking}
+          onClick={handleLike} disabled={liking}
         >
           <HeartSVG filled={isLikedByMe} />
           {currentTrack?.likes?.length || 0} likes
@@ -354,7 +315,6 @@ export default function MusicPlayer() {
         </span>
       </div>
 
-      {/* Progress */}
       <div className={s.progressWrap}>
         <div className={s.progressBg}>
           <div className={s.progressFill} style={{ width: `${progress}%` }} />
@@ -367,7 +327,6 @@ export default function MusicPlayer() {
         </div>
       </div>
 
-      {/* Controls */}
       <div className={s.controls}>
         <button className={s.ctrlBtn} onClick={prev}><PrevIcon /></button>
         <button className={s.playBtn} onClick={togglePlay}>

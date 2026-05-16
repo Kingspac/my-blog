@@ -329,6 +329,8 @@ export default function EntertainmentPage() {
   const [activeTab, setActiveTab] = useState(null);
   const { userInfo } = useContext(UserContext);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     fetch(`${apiUrl}/api/music`)
       .then((res) => res.json())
@@ -359,24 +361,30 @@ export default function EntertainmentPage() {
 
       {/* TABS */}
       <div style={{ display: "flex", gap: 8, padding: "12px 14px", background: "white", borderBottom: "1px solid rgba(205,133,63,0.1)", overflowX: "auto" }}>
-        {[
-          { key: null, label: "🏠 All" },
-          { key: "music", label: "🎵 Music" },
-          { key: "video", label: "🎬 Video" },
-        ].map(tab => (
-          <button key={tab.key ?? "all"}
-            onClick={() => setActiveTab(tab.key)}
-            style={{
-              flexShrink: 0, padding: "7px 18px", borderRadius: 20, border: "2px solid rgba(205,133,63,0.2)",
+{[
+  { key: null, label: "🏠 All" },
+  { key: "video", label: "🎬 Video" },
+  { key: "music", label: "🎵 Music" },
+].map(tab => (
+  <button key={tab.key ?? "all"}
+    onClick={() => {
+      if (tab.key === "music") {
+        navigate("/music"); // ← navigate to player instead of filtering
+      } else {
+        setActiveTab(tab.key);
+      }
+    }}
+    style={{
+flexShrink: 0, padding: "7px 18px", borderRadius: 20, border: "2px solid rgba(205,133,63,0.2)",
               background: activeTab === tab.key ? "linear-gradient(135deg,#8B4513,#CD853F)" : "white",
               color: activeTab === tab.key ? "white" : "#8B4513",
               fontFamily: "'DM Sans',sans-serif", fontSize: "0.85rem", fontWeight: 500,
               cursor: "pointer", width: "auto", margin: 0,
               boxShadow: activeTab === tab.key ? "0 3px 10px rgba(139,69,19,0.3)" : "none"
-            }}>
-            {tab.label}
-          </button>
-        ))}
+    }}>
+    {tab.label}
+  </button>
+))}
       </div>
 
       {/* FEED */}

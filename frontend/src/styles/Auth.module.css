@@ -88,8 +88,8 @@
     #5C3317,
     #8B4513
   );
-  animation: rotateBorder 3s linear infinite;
-  z-index: 0;
+  animation: rotateBorder 2s linear infinite;
+  z-index: -1;
 }
 
 @property --angle {
