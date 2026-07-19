@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import Spinner from "../Spinner";
 import { UserContext } from "../UserContext";
 
 const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
@@ -68,11 +69,7 @@ export default function EducationPostPage() {
     else alert("Failed to delete");
   }
 
-  if (loading) return (
-    <div style={{ textAlign: "center", padding: "60px 20px", fontFamily: "'DM Sans', sans-serif", color: "#8B4513" }}>
-      ⏳ Loading...
-    </div>
-  );
+  if (loading) return <Spinner text="Loading post..." />;
 
   if (!postInfo || postInfo === "not found") return (
     <div style={{ textAlign: "center", padding: "60px 20px" }}>

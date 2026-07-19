@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import styles from "../styles/Auth.module.css";
+import Spinner from "../Spinner";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState("");

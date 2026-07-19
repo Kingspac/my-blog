@@ -2,6 +2,7 @@ import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import { motion } from "framer-motion";
+import Spinner from "../Spinner";
 import styles from "../styles/UploadMedia.module.css";
 
 const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
@@ -95,6 +96,7 @@ export default function UploadMedia() {
 
   return (
     <div className={styles.uploadPage}>
+      {isUploading && <Spinner overlay text="Uploading your media... please wait" />}
 
       {/* HERO */}
       <div className={styles.uploadHero}>
@@ -222,7 +224,7 @@ export default function UploadMedia() {
 
         <motion.button type="submit" className={styles.submitBtn}
           disabled={isUploading} whileTap={{ scale: 0.97 }}>
-          {isUploading ? "⏳ Uploading..." : `📤 Upload ${category === "music" ? "Music" : "Video"}`}
+          {isUploading ? <><Spinner inline />Uploading...</> : `📤 Upload ${category === "music" ? "Music" : "Video"}`}
         </motion.button>
       </form>
     </div>

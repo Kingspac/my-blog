@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { UserContext } from "../UserContext";
 import Post from "../Post.js";
 import styles from "../styles/ProfilePage.module.css";
+import Spinner from "../Spinner";
 
 const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
@@ -267,6 +268,7 @@ function MediaCard({ item, isOwnProfile, onDelete }) {
 
 export default function ProfilePage() {
   const [profileData, setProfileData] = useState(null);
+  const [pageLoading, setPageLoading] = useState(true);
   const [bio, setBio] = useState("");
   const [profilePhoto, setProfilePhoto] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -452,6 +454,7 @@ export default function ProfilePage() {
     setMusic(prev => prev.filter(m => m._id !== mediaId));
   }
 
+  if (pageLoading) return <Spinner text="Loading profile..." />;
   if (!profileData) return "";
 
   const { user, posts } = profileData;

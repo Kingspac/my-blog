@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Editor from "./Editor";
 import styles from "./styles/Editor.module.css";
+import Spinner from "./Spinner";
 
 export default function CreatePost() {
   const [title, setTitle] = useState("");
@@ -12,14 +13,15 @@ export default function CreatePost() {
   const [coverPreview, setCoverPreview] = useState(null);
 
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   function handleFileChange(e) {
     const file = e.target.files[0];
     if (!file) return;
 
-    const maxSize = 150 * 1024 * 1024; // 150MB
+    const maxSize = 1150 * 1024 * 1024; // 20MB
     if (file.size > maxSize) {
-      setFileError("Image is too large! Please upload an image smaller than 150MB.");
+      setFileError("Image is too large! Please upload an image smaller than 20MB.");
       e.target.value = "";
       setFiles(null);
       setCoverPreview(null);
@@ -52,6 +54,7 @@ export default function CreatePost() {
 
   async function createNewPost(e) {
     e.preventDefault();
+    setIsSubmitting(true);
     if (fileError) return;
 
     const data = new FormData();
@@ -69,6 +72,7 @@ export default function CreatePost() {
       credentials: "include",
     });
 
+    setIsSubmitting(false);
     if (response.ok) {
       navigate("/");
     }
