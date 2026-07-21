@@ -13,7 +13,7 @@ export function MusicProvider({ children }) {
   const audioRef      = useRef(null);
   const playCountedRef = useRef(null); // tracks which song was already counted
 
-  const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:4000";
+  const backendUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
   const currentTrack = tracks[currentIndex] || null;
 
