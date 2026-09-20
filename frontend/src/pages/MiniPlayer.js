@@ -14,6 +14,13 @@ const DARK3    = "#1e1e21";
 const TEXT     = "#f0ede6";
 const TEXT_DIM = "rgba(240,237,230,0.5)";
 
+const BUBBLE_SIZE  = 56;
+const LONG_PRESS_MS = 450;
+const MOVE_CANCEL_PX = 10;
+const DOUBLE_TAP_MS = 280;
+
+const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
+
 export default function MiniPlayer() {
   const {
     currentTrack, isPlaying, togglePlay, next,
@@ -23,43 +30,100 @@ export default function MiniPlayer() {
 
   const navigate = useNavigate();
 
+  // ── Bar (swipe) state ───────────────────────────────────────────────────
   const [translateY, setTranslateY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [visible, setVisible]       = useState(true);
 
+  const touchStartX  = useRef(null);
   const touchStartY  = useRef(null);
   const touchStartTime = useRef(null);
   const currentY     = useRef(0);
   const isDraggingRef = useRef(false);
 
+  const longPressTimerRef = useRef(null);
+  const longPressTriggeredRef = useRef(false);
+
+  // ── Bubble (move) mode state ────────────────────────────────────────────
+  const [mode, setMode] = useState("bar"); // 'bar' | 'bubble'
+  const [bubblePos, setBubblePos] = useState(() => ({
+    x: typeof window !== "undefined" ? window.innerWidth - BUBBLE_SIZE - 16 : 16,
+    y: typeof window !== "undefined" ? window.innerHeight - BUBBLE_SIZE - 140 : 140,
+  }));
+  const [isBubbleDragging, setIsBubbleDragging] = useState(false);
+
+  const bubbleTouchStart = useRef({ x: 0, y: 0 });
+  const bubbleDragStart  = useRef({ x: 0, y: 0 });
+  const bubbleMoved      = useRef(false);
+  const tapTimerRef      = useRef(null);
+
   if (!hasStarted || !isMiniPlayer || !currentTrack || !visible) return null;
 
   const progress = duration ? (currentTime / duration) * 100 : 0;
 
-  // ── Touch handlers ────────────────────────────────────────────────────────
+  // ── Bar touch handlers (swipe + long-press to enter bubble mode) ───────
   const onTouchStart = (e) => {
-    // don't drag if touching controls
     if (e.target.closest("[data-controls]")) return;
-    touchStartY.current   = e.touches[0].clientY;
+    const t = e.touches[0];
+    touchStartY.current    = t.clientY;
+    touchStartX.current    = t.clientX;
     touchStartTime.current = Date.now();
-    currentY.current      = 0;
-    isDraggingRef.current = true;
+    currentY.current       = 0;
+    isDraggingRef.current  = true;
+    longPressTriggeredRef.current = false;
     setIsDragging(true);
+
+    longPressTimerRef.current = setTimeout(() => {
+      longPressTimerRef.current = null;
+      longPressTriggeredRef.current = true;
+      isDraggingRef.current = false;
+      setIsDragging(false);
+      setTranslateY(0);
+      if (navigator.vibrate) navigator.vibrate(15);
+
+      const cx = touchStartX.current;
+      const cy = touchStartY.current;
+      setBubblePos({
+        x: clamp(cx - BUBBLE_SIZE / 2, 8, window.innerWidth - BUBBLE_SIZE - 8),
+        y: clamp(cy - BUBBLE_SIZE / 2, 8, window.innerHeight - BUBBLE_SIZE - 8),
+      });
+      setMode("bubble");
+    }, LONG_PRESS_MS);
   };
 
   const onTouchMove = (e) => {
+    if (longPressTriggeredRef.current) return;
     if (!isDraggingRef.current || touchStartY.current === null) return;
-    e.preventDefault(); // ← this is the key — stops browser scroll/navigation
-    const delta = e.touches[0].clientY - touchStartY.current;
+    e.preventDefault(); // stops browser scroll/navigation
+
+    const t = e.touches[0];
+    const delta  = t.clientY - touchStartY.current;
+    const deltaX = t.clientX - touchStartX.current;
+
+    // cancel the long-press if this turns into a real swipe
+    if (longPressTimerRef.current && (Math.abs(delta) > MOVE_CANCEL_PX || Math.abs(deltaX) > MOVE_CANCEL_PX)) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+
     currentY.current = delta;
-    // resist extremes with rubber band effect
     const clamped = delta < 0
       ? Math.max(delta, -100)
       : Math.min(delta, 100);
-    setTranslateY(clamped * 0.6); // dampen the movement
+    setTranslateY(clamped * 0.6);
   };
 
   const onTouchEnd = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+    if (longPressTriggeredRef.current) {
+      // bubble mode already engaged by the timer — nothing more to do
+      longPressTriggeredRef.current = false;
+      touchStartY.current = null;
+      return;
+    }
     if (!isDraggingRef.current) return;
     isDraggingRef.current = false;
     setIsDragging(false);
@@ -91,8 +155,110 @@ export default function MiniPlayer() {
     touchStartY.current = null;
   };
 
-  const opacity = Math.max(0, 1 - Math.abs(translateY) / 120);
+  // ── Bubble touch handlers (free drag + tap / double-tap) ───────────────
+  const onBubbleTouchStart = (e) => {
+    const t = e.touches[0];
+    bubbleTouchStart.current = { x: t.clientX, y: t.clientY };
+    bubbleDragStart.current  = { x: bubblePos.x, y: bubblePos.y };
+    bubbleMoved.current = false;
+    setIsBubbleDragging(true);
+  };
 
+  const onBubbleTouchMove = (e) => {
+    e.preventDefault();
+    const t = e.touches[0];
+    const dx = t.clientX - bubbleTouchStart.current.x;
+    const dy = t.clientY - bubbleTouchStart.current.y;
+    if (Math.abs(dx) > 6 || Math.abs(dy) > 6) bubbleMoved.current = true;
+
+    setBubblePos({
+      x: clamp(bubbleDragStart.current.x + dx, 8, window.innerWidth - BUBBLE_SIZE - 8),
+      y: clamp(bubbleDragStart.current.y + dy, 8, window.innerHeight - BUBBLE_SIZE - 8),
+    });
+  };
+
+  const onBubbleTouchEnd = () => {
+    setIsBubbleDragging(false);
+    if (bubbleMoved.current) return; // was a drag, not a tap
+
+    if (tapTimerRef.current) {
+      // second tap within the window → double-tap: back to bar
+      clearTimeout(tapTimerRef.current);
+      tapTimerRef.current = null;
+      setMode("bar");
+    } else {
+      tapTimerRef.current = setTimeout(() => {
+        tapTimerRef.current = null;
+        navigate("/music");
+      }, DOUBLE_TAP_MS);
+    }
+  };
+
+  // ── Bubble mode render ───────────────────────────────────────────────────
+  if (mode === "bubble") {
+    return (
+      <AnimatePresence>
+        <motion.div
+          key="mini-player-bubble"
+          initial={{ scale: 0.4, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.4, opacity: 0 }}
+          transition={{ duration: 0.18 }}
+          onTouchStart={onBubbleTouchStart}
+          onTouchMove={onBubbleTouchMove}
+          onTouchEnd={onBubbleTouchEnd}
+          style={{
+            position: "fixed",
+            left: bubblePos.x,
+            top: bubblePos.y,
+            width: BUBBLE_SIZE,
+            height: BUBBLE_SIZE,
+            borderRadius: "50%",
+            overflow: "hidden",
+            zIndex: 1000,
+            background: DARK2,
+            border: `2px solid ${GOLD}`,
+            boxShadow: isBubbleDragging
+              ? "0 8px 28px rgba(0,0,0,0.6)"
+              : "0 4px 16px rgba(0,0,0,0.45)",
+            touchAction: "none",
+            userSelect: "none",
+            WebkitUserSelect: "none",
+          }}
+        >
+          {currentTrack.coverPhoto
+            ? <img
+                src={getCoverUrl(currentTrack.coverPhoto)}
+                alt=""
+                style={{ width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }}
+                draggable={false}
+              />
+            : <div style={{ width: "100%", height: "100%", background: DARK3 }} />}
+
+          {/* play/pause indicator overlay */}
+          <div style={{
+            position: "absolute", inset: 0,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            background: "rgba(0,0,0,0.28)", pointerEvents: "none",
+          }}>
+            <div style={{ width: 18, height: 18, color: "#fff" }}>
+              {isPlaying ? <PauseIcon /> : <PlayIcon />}
+            </div>
+          </div>
+
+          {/* thin progress ring at the bottom */}
+          <div style={{
+            position: "absolute", bottom: 0, left: 0, right: 0, height: 3,
+            background: "rgba(245,158,11,0.2)", pointerEvents: "none",
+          }}>
+            <div style={{ height: "100%", width: `${progress}%`, background: GOLD }} />
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
+
+  // ── Bar mode render (unchanged behavior, plus long-press) ──────────────
   return (
     <div
       onTouchStart={onTouchStart}
@@ -104,7 +270,7 @@ export default function MiniPlayer() {
         left: 0, right: 0,
         zIndex: 999,
         transform: `translateY(${translateY}px)`,
-        opacity,
+        opacity: Math.max(0, 1 - Math.abs(translateY) / 120),
         transition: isDragging ? "none" : "transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.3s ease",
         background: DARK2,
         borderTop: "1px solid rgba(245,158,11,0.12)",
@@ -189,7 +355,7 @@ export default function MiniPlayer() {
       <div style={styles.swipeHint}>
         {translateY < -10 ? "↑ release to open" :
          translateY > 10  ? "↓ release to close" :
-         "↕ drag to open or close"}
+         "↕ drag to open/close · hold to move"}
       </div>
     </div>
   );

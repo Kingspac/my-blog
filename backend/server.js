@@ -32,7 +32,7 @@ app.use("/api/education", educationRoutes);
 
 // variable from .env
 const mongoURI = process.env.MONGO_URI;
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 8000;
 
 mongoose.connect(mongoURI)
   .then(() => console.log("✅ Successfully connected to MongoDB!"))

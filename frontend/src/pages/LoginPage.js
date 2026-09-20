@@ -17,8 +17,7 @@ export default function LoginPage() {
     setError("");
     setIsSubmitting(true);
 
-    const response = await fetch(
-      `${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/login`,
+    const response = await fetch( `${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/login`,
       {
         method: "POST",
         body: JSON.stringify({ username, password }),

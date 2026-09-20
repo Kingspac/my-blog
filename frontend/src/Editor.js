@@ -108,14 +108,17 @@ export default function Editor({ value, onChange }) {
 
       {/* THE EDITOR */}
       <ReactQuill
-        ref={quillRef}
-        value={value}
-        theme="snow"
-        onChange={onChange}
-        modules={modules}
-        placeholder="Write your post content here..."
-      />
-
+  ref={quillRef}
+  value={typeof value === "string" ? value : ""}
+  theme="snow"
+  onChange={(content) => {
+    console.log("ReactQuill content:", content);
+    console.log("Type:", typeof content);
+    onChange(typeof content === "string" ? content : "");
+  }}
+  modules={modules}
+  placeholder="Write your post content here..."
+/>
       {/* IMAGE MANAGER */}
       {editorImages.length > 0 && (
         <div className="editor-image-manager">
