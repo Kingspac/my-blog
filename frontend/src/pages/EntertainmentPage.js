@@ -1,8 +1,9 @@
 import { useState, useEffect, useContext, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import { format, formatISO9075 } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
+import Spinner from "../Spinner";
 
 const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
@@ -327,14 +328,14 @@ function MediaCard({ media, currentUser, onDelete }) {
 export default function EntertainmentPage() {
   const [mediaList, setMediaList] = useState([]);
   const [activeTab, setActiveTab] = useState(null);
+  const [loading, setLoading] = useState(true);
   const { userInfo } = useContext(UserContext);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`${apiUrl}/api/music`)
       .then((res) => res.json())
-      .then((data) => setMediaList(data));
+      .then((data) => { setMediaList(data); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
 
   function handleDelete(id) {
@@ -361,34 +362,30 @@ export default function EntertainmentPage() {
 
       {/* TABS */}
       <div style={{ display: "flex", gap: 8, padding: "12px 14px", background: "white", borderBottom: "1px solid rgba(205,133,63,0.1)", overflowX: "auto" }}>
-{[
-  { key: null, label: "🏠 All" },
-  { key: "video", label: "🎬 Video" },
-  { key: "music", label: "🎵 Music" },
-].map(tab => (
-  <button key={tab.key ?? "all"}
-    onClick={() => {
-      if (tab.key === "music") {
-        navigate("/music"); // ← navigate to player instead of filtering
-      } else {
-        setActiveTab(tab.key);
-      }
-    }}
-    style={{
-flexShrink: 0, padding: "7px 18px", borderRadius: 20, border: "2px solid rgba(205,133,63,0.2)",
+        {[
+          { key: null, label: "🏠 All" },
+          { key: "music", label: "🎵 Music" },
+          { key: "video", label: "🎬 Video" },
+        ].map(tab => (
+          <button key={tab.key ?? "all"}
+            onClick={() => setActiveTab(tab.key)}
+            style={{
+              flexShrink: 0, padding: "7px 18px", borderRadius: 20, border: "2px solid rgba(205,133,63,0.2)",
               background: activeTab === tab.key ? "linear-gradient(135deg,#8B4513,#CD853F)" : "white",
               color: activeTab === tab.key ? "white" : "#8B4513",
               fontFamily: "'DM Sans',sans-serif", fontSize: "0.85rem", fontWeight: 500,
               cursor: "pointer", width: "auto", margin: 0,
               boxShadow: activeTab === tab.key ? "0 3px 10px rgba(139,69,19,0.3)" : "none"
-    }}>
-    {tab.label}
-  </button>
-))}
+            }}>
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* FEED */}
-      {filtered.length === 0 ? (
+      {loading ? (
+        <Spinner text="Loading content..." />
+      ) : filtered.length === 0 ? (
         <p className="no-content">
           {activeTab ? `No ${activeTab} content yet!` : "No content yet. Be the first to upload!"}
         </p>

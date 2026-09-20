@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Editor from "../Editor";
+import Spinner from "../Spinner";
 
 export default function CreateEducation() {
   const [title, setTitle] = useState("");
@@ -16,7 +17,7 @@ export default function CreateEducation() {
 
   function handleCoverChange(e) {
     const file = e.target.files[0];
-    const maxSize = 150 * 1024 * 1024; // 150MB
+    const maxSize = 1150 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
       setFileError("Image too large! Max 150MB.");
       e.target.value = "";
@@ -27,9 +28,11 @@ export default function CreateEducation() {
   }
 
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setIsSubmitting(true);
 
     const formData = new FormData();
     formData.append("title", title);

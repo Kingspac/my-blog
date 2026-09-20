@@ -2,6 +2,7 @@ import { useContext, useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { UserContext } from "../UserContext.js";
 import styles from "../styles/Auth.module.css";
+import Spinner from "../Spinner";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");

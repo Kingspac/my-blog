@@ -3,6 +3,7 @@ import { useEffect, useState, useRef, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { format, formatISO9075 } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
+import Spinner from "../Spinner";
 import { UserContext } from "../UserContext";
 import styles from "../styles/IndexPage.module.css";
 
@@ -300,6 +301,7 @@ export default function IndexPage() {
   const [music, setMusic] = useState([]);
   const [users, setUsers] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const [feedLoading, setFeedLoading] = useState(true);
 
   // Search state
   const [searchQuery, setSearchQuery] = useState("");

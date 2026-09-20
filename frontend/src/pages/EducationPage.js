@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import Spinner from "../Spinner";
 import { UserContext } from "../UserContext";
 
 const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
@@ -293,11 +294,7 @@ export default function EducationPage() {
 
       {/* CONTENT GRID */}
       <div className="edu-grid">
-        {!loaded && (
-          <div className="edu-empty">
-            <span>⏳</span>Loading...
-          </div>
-        )}
+        {!loaded && <Spinner text="Loading education content..." />}
 
         {loaded && filtered.length === 0 && (
           <div className="edu-empty">
