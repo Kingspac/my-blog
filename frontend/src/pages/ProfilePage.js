@@ -29,10 +29,14 @@ function CommentsModal({ mediaId, comments: initialComments, onClose, currentUse
 
   async function handleComment(e) {
     e.preventDefault();
-    if (!currentUser?.id) { alert("Please login"); return; }
+    if (!currentUser?.id) {
+      alert("Please login");
+      return;
+    }
     if (!comment.trim()) return;
     const res = await fetch(`${apiUrl}/api/music/${mediaId}/comment`, {
-      method: "POST", credentials: "include",
+      method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content: comment }),
     });
@@ -44,16 +48,26 @@ function CommentsModal({ mediaId, comments: initialComments, onClose, currentUse
   }
 
   return (
-    <motion.div className="modal-overlay"
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      onClick={onClose}>
-      <motion.div className="modal-box"
-        initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+    <motion.div
+      className="modal-overlay"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="modal-box"
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        onClick={(e) => e.stopPropagation()}>
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="modal-header">
           <h3>💬 Comments ({comments.length})</h3>
-          <button className="modal-close-btn" onClick={onClose}>✕</button>
+          <button className="modal-close-btn" onClick={onClose}>
+            ✕
+          </button>
         </div>
         <div className="modal-comments-list">
           {comments.length === 0 ? (
@@ -70,12 +84,18 @@ function CommentsModal({ mediaId, comments: initialComments, onClose, currentUse
         </div>
         {currentUser?.id ? (
           <form className="modal-comment-form" onSubmit={handleComment}>
-            <input type="text" placeholder="Write a comment..."
-              value={comment} onChange={(e) => setComment(e.target.value)} />
+            <input
+              type="text"
+              placeholder="Write a comment..."
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            />
             <button type="submit">Post</button>
           </form>
         ) : (
-          <p className="modal-login-prompt"><Link to="/login">Login</Link> to comment</p>
+          <p className="modal-login-prompt">
+            <Link to="/login">Login</Link> to comment
+          </p>
         )}
       </motion.div>
     </motion.div>
@@ -101,22 +121,29 @@ function MediaCard({ item, isOwnProfile, onDelete }) {
     const card = cardRef.current;
     const media = mediaRef.current;
     if (!card || !media) return;
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting && !media.paused) {
-          media.pause();
-          if (currentlyPlaying === media) currentlyPlaying = null;
-        }
-      });
-    }, { threshold: 0.2 });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting && !media.paused) {
+            media.pause();
+            if (currentlyPlaying === media) currentlyPlaying = null;
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
     observer.observe(card);
     return () => observer.disconnect();
   }, []);
 
   async function handleLike() {
-    if (!userInfo?.id) { alert("Please login to like"); return; }
+    if (!userInfo?.id) {
+      alert("Please login to like");
+      return;
+    }
     const res = await fetch(`${apiUrl}/api/music/${item._id}/like`, {
-      method: "PUT", credentials: "include",
+      method: "PUT",
+      credentials: "include",
     });
     if (res.ok) {
       const data = await res.json();
@@ -128,7 +155,8 @@ function MediaCard({ item, isOwnProfile, onDelete }) {
   async function handleDelete() {
     if (!window.confirm("Delete this media?")) return;
     const res = await fetch(`${apiUrl}/api/music/${item._id}`, {
-      method: "DELETE", credentials: "include",
+      method: "DELETE",
+      credentials: "include",
     });
     if (res.ok) onDelete(item._id);
     else alert("Failed to delete");
@@ -137,7 +165,10 @@ function MediaCard({ item, isOwnProfile, onDelete }) {
   function shareMedia() {
     const url = window.location.href;
     if (navigator.share) navigator.share({ title: item.title, url });
-    else { navigator.clipboard.writeText(url); alert("Link copied!"); }
+    else {
+      navigator.clipboard.writeText(url);
+      alert("Link copied!");
+    }
   }
 
   const hasVideo = isVideoFile(item.audioFile);
@@ -145,19 +176,23 @@ function MediaCard({ item, isOwnProfile, onDelete }) {
 
   return (
     <>
-      <motion.div ref={cardRef} className="fb-card tiktok-card"
+      <motion.div
+        ref={cardRef}
+        className="fb-card tiktok-card"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.1 }}
-        transition={{ duration: 0.4 }}>
-
+        transition={{ duration: 0.4 }}
+      >
         <div className="fb-card-header">
           <div className="fb-avatar">{item.uploadedBy?.username?.charAt(0).toUpperCase()}</div>
           <div className="fb-author-info">
             <Link to={`/profile/${item.uploadedBy?._id}`} className="fb-author-name">
               {item.artist || item.uploadedBy?.username}
             </Link>
-            <time className="fb-time">{format(new Date(item.createdAt), "MMM d, yyyy • h:mm a")}</time>
+            <time className="fb-time">
+              {format(new Date(item.createdAt), "MMM d, yyyy • h:mm a")}
+            </time>
           </div>
           <span className="fb-badge">{item.category === "music" ? "🎵 Music" : "🎬 Video"}</span>
         </div>
@@ -175,15 +210,25 @@ function MediaCard({ item, isOwnProfile, onDelete }) {
           )}
           {item.youtubeLink && (
             <div className="fb-card-image">
-              <iframe width="100%" height="280"
+              <iframe
+                width="100%"
+                height="280"
                 src={`https://www.youtube.com/embed/${getYoutubeId(item.youtubeLink)}`}
-                title={item.title} frameBorder="0" allowFullScreen style={{ display: "block" }} />
+                title={item.title}
+                frameBorder="0"
+                allowFullScreen
+                style={{ display: "block" }}
+              />
             </div>
           )}
           {item.audioFile && !item.youtubeLink && hasVideo && (
             <div className="fb-card-image" style={{ background: "#000" }}>
-              <video ref={mediaRef} controls onPlay={handlePlay}
-                style={{ width: "100%", display: "block", maxHeight: "360px" }}>
+              <video
+                ref={mediaRef}
+                controls
+                onPlay={handlePlay}
+                style={{ width: "100%", display: "block", maxHeight: "360px" }}
+              >
                 <source src={`${apiUrl}/${item.audioFile}`} type="video/mp4" />
               </video>
             </div>
@@ -198,26 +243,34 @@ function MediaCard({ item, isOwnProfile, onDelete }) {
           )}
           {hasMedia && (
             <div className="tiktok-actions">
-              <motion.button className={`tiktok-btn ${liked ? "tiktok-liked" : ""}`}
-                onClick={handleLike} whileTap={{ scale: 1.3 }}
-                transition={{ type: "spring", stiffness: 400 }}>
+              <motion.button
+                className={`tiktok-btn ${liked ? "tiktok-liked" : ""}`}
+                onClick={handleLike}
+                whileTap={{ scale: 1.3 }}
+                transition={{ type: "spring", stiffness: 400 }}
+              >
                 <span>{liked ? "❤️" : "🤍"}</span>
                 <span className="tiktok-count">{likes}</span>
               </motion.button>
-              <motion.button className="tiktok-btn"
-                onClick={() => setShowModal(true)} whileTap={{ scale: 1.2 }}>
+              <motion.button
+                className="tiktok-btn"
+                onClick={() => setShowModal(true)}
+                whileTap={{ scale: 1.2 }}
+              >
                 <span>💬</span>
                 <span className="tiktok-count">{comments.length}</span>
               </motion.button>
-              <motion.button className="tiktok-btn"
-                onClick={shareMedia} whileTap={{ scale: 1.2 }}>
+              <motion.button className="tiktok-btn" onClick={shareMedia} whileTap={{ scale: 1.2 }}>
                 <span>📤</span>
                 <span className="tiktok-count">Share</span>
               </motion.button>
               {isOwnProfile && (
-                <motion.button className="tiktok-btn"
-                  onClick={handleDelete} whileTap={{ scale: 1.1 }}
-                  style={{ background: "rgba(180,0,0,0.5)" }}>
+                <motion.button
+                  className="tiktok-btn"
+                  onClick={handleDelete}
+                  whileTap={{ scale: 1.1 }}
+                  style={{ background: "rgba(180,0,0,0.5)" }}
+                >
                   <span>🗑️</span>
                   <span className="tiktok-count">Del</span>
                 </motion.button>
@@ -228,22 +281,30 @@ function MediaCard({ item, isOwnProfile, onDelete }) {
 
         {item.audioFile && !hasVideo && (
           <div className="fb-card-footer">
-            <motion.button className={`fb-action-btn ${liked ? "fb-liked" : ""}`}
-              onClick={handleLike} whileTap={{ scale: 1.2 }}>
+            <motion.button
+              className={`fb-action-btn ${liked ? "fb-liked" : ""}`}
+              onClick={handleLike}
+              whileTap={{ scale: 1.2 }}
+            >
               <span>{liked ? "❤️" : "🤍"}</span> {likes}
             </motion.button>
-            <motion.button className="fb-action-btn"
-              onClick={() => setShowModal(true)} whileTap={{ scale: 1.1 }}>
+            <motion.button
+              className="fb-action-btn"
+              onClick={() => setShowModal(true)}
+              whileTap={{ scale: 1.1 }}
+            >
               <span>💬</span> {comments.length}
             </motion.button>
-            <motion.button className="fb-action-btn"
-              onClick={shareMedia} whileTap={{ scale: 1.1 }}>
+            <motion.button className="fb-action-btn" onClick={shareMedia} whileTap={{ scale: 1.1 }}>
               <span>📤</span> Share
             </motion.button>
             {isOwnProfile && (
-              <motion.button className="fb-action-btn"
-                onClick={handleDelete} whileTap={{ scale: 1.1 }}
-                style={{ color: "#cc0000", marginLeft: "auto" }}>
+              <motion.button
+                className="fb-action-btn"
+                onClick={handleDelete}
+                whileTap={{ scale: 1.1 }}
+                style={{ color: "#cc0000", marginLeft: "auto" }}
+              >
                 🗑️ Delete
               </motion.button>
             )}
@@ -264,7 +325,6 @@ function MediaCard({ item, isOwnProfile, onDelete }) {
     </>
   );
 }
-
 
 export default function ProfilePage() {
   const [profileData, setProfileData] = useState(null);
@@ -288,6 +348,12 @@ export default function ProfilePage() {
       .then((data) => {
         setProfileData(data);
         setBio(data.user.bio || "");
+      })
+      .catch((err) => {
+        console.error("Failed to load profile:", err);
+      })
+      .finally(() => {
+        setPageLoading(false);
       });
 
     fetch(`${apiUrl}/api/music`)
@@ -403,11 +469,11 @@ export default function ProfilePage() {
       credentials: "include",
     });
     if (res.ok) {
-      setProfileData(prev => ({
+      setProfileData((prev) => ({
         ...prev,
-        posts: prev.posts.filter(p => p._id !== postId)
+        posts: prev.posts.filter((p) => p._id !== postId),
       }));
-      setMusic(prev => prev.filter(m => m._id !== postId));
+      setMusic((prev) => prev.filter((m) => m._id !== postId));
     } else {
       alert("Failed to delete post");
     }
@@ -421,7 +487,7 @@ export default function ProfilePage() {
       credentials: "include",
     });
     if (res.ok) {
-      setMusic(prev => prev.filter(m => m._id !== mediaId));
+      setMusic((prev) => prev.filter((m) => m._id !== mediaId));
     } else {
       alert("Failed to delete media");
     }
@@ -433,7 +499,7 @@ export default function ProfilePage() {
       credentials: "include",
     });
     if (res.ok) {
-      setPendingPosts(pendingPosts.filter(p => p._id !== postId));
+      setPendingPosts(pendingPosts.filter((p) => p._id !== postId));
     }
   }
 
@@ -446,12 +512,12 @@ export default function ProfilePage() {
       body: JSON.stringify({ reviewNote: note || "" }),
     });
     if (res.ok) {
-      setPendingPosts(pendingPosts.filter(p => p._id !== postId));
+      setPendingPosts(pendingPosts.filter((p) => p._id !== postId));
     }
   }
 
   function handleMediaDelete(mediaId) {
-    setMusic(prev => prev.filter(m => m._id !== mediaId));
+    setMusic((prev) => prev.filter((m) => m._id !== mediaId));
   }
 
   if (pageLoading) return <Spinner text="Loading profile..." />;
@@ -466,7 +532,6 @@ export default function ProfilePage() {
 
   return (
     <div className={styles.profilePage}>
-
       {/* PROFILE HEADER */}
       <div className={styles.profileHeader}>
         <div className={styles.profilePhoto}>
@@ -495,8 +560,12 @@ export default function ProfilePage() {
 
         {isOwnProfile && (
           <div className={styles.profileCreateButtons}>
-            <Link to="/create" className="create-btn">📝 Create Post</Link>
-            <Link to="/entertainment/upload" className="create-btn entertainment">🎵 Upload Media</Link>
+            <Link to="/create" className="create-btn">
+              📝 Create Post
+            </Link>
+            <Link to="/entertainment/upload" className="create-btn entertainment">
+              🎵 Upload Media
+            </Link>
           </div>
         )}
 
@@ -534,16 +603,16 @@ export default function ProfilePage() {
       {showDeleteModal && (
         <div className={styles.deleteModalOverlay} onClick={() => setShowDeleteModal(false)}>
           <div className={styles.deleteModalBox} onClick={(e) => e.stopPropagation()}>
-
             {/* Warning icon */}
             <div className={styles.deleteModalIcon}>⚠️</div>
 
             <h3 className={styles.deleteModalTitle}>Delete Account</h3>
 
             <p className={styles.deleteModalText}>
-              This will <strong>permanently delete</strong> your account,
-              all your posts and all uploaded media.
-              <br /><br />
+              This will <strong>permanently delete</strong> your account, all your posts and all
+              uploaded media.
+              <br />
+              <br />
               <strong>This action cannot be undone.</strong>
             </p>
 
@@ -556,9 +625,7 @@ export default function ProfilePage() {
 
             {/* Confirmation code */}
             <div className={styles.deleteCodeBox}>
-              <p className={styles.deleteCodeLabel}>
-                To confirm, type this code exactly:
-              </p>
+              <p className={styles.deleteCodeLabel}>To confirm, type this code exactly:</p>
               <div className={styles.deleteCode}>{deleteCode}</div>
             </div>
 
@@ -576,15 +643,10 @@ export default function ProfilePage() {
               spellCheck="false"
             />
 
-            {deleteError && (
-              <p className={styles.deleteError}>{deleteError}</p>
-            )}
+            {deleteError && <p className={styles.deleteError}>{deleteError}</p>}
 
             <div className={styles.deleteModalButtons}>
-              <button
-                className={styles.deleteCancelBtn}
-                onClick={() => setShowDeleteModal(false)}
-              >
+              <button className={styles.deleteCancelBtn} onClick={() => setShowDeleteModal(false)}>
                 Cancel
               </button>
               <button
@@ -615,14 +677,12 @@ export default function ProfilePage() {
                 </span>
               </div>
               <div className={styles.pendingActions}>
-                <button
-                  className={styles.approveBtn}
-                  onClick={() => approvePost(post._id)}
-                >✅ Approve</button>
-                <button
-                  className={styles.rejectBtn}
-                  onClick={() => rejectPost(post._id)}
-                >❌ Reject</button>
+                <button className={styles.approveBtn} onClick={() => approvePost(post._id)}>
+                  ✅ Approve
+                </button>
+                <button className={styles.rejectBtn} onClick={() => rejectPost(post._id)}>
+                  ❌ Reject
+                </button>
               </div>
             </div>
           ))}
@@ -630,11 +690,8 @@ export default function ProfilePage() {
       )}
 
       {isAdmin && isOwnProfile && pendingPosts.length === 0 && (
-        <div className={styles.adminPanelEmpty}>
-          🛡️ Admin Panel — No pending posts to review ✅
-        </div>
+        <div className={styles.adminPanelEmpty}>🛡️ Admin Panel — No pending posts to review ✅</div>
       )}
-
 
       {/* MIXED CONTENT FEED - using working components */}
       <div className={styles.profileFeed}>
@@ -647,9 +704,7 @@ export default function ProfilePage() {
         ) : (
           mixedContent.map((item) => (
             <div key={item._id}>
-              {item.itemType === "post" && (
-                <Post {...item} variant="feed" />
-              )}
+              {item.itemType === "post" && <Post {...item} variant="feed" />}
               {item.itemType === "media" && (
                 <MediaCard item={item} isOwnProfile={isOwnProfile} onDelete={handleMediaDelete} />
               )}
