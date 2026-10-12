@@ -2,9 +2,9 @@ import { useState, useEffect, useContext, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import { format, formatISO9075 } from "date-fns";
+import { useMusic } from "../MusicContext";
 import { motion, AnimatePresence } from "framer-motion";
 
-const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
 function getYoutubeId(url) {
   const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
@@ -19,8 +19,27 @@ function isVideoFile(filename) {
 
 let currentlyPlaying = null;
 
+// Try to play with sound first (works if the user already tapped the page).
+// If the browser blocks it, fall back to muted autoplay, which is always allowed.
+function startPlayback(el) {
+  if (!el) return;
+  if (currentlyPlaying && currentlyPlaying !== el) {
+    currentlyPlaying.pause();
+  }
+  currentlyPlaying = el;
+  const p = el.play();
+  if (p && typeof p.catch === "function") {
+    p.catch(() => {
+      el.muted = true;
+      const p2 = el.play();
+      if (p2 && typeof p2.catch === "function") p2.catch(() => {});
+    });
+  }
+}
+
 // ===== COMMENTS MODAL =====
 function CommentsModal({ media, currentUser, onClose }) {
+  const { backendUrl: apiUrl } = useMusic();
   const [comments, setComments] = useState(media.comments || []);
   const [comment, setComment] = useState("");
 
@@ -84,6 +103,7 @@ function CommentsModal({ media, currentUser, onClose }) {
 
 // ===== MEDIA CARD - pure TikTok style =====
 function MediaCard({ media, currentUser, onDelete }) {
+  const { backendUrl: apiUrl } = useMusic();
   const mediaRef = useRef(null);
   const cardRef = useRef(null);
   const [likes, setLikes] = useState(media.likes?.length || 0);
@@ -93,12 +113,15 @@ function MediaCard({ media, currentUser, onDelete }) {
   const [commentCount, setCommentCount] = useState(media.comments?.length || 0);
   const [showModal, setShowModal] = useState(false);
   const [descExpanded, setDescExpanded] = useState(false);
+  // true while this card is mostly visible on screen (drives YouTube autoplay)
+  const [isActive, setIsActive] = useState(false);
 
   const hasVideo = isVideoFile(media.audioFile);
   const isOwner = currentUser?.id === media.uploadedBy?._id;
   const hasVisualMedia = media.youtubeLink || hasVideo || media.coverPhoto;
+  const youtubeId = media.youtubeLink ? getYoutubeId(media.youtubeLink) : null;
 
-  // Auto-stop when out of view
+  // Keep track of which element is playing (manual play by the user)
   function handlePlay() {
     if (currentlyPlaying && currentlyPlaying !== mediaRef.current) {
       currentlyPlaying.pause();
@@ -106,20 +129,38 @@ function MediaCard({ media, currentUser, onDelete }) {
     currentlyPlaying = mediaRef.current;
   }
 
+  // AUTOPLAY when the card scrolls into view, pause when it leaves
   useEffect(() => {
     const card = cardRef.current;
-    const media_el = mediaRef.current;
-    if (!card || !media_el) return;
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting && !media_el.paused) {
-          media_el.pause();
-          if (currentlyPlaying === media_el) currentlyPlaying = null;
-        }
-      });
-    }, { threshold: 0.2 });
+    if (!card) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const el = mediaRef.current;
+          const visible = entry.isIntersecting && entry.intersectionRatio >= 0.6;
+
+          if (visible) {
+            setIsActive(true);
+            if (el) startPlayback(el);
+          } else if (entry.intersectionRatio < 0.3) {
+            setIsActive(false);
+            if (el && !el.paused) {
+              el.pause();
+              if (currentlyPlaying === el) currentlyPlaying = null;
+            }
+          }
+        });
+      },
+      { threshold: [0, 0.3, 0.6, 1] }
+    );
+
     observer.observe(card);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      const el = mediaRef.current;
+      if (el && currentlyPlaying === el) currentlyPlaying = null;
+    };
   }, []);
 
   async function handleLike() {
@@ -155,7 +196,7 @@ function MediaCard({ media, currentUser, onDelete }) {
   return (
     <>
       <motion.div ref={cardRef} className="fb-card"
-        style={{ position: "relative", background: "white", marginBottom: 1 }}
+        style={{ position: "relative" }}
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.1 }}
@@ -171,7 +212,9 @@ function MediaCard({ media, currentUser, onDelete }) {
               {media.artist || media.uploadedBy?.username}
             </Link>
             <time className="fb-time">
-              {format(new Date(media.createdAt), "MMM d, yyyy • h:mm a")}
+              {media.releaseDate
+                ? format(new Date(media.releaseDate), "MMM d, yyyy")
+                : format(new Date(media.createdAt), "MMM d, yyyy • h:mm a")}
             </time>
           </div>
           <span className="fb-badge">
@@ -183,7 +226,7 @@ function MediaCard({ media, currentUser, onDelete }) {
         <div className="fb-card-body">
           <p className="fb-title">{media.title}</p>
           {media.description && (
-            <p className="fb-summary">
+            <p className="fb-summary" style={{ whiteSpace: "pre-wrap" }}>
               {descExpanded ? media.description : media.description.slice(0, descLimit)}
               {isLongDesc && (
                 <button onClick={() => setDescExpanded(!descExpanded)}
@@ -198,12 +241,13 @@ function MediaCard({ media, currentUser, onDelete }) {
         {/* MEDIA SECTION with TikTok buttons */}
         <div className="tiktok-media-wrapper">
 
-          {/* YouTube embed */}
-          {media.youtubeLink && (
+          {/* YouTube embed - autoplays (muted) only while the card is on screen */}
+          {media.youtubeLink && youtubeId && (
             <div className="fb-card-image">
               <iframe
-                src={`https://www.youtube.com/embed/${getYoutubeId(media.youtubeLink)}`}
+                src={`https://www.youtube.com/embed/${youtubeId}?autoplay=${isActive ? 1 : 0}&mute=1&playsinline=1&rel=0`}
                 title={media.title} frameBorder="0" allowFullScreen
+                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
                 style={{ width: "100%", height: "56vw", maxHeight: "70vh", minHeight: 220, display: "block" }}
               />
             </div>
@@ -220,11 +264,16 @@ function MediaCard({ media, currentUser, onDelete }) {
           {/* Video file */}
           {media.audioFile && !media.youtubeLink && hasVideo && (
             <div className="fb-card-image" style={{ background: "#000" }}>
-              <video ref={mediaRef} controls onPlay={handlePlay}
-                style={{ width: "100%", maxHeight: "70vh", display: "block" }}>
-                <source src={`${apiUrl}/${media.audioFile}`} type="video/mp4" />
-                <source src={`${apiUrl}/${media.audioFile}`} />
-              </video>
+              <video
+                ref={mediaRef}
+                src={`${apiUrl}/${media.audioFile}`}
+                controls
+                playsInline
+                loop
+                preload="auto"
+                onPlay={handlePlay}
+                style={{ width: "100%", maxHeight: "70vh", display: "block" }}
+              />
             </div>
           )}
 
@@ -232,7 +281,7 @@ function MediaCard({ media, currentUser, onDelete }) {
           {media.audioFile && !media.youtubeLink && !hasVideo && !media.coverPhoto && (
             <div className="fb-audio-player">
               <div className="fb-audio-icon">🎵</div>
-              <audio ref={mediaRef} controls onPlay={handlePlay} style={{ width: "100%", maxWidth: 320 }}>
+              <audio ref={mediaRef} controls playsInline preload="auto" onPlay={handlePlay} style={{ width: "100%", maxWidth: 320 }}>
                 <source src={`${apiUrl}/${media.audioFile}`} />
               </audio>
             </div>
@@ -243,7 +292,7 @@ function MediaCard({ media, currentUser, onDelete }) {
             <div style={{ position: "relative" }}>
               {/* audio player below cover */}
               <div style={{ padding: "10px 16px", background: "#1a1209" }}>
-                <audio ref={mediaRef} controls onPlay={handlePlay} style={{ width: "100%" }}>
+                <audio ref={mediaRef} controls playsInline preload="auto" onPlay={handlePlay} style={{ width: "100%" }}>
                   <source src={`${apiUrl}/${media.audioFile}`} />
                 </audio>
               </div>
@@ -325,6 +374,7 @@ function MediaCard({ media, currentUser, onDelete }) {
 
 // ===== MAIN PAGE =====
 export default function EntertainmentPage() {
+  const { backendUrl: apiUrl } = useMusic();
   const [mediaList, setMediaList] = useState([]);
   const [activeTab, setActiveTab] = useState(null);
   const { userInfo } = useContext(UserContext);
@@ -346,7 +396,7 @@ export default function EntertainmentPage() {
     : mediaList;
 
   return (
-    <div style={{ background: "#f0e8de", minHeight: "100vh", paddingBottom: 80 }}>
+    <div style={{ minHeight: "100vh", paddingBottom: 80 }}>
 
       {/* PAGE HEADER */}
       <div className="page-header">
@@ -360,31 +410,31 @@ export default function EntertainmentPage() {
       </div>
 
       {/* TABS */}
-      <div style={{ display: "flex", gap: 8, padding: "12px 14px", background: "white", borderBottom: "1px solid rgba(205,133,63,0.1)", overflowX: "auto" }}>
-{[
-  { key: null, label: "🏠 All" },
-  { key: "video", label: "🎬 Video" },
-  { key: "music", label: "🎵 Music" },
-].map(tab => (
-  <button key={tab.key ?? "all"}
-    onClick={() => {
-      if (tab.key === "music") {
-        navigate("/music"); // ← navigate to player instead of filtering
-      } else {
-        setActiveTab(tab.key);
-      }
-    }}
-    style={{
-flexShrink: 0, padding: "7px 18px", borderRadius: 20, border: "2px solid rgba(205,133,63,0.2)",
-              background: activeTab === tab.key ? "linear-gradient(135deg,#8B4513,#CD853F)" : "white",
+      <div style={{ display: "flex", gap: 8, padding: "10px 14px", margin: "0 10px 14px", borderRadius: 20, background: "var(--glass-bg)", backdropFilter: "blur(12px) saturate(140%)", WebkitBackdropFilter: "blur(12px) saturate(140%)", border: "1px solid var(--glass-border)", boxShadow: "var(--glass-shadow)", overflowX: "auto" }}>
+        {[
+          { key: null, label: "🏠 All" },
+          { key: "video", label: "🎬 Video" },
+          { key: "music", label: "🎵 Music" },
+        ].map(tab => (
+          <button key={tab.key ?? "all"}
+            onClick={() => {
+              if (tab.key === "music") {
+                navigate("/music"); // navigate to player instead of filtering
+              } else {
+                setActiveTab(tab.key);
+              }
+            }}
+            style={{
+              flexShrink: 0, padding: "7px 18px", borderRadius: 20, border: "1px solid rgba(255,255,255,0.6)",
+              background: activeTab === tab.key ? "linear-gradient(135deg,#8B4513,#CD853F)" : "rgba(255,255,255,0.45)",
               color: activeTab === tab.key ? "white" : "#8B4513",
               fontFamily: "'DM Sans',sans-serif", fontSize: "0.85rem", fontWeight: 500,
               cursor: "pointer", width: "auto", margin: 0,
               boxShadow: activeTab === tab.key ? "0 3px 10px rgba(139,69,19,0.3)" : "none"
-    }}>
-    {tab.label}
-  </button>
-))}
+            }}>
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* FEED */}

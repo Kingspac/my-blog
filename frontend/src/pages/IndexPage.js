@@ -21,6 +21,24 @@ function isVideoFile(filename) {
 
 let currentlyPlaying = null;
 
+// Try to play with sound first (works if the user already tapped the page).
+// If the browser blocks it, fall back to muted autoplay, which is always allowed.
+function startPlayback(el) {
+  if (!el) return;
+  if (currentlyPlaying && currentlyPlaying !== el) {
+    currentlyPlaying.pause();
+  }
+  currentlyPlaying = el;
+  const p = el.play();
+  if (p && typeof p.catch === "function") {
+    p.catch(() => {
+      el.muted = true;
+      const p2 = el.play();
+      if (p2 && typeof p2.catch === "function") p2.catch(() => {});
+    });
+  }
+}
+
 // Comments Modal
 function CommentsModal({ mediaId, comments: initialComments, onClose, currentUser }) {
   const [comments, setComments] = useState(initialComments || []);
@@ -91,26 +109,47 @@ function MediaCard({ item }) {
   const [liked, setLiked] = useState(userInfo?.id ? item.likes?.includes(userInfo.id) : false);
   const [showModal, setShowModal] = useState(false);
   const [comments, setComments] = useState(item.comments || []);
+  const [descExpanded, setDescExpanded] = useState(false);
+  // true while this card is mostly visible on screen (drives YouTube autoplay)
+  const [isActive, setIsActive] = useState(false);
 
   function handlePlay() {
     if (currentlyPlaying && currentlyPlaying !== mediaRef.current) currentlyPlaying.pause();
     currentlyPlaying = mediaRef.current;
   }
 
+  // AUTOPLAY when the card scrolls into view, pause when it leaves
   useEffect(() => {
     const card = cardRef.current;
-    const media = mediaRef.current;
-    if (!card || !media) return;
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting && !media.paused) {
-          media.pause();
-          if (currentlyPlaying === media) currentlyPlaying = null;
-        }
-      });
-    }, { threshold: 0.2 });
+    if (!card) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const el = mediaRef.current;
+          const visible = entry.isIntersecting && entry.intersectionRatio >= 0.6;
+
+          if (visible) {
+            setIsActive(true);
+            if (el) startPlayback(el);
+          } else if (entry.intersectionRatio < 0.3) {
+            setIsActive(false);
+            if (el && !el.paused) {
+              el.pause();
+              if (currentlyPlaying === el) currentlyPlaying = null;
+            }
+          }
+        });
+      },
+      { threshold: [0, 0.3, 0.6, 1] }
+    );
+
     observer.observe(card);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      const el = mediaRef.current;
+      if (el && currentlyPlaying === el) currentlyPlaying = null;
+    };
   }, []);
 
   async function handleLike() {
@@ -133,6 +172,7 @@ function MediaCard({ item }) {
 
   const hasVideo = isVideoFile(item.audioFile);
   const hasMedia = item.audioFile || item.youtubeLink;
+  const youtubeId = item.youtubeLink ? getYoutubeId(item.youtubeLink) : null;
 
   return (
     <>
@@ -146,13 +186,29 @@ function MediaCard({ item }) {
             <Link to={`/profile/${item.uploadedBy?._id}`} className="fb-author-name">
               {item.artist || item.uploadedBy?.username}
             </Link>
-            <time className="fb-time">{format(new Date(item.createdAt), "MMM d, yyyy • h:mm a")}</time>
+            <time className="fb-time">
+              {item.releaseDate
+                ? format(new Date(item.releaseDate), "MMM d, yyyy")
+                : format(new Date(item.createdAt), "MMM d, yyyy • h:mm a")}
+            </time>
           </div>
           <span className="fb-badge">{item.category === "music" ? "🎵 Music" : "🎬 Video"}</span>
         </div>
         <div className="fb-card-body">
           <p className="fb-title">{item.title}</p>
-          {item.description && <p className="fb-summary">{item.description}</p>}
+          {item.description && (
+            <p className="fb-summary" style={{ whiteSpace: "pre-wrap" }}>
+              {descExpanded || item.description.length <= 80
+                ? item.description
+                : item.description.slice(0, 80)}
+              {item.description.length > 80 && (
+                <button onClick={() => setDescExpanded(!descExpanded)}
+                  style={{ background: "none", border: "none", color: "#CD853F", fontSize: "0.8rem", fontWeight: 600, cursor: "pointer", width: "auto", margin: 0, padding: 0, display: "inline" }}>
+                  {descExpanded ? " ...less" : "... more"}
+                </button>
+              )}
+            </p>
+          )}
         </div>
         <div className="tiktok-media-wrapper">
           {item.coverPhoto && !item.youtubeLink && !hasVideo && (
@@ -160,25 +216,27 @@ function MediaCard({ item }) {
               <img src={`${apiUrl}/${item.coverPhoto}`} alt={item.title} />
             </div>
           )}
-          {item.youtubeLink && (
+          {/* YouTube - autoplays (muted) only while the card is on screen */}
+          {item.youtubeLink && youtubeId && (
             <div className="fb-card-image">
               <iframe width="100%" height="280"
-                src={`https://www.youtube.com/embed/${getYoutubeId(item.youtubeLink)}`}
-                title={item.title} frameBorder="0" allowFullScreen style={{ display: "block" }} />
+                src={`https://www.youtube.com/embed/${youtubeId}?autoplay=${isActive ? 1 : 0}&mute=1&playsinline=1&rel=0`}
+                title={item.title} frameBorder="0" allowFullScreen
+                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                style={{ display: "block" }} />
             </div>
           )}
           {item.audioFile && !item.youtubeLink && hasVideo && (
             <div className="fb-card-image" style={{ background: "#000" }}>
-              <video ref={mediaRef} controls onPlay={handlePlay}
-                style={{ width: "100%", display: "block", maxHeight: "360px" }}>
-                <source src={`${apiUrl}/${item.audioFile}`} type="video/mp4" />
-              </video>
+              <video ref={mediaRef} controls playsInline loop preload="auto"
+                src={`${apiUrl}/${item.audioFile}`} onPlay={handlePlay}
+                style={{ width: "100%", display: "block", maxHeight: "360px" }} />
             </div>
           )}
           {item.audioFile && !item.youtubeLink && !hasVideo && (
             <div className="fb-audio-player">
               <div className="fb-audio-icon">🎵</div>
-              <audio ref={mediaRef} controls onPlay={handlePlay} style={{ flex: 1 }}>
+              <audio ref={mediaRef} controls playsInline preload="auto" onPlay={handlePlay} style={{ flex: 1 }}>
                 <source src={`${apiUrl}/${item.audioFile}`} />
               </audio>
             </div>

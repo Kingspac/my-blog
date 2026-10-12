@@ -10,6 +10,8 @@ export default function UploadMedia() {
   const [title, setTitle] = useState("");
   const [artist, setArtist] = useState("");
   const [description, setDescription] = useState("");
+  // today's date in YYYY-MM-DD (local time) as the default release date
+  const [releaseDate, setReleaseDate] = useState(new Date().toLocaleDateString("en-CA"));
   const [category, setCategory] = useState("music");
   const [uploadType, setUploadType] = useState("file");
   const [youtubeLink, setYoutubeLink] = useState("");
@@ -58,6 +60,14 @@ export default function UploadMedia() {
     if (fileError) return;
 
     // Validate
+    if (!artist.trim()) {
+      setFileError("Artist / creator name is required.");
+      return;
+    }
+    if (!releaseDate) {
+      setFileError("Please choose a date.");
+      return;
+    }
     if (uploadType === "link" && !youtubeLink.trim()) {
       setFileError("Please enter a YouTube link.");
       return;
@@ -70,8 +80,9 @@ export default function UploadMedia() {
     setIsUploading(true);
     const data = new FormData();
     data.append("title", title);
-    data.append("artist", artist);
+    data.append("artist", artist.trim());
     data.append("description", description);
+    data.append("releaseDate", releaseDate);
     data.append("category", category);
 
     if (uploadType === "link") {
@@ -82,15 +93,24 @@ export default function UploadMedia() {
 
     if (coverPhoto?.[0]) data.append("coverPhoto", coverPhoto[0]);
 
-    const res = await fetch(`${apiUrl}/api/music`, {
-      method: "POST",
-      credentials: "include",
-      body: data,
-    });
+    try {
+      const res = await fetch(`${apiUrl}/api/music`, {
+        method: "POST",
+        credentials: "include",
+        body: data,
+      });
 
-    setIsUploading(false);
-    if (res.ok) navigate("/entertainment");
-    else alert("Upload failed. Please try again.");
+      if (res.ok) {
+        navigate("/entertainment");
+      } else {
+        const msg = await res.json().catch(() => null);
+        setFileError(typeof msg === "string" ? msg : "Upload failed. Please try again.");
+      }
+    } catch {
+      setFileError("Upload failed. Check your connection and try again.");
+    } finally {
+      setIsUploading(false);
+    }
   }
 
   return (
@@ -137,12 +157,19 @@ export default function UploadMedia() {
             value={title} onChange={(e) => setTitle(e.target.value)} required />
         </div>
 
-        {/* ARTIST */}
+        {/* ARTIST (required) */}
         <div className={styles.uploadField}>
-          <label className={styles.uploadLabel}>Artist / Creator</label>
+          <label className={styles.uploadLabel}>Artist / Creator *</label>
           <input className={styles.uploadInput} type="text"
-            placeholder="Artist or creator name (optional)"
-            value={artist} onChange={(e) => setArtist(e.target.value)} />
+            placeholder="Artist or creator name"
+            value={artist} onChange={(e) => setArtist(e.target.value)} required />
+        </div>
+
+        {/* DATE */}
+        <div className={styles.uploadField}>
+          <label className={styles.uploadLabel}>📅 Date *</label>
+          <input className={styles.uploadInput} type="date"
+            value={releaseDate} onChange={(e) => setReleaseDate(e.target.value)} required />
         </div>
 
         <hr className={styles.divider} />

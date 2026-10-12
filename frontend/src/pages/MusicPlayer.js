@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useContext } from "react";
+import { format } from "date-fns";
 import { useMusic } from "../MusicContext";
 import { UserContext } from "../UserContext";
 import { useNavigate } from "react-router-dom";
@@ -52,8 +53,9 @@ export default function MusicPlayer() {
   const [isLandscape, setIsLandscape]       = useState(
     window.matchMedia("(orientation: landscape)").matches
   );
-  const [liking, setLiking] = useState(false);
-  const [toast, setToast]   = useState("");
+  const [liking, setLiking]     = useState(false);
+  const [toast, setToast]       = useState("");
+  const [showDesc, setShowDesc] = useState(false);
 
   const isLoggedIn  = !!userInfo?.id;
   const isLikedByMe = currentTrack?.likes?.includes(userInfo?.id);
@@ -208,6 +210,49 @@ export default function MusicPlayer() {
     </div>
   );
 
+  // ── Description sheet (shared by portrait + landscape) ───────────────────
+  const dateSource = currentTrack?.releaseDate || currentTrack?.createdAt;
+  const dateLabel  = dateSource ? format(new Date(dateSource), "MMM d, yyyy") : "";
+
+  const descSheet = showDesc && currentTrack && (
+    <div
+      onClick={() => setShowDesc(false)}
+      style={{
+        position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)",
+        zIndex: 1000, display: "flex", alignItems: "flex-end", justifyContent: "center",
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: "#1a1209", color: "#f5e9d8", width: "100%", maxWidth: 520,
+          maxHeight: "75vh", overflowY: "auto", boxSizing: "border-box",
+          borderRadius: "20px 20px 0 0", padding: "18px 20px 28px",
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+          <div style={{ minWidth: 0 }}>
+            <h3 style={{ margin: 0, fontSize: "1.1rem", wordBreak: "break-word" }}>{currentTrack.title}</h3>
+            <p style={{ margin: "4px 0 0", fontSize: "0.85rem", opacity: 0.75 }}>
+              {currentTrack.artist || "Unknown Artist"}
+              {dateLabel && ` • ${dateLabel}`}
+            </p>
+          </div>
+          <button
+            onClick={() => setShowDesc(false)}
+            style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: 4, width: "auto", margin: 0, flexShrink: 0 }}
+          >
+            <CloseIcon />
+          </button>
+        </div>
+        <hr style={{ border: "none", borderTop: "1px solid rgba(255,255,255,0.12)", margin: "14px 0" }} />
+        <p style={{ margin: 0, fontSize: "0.92rem", lineHeight: 1.6, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+          {currentTrack.description?.trim() || "No description was added for this track."}
+        </p>
+      </div>
+    </div>
+  );
+
   // ── LANDSCAPE ─────────────────────────────────────────────────────────────
   if (isLandscape) {
     return (
@@ -230,7 +275,7 @@ export default function MusicPlayer() {
                 <p className={s.lsArtist}>{currentTrack.artist || "Unknown Artist"}</p>
               </div>
               {toast && <div className={s.toast}>{toast}</div>}
-              <div className={s.lsStats}>
+              <div className={s.lsStats} style={{ flexWrap: "wrap" }}>
                 <button
                   className={`${s.likeBtn} ${isLikedByMe ? s.likeBtnActive : ""}`}
                   onClick={handleLike} disabled={liking}
@@ -241,6 +286,9 @@ export default function MusicPlayer() {
                 <span className={`${s.statBadge} ${s.statPlays}`}>
                   <PlayedIcon /> {currentTrack.playCount || 0} plays
                 </span>
+                <button className={s.likeBtn} onClick={() => setShowDesc(true)}>
+                  📝 Description
+                </button>
               </div>
               <div className={s.lsProgressWrap}>
                 <span className={s.timeLbl}>{fmt(currentTime)}</span>
@@ -258,6 +306,7 @@ export default function MusicPlayer() {
             </>
           )}
         </div>
+        {descSheet}
       </div>
     );
   }
@@ -302,7 +351,7 @@ export default function MusicPlayer() {
         <p className={s.trackArtist}>{currentTrack?.artist || "Unknown Artist"}</p>
       </div>
 
-      <div className={s.statsRow}>
+      <div className={s.statsRow} style={{ flexWrap: "wrap" }}>
         <button
           className={`${s.likeBtn} ${isLikedByMe ? s.likeBtnActive : ""}`}
           onClick={handleLike} disabled={liking}
@@ -313,6 +362,9 @@ export default function MusicPlayer() {
         <span className={`${s.statBadge} ${s.statPlays}`}>
           <PlayedIcon /> {currentTrack?.playCount || 0} plays
         </span>
+        <button className={s.likeBtn} onClick={() => setShowDesc(true)}>
+          📝 Description
+        </button>
       </div>
 
       <div className={s.progressWrap}>
@@ -334,6 +386,8 @@ export default function MusicPlayer() {
         </button>
         <button className={s.ctrlBtn} onClick={next}><NextIcon /></button>
       </div>
+
+      {descSheet}
     </div>
   );
 }
