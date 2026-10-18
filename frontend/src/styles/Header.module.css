@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap");
 
 /* ===== HEADER - FIXED at top always ===== */
 .header {
@@ -15,11 +15,11 @@
   right: 0;
   z-index: 100;
 
-  background: linear-gradient(135deg, #CD853F, #DAA520, #C17F3A);
+  background: linear-gradient(135deg, #cd853f, #daa520, #c17f3a);
   box-shadow:
-    0 4px 15px rgba(139,69,19,0.4),
-    0 1px 0 rgba(255,220,100,0.3);
-  border-bottom: 2px solid rgba(139,69,19,0.2);
+    0 4px 15px rgba(139, 69, 19, 0.4),
+    0 1px 0 rgba(255, 220, 100, 0.3);
+  border-bottom: 2px solid rgba(139, 69, 19, 0.2);
 }
 
 /* ===== SPACER - pushes content below fixed header ===== */
@@ -37,7 +37,6 @@
   align-items: center;
   gap: 5px;
   flex-wrap: nowrap;
-  color: red;
 }
 
 /* ===== NEUMORPHIC NAV BUTTONS ===== */
@@ -53,17 +52,19 @@
   position: relative;
   transition: all 0.2s ease;
   background: #2a1a0a;
+  color: rgba(132, 64, 8, 0.988);
   box-shadow:
-    3px 3px 8px rgba(0,0,0,0.4),
-    -2px -2px 6px rgba(205,133,63,0.15),
-    inset 0 1px 0 rgba(205,133,63,0.1);
+    3px 3px 8px rgba(0, 0, 0, 0.4),
+    -2px -2px 6px rgba(205, 133, 63, 0.15),
+    inset 0 1px 0 rgba(205, 133, 63, 0.1);
 }
 
 .navBtn:hover {
   box-shadow:
-    inset 3px 3px 8px rgba(0,0,0,0.5),
-    inset -2px -2px 5px rgba(205,133,63,0.08);
+    inset 3px 3px 8px rgba(0, 0, 0, 0.926),
+    inset -2px -2px 5px rgba(205, 133, 63, 0.08);
   transform: scale(0.95);
+  color: rgba(250, 232, 203, 0.978);
 }
 
 .navBtn:active {
@@ -84,12 +85,19 @@
   min-width: 16px;
   text-align: center;
   animation: pulse 1.5s infinite;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(0.9); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.9);
+  }
 }
 
 /* ===== PROFILE LINK ===== */
@@ -103,8 +111,8 @@
   text-decoration: none;
   background: #2a1a0a;
   box-shadow:
-    3px 3px 8px rgba(0,0,0,0.4),
-    -2px -2px 6px rgba(205,133,63,0.15);
+    3px 3px 8px rgba(0, 0, 0, 0.4),
+    -2px -2px 6px rgba(205, 133, 63, 0.15);
   transition: all 0.2s;
 }
 
@@ -113,7 +121,7 @@
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #DAA520;
+  border: 2px solid #daa520;
 }
 
 .profileAvatarPlaceholder {
@@ -126,26 +134,26 @@
   justify-content: center;
   font-weight: 700;
   font-size: 0.85rem;
-  color: #CD853F;
-  font-family: 'DM Sans', sans-serif;
-  border: 2px solid #DAA520;
+  color: #cd853f;
+  font-family: "DM Sans", sans-serif;
+  border: 2px solid #daa520;
 }
 
 /* ===== LOGIN BUTTON ===== */
 .loginBtn {
   background: #1a1209;
-  color: #DAA520;
+  color: #daa520;
   border-radius: 20px;
   padding: 5px 10px;
   font-size: 0.75rem;
   white-space: nowrap;
-  font-family: 'DM Sans', sans-serif;
+  font-family: "DM Sans", sans-serif;
   font-weight: 600;
   text-decoration: none;
   transition: all 0.2s;
   box-shadow:
-    3px 3px 8px rgba(0,0,0,0.3),
-    -2px -2px 6px rgba(205,133,63,0.15);
+    3px 3px 8px rgba(0, 0, 0, 0.3),
+    -2px -2px 6px rgba(205, 133, 63, 0.15);
 }
 
 /* ===== FLOATING HOME BUTTON - perfectly centered ===== */
@@ -169,34 +177,38 @@
   z-index: 200;
 
   /* Neumorphic - reduced blur */
-  background: #f0e8de;
+   background: #2a1a0a;
+  color: rgba(132, 64, 8, 0.988);
   box-shadow:
-    5px 5px 12px rgba(139,90,43,0.18),
-    -5px -5px 12px rgba(255,255,255,0.85),
-    0 0 0 2px rgba(205,133,63,0.2);
-  transition: box-shadow 0.2s, background 0.2s;
+    3px 3px 8px rgba(0, 0, 0, 0.4),
+    -2px -2px 6px rgba(205, 133, 63, 0.15),
+    inset 0 1px 0 rgba(205, 133, 63, 0.1);
+  transition:
+    box-shadow 0.2s,
+    background 0.2s;
 }
 
 .homeBtn:hover {
-  background: #e8d5b7;
-  box-shadow:
-    inset 3px 3px 8px rgba(139,90,43,0.12),
-    inset -3px -3px 8px rgba(255,255,255,0.75),
-    0 0 0 3px rgba(205,133,63,0.3);
+  background: #2a1a0a;
+   box-shadow:
+    inset 3px 3px 8px rgba(0, 0, 0, 0.926),
+    inset -2px -2px 5px rgba(205, 133, 63, 0.08);
+  transform: scale(0.95);
+  color: rgba(250, 232, 203, 0.978);
 }
 
 /* ===== ACTIVE NAV BUTTON - milky champagne background ===== */
 .navBtn:focus,
 .navBtnActive {
   outline: none;
-  background: #f0e8de !important;
+  background: #060606 !important;
+  color: rgba(250, 232, 203, 0.978);
   box-shadow:
-    inset 3px 3px 8px rgba(139,90,43,0.15),
-    inset -2px -2px 6px rgba(255,255,255,0.8);
+    inset 3px 3px 8px rgba(139, 90, 43, 0.15),
+    inset -1px -1px 3px rgba(255, 255, 255, 0.8);
 }
 
 /* Room page - home button pushed above message input */
 .homeBtnRoom {
   bottom: 80px !important;
 }
- 
