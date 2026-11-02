@@ -1,11 +1,15 @@
+
 const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
-
+ 
 const MediaSchema = new Schema({
   title: {
     type: String,
     required: true,
   },
+  // Artist is required for NEW uploads (enforced in the controller).
+  // It is intentionally not "required" here, because older documents have an
+  // empty artist and Mongoose would then reject like/comment saves on them.
   artist: {
     type: String,
     default: "",
@@ -13,6 +17,10 @@ const MediaSchema = new Schema({
   description: {
     type: String,
     default: "",
+  },
+  releaseDate: {
+    type: Date,
+    default: Date.now,
   },
   audioFile: {
     type: String,
@@ -44,10 +52,11 @@ const MediaSchema = new Schema({
     default: "music",
   },
   playCount: {
-  type: Number,
-  default: 0,
-},
+    type: Number,
+    default: 0,
+  },
 }, { timestamps: true });
-
+ 
 const MediaModel = model("Media", MediaSchema);
 module.exports = MediaModel;
+ 

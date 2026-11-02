@@ -1,14 +1,129 @@
-/* ===== GLOBAL STYLES ===== */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
+
+/* =====================================================================
+   ENCHWRA — GLOBAL GLASSMORPHISM THEME
+   ---------------------------------------------------------------------
+   Everything you will want to tweak is in the :root block below.
+   Change a value there and it updates every page, including the pages
+   that use CSS modules (they are overridden in section 9).
+   ===================================================================== */
+:root {
+  /* ---------- 1. BACKGROUND IMAGE ---------- */
+  --bg-image: url("./assets/bg.jpg");          /* file lives in src/assets */
+  --bg-fallback: #3a2314;                      /* shown if the image fails */
+  --bg-overlay-top: rgba(30, 15, 5, 0.55);     /* dark gradient over image */
+  --bg-overlay-mid: rgba(90, 45, 15, 0.35);
+  --bg-overlay-bottom: rgba(30, 15, 5, 0.65);
+
+  /* ---------- 2. LIGHT GLASS (cards, headers, forms, modals) ---------- */
+  --glass-bg: rgba(255, 248, 240, 0.55);
+  --glass-bg-strong: rgba(255, 248, 240, 0.78);
+  --glass-bg-soft: rgba(255, 255, 255, 0.35);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-shadow: 0 8px 28px rgba(50, 25, 8, 0.28);
+  --glass-blur: blur(12px) saturate(140%);
+  --glass-blur-strong: blur(22px) saturate(150%);
+
+  /* ---------- 3. DARK GLASS (nav bar, music player, side panels) ---------- */
+  --glass-dark-bg: rgba(26, 16, 8, 0.55);
+  --glass-dark-bg-strong: rgba(26, 16, 8, 0.80);
+  --glass-dark-border: rgba(255, 255, 255, 0.18);
+  --text-on-dark: #f5e9d8;
+  --auth-card-bg: rgba(26, 16, 8, 0.90);   /* login/register card; keep high, a spinning border sits behind it */
+
+  /* ---------- 4. SHAPES ---------- */
+  --radius-card: 20px;
+  --radius-btn: 14px;
+  --radius-input: 12px;
+  --radius-pill: 999px;
+
+  /* ---------- 5. BRAND COLOURS ---------- */
+  --brand-dark: #8B4513;
+  --brand-gold: #CD853F;
+  --brand-text: #2d2420;
+  --brand-text-soft: #5a483c;
+  --brand-grad: linear-gradient(135deg, rgba(139, 69, 19, 0.85), rgba(205, 133, 63, 0.85));
+  --brand-grad-hover: linear-gradient(135deg, rgba(160, 82, 30, 0.95), rgba(222, 150, 80, 0.95));
+}
+
+/* Browsers without backdrop-filter get a more solid glass so text stays readable */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    --glass-bg: rgba(255, 248, 240, 0.9);
+    --glass-bg-strong: rgba(255, 248, 240, 0.96);
+    --glass-bg-soft: rgba(255, 255, 255, 0.8);
+    --glass-dark-bg: rgba(26, 16, 8, 0.9);
+    --glass-dark-bg-strong: rgba(26, 16, 8, 0.95);
+  }
+}
+
+/* =====================================================================
+   REUSABLE GLASS CLASSES — add to any element in JSX if you want glass
+   e.g. <div className="glass"> ... </div>
+   ===================================================================== */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-card);
+}
+
+.glass-strong {
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-card);
+}
+
+.glass-dark {
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-dark-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-card);
+  color: var(--text-on-dark);
+}
+
+/* =====================================================================
+   1. BASE
+   ===================================================================== */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+/* Themed scrollbars: thin, gold thumb, no white track or arrow buttons.
+   Change the two colours (thumb, track) to taste. */
+:root { scrollbar-color: rgba(205, 133, 63, 0.75) rgba(0, 0, 0, 0.15); }
+* { scrollbar-width: thin; }
+
 body {
   color: #222;
-  font-family: Arial, sans-serif;
-  background-color: #f9f9f9;
+  font-family: 'DM Sans', Arial, sans-serif;
+  background-color: var(--bg-fallback);
+  min-height: 100vh;
+}
+
+/* Fixed background layer: image + dark gradient on top.
+   (A fixed layer works on Android; background-attachment: fixed does not.) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg,
+      var(--bg-overlay-top) 0%,
+      var(--bg-overlay-mid) 50%,
+      var(--bg-overlay-bottom) 100%),
+    var(--bg-image) center / cover no-repeat;
+  background-color: var(--bg-fallback);
 }
 
 img {
@@ -20,149 +135,195 @@ main {
   padding-top: 58px; /* space for fixed header */
   max-width: 100%;
   margin: 0;
-  background: #f0e8de;
+  background: transparent;
 }
 
-/* ===== GLOBAL INPUTS ===== */
+/* =====================================================================
+   2. INPUTS + BUTTONS
+   ===================================================================== */
 input {
   display: block;
   margin-bottom: 12px;
   width: 100%;
-  padding: 8px 10px;
-  border: 2px solid #ddd;
-  border-radius: 5px;
-  background-color: #fff;
+  padding: 10px 14px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-input);
+  background-color: var(--glass-bg-soft);
+  color: var(--brand-text);
   font-size: 0.95rem;
-}
-
-input:focus {
-  outline: none;
-  border-color: #555;
+  font-family: 'DM Sans', Arial, sans-serif;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 textarea {
   width: 100%;
-  padding: 8px 10px;
-  border: 2px solid #ddd;
-  border-radius: 5px;
+  padding: 10px 14px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-input);
+  background-color: var(--glass-bg-soft);
+  color: var(--brand-text);
   font-size: 0.95rem;
   resize: vertical;
-  font-family: Arial, sans-serif;
+  font-family: 'DM Sans', Arial, sans-serif;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-/* ===== GLOBAL BUTTON ===== */
+input::placeholder,
+textarea::placeholder {
+  color: rgba(80, 50, 30, 0.6);
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--brand-gold);
+  background-color: var(--glass-bg-strong);
+  box-shadow: 0 0 0 3px rgba(205, 133, 63, 0.25);
+}
+
 button {
   width: 100%;
   display: block;
-  background-color: #555;
-  border: 0;
+  background: var(--brand-grad);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   color: #fff;
-  border-radius: 5px;
+  border-radius: var(--radius-btn);
   padding: 10px 0;
   cursor: pointer;
   font-size: 1rem;
+  font-family: 'DM Sans', Arial, sans-serif;
   margin-top: 5px;
+  transition: background 0.2s ease, transform 0.15s ease;
 }
 
 button:hover {
-  background-color: #333;
+  background: var(--brand-grad-hover);
 }
 
-/* ===== CREATE BUTTON ===== */
+button:active {
+  transform: scale(0.98);
+}
+
 .create-btn {
-  background: #333;
+  background: var(--brand-grad);
   color: white;
-  padding: 8px 20px;
-  border-radius: 5px;
+  padding: 9px 22px;
+  border-radius: var(--radius-btn);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   text-decoration: none;
   font-size: 0.9rem;
+  font-weight: 500;
   display: inline-block;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35),
+              0 4px 14px rgba(50, 25, 8, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.create-btn:active {
+  transform: scale(0.97);
 }
 
 .create-btn.entertainment {
-  background: #666;
+  background: linear-gradient(135deg, rgba(80, 60, 45, 0.8), rgba(130, 100, 75, 0.8));
 }
 
-/* ===== LOGIN REQUIRED BUTTONS ===== */
 .login-required-buttons {
   display: flex;
   gap: 15px;
   justify-content: center;
 }
 
-/* ===== REGISTER PROMPT ===== */
+/* =====================================================================
+   3. GLASS PANELS (page header, register prompt, empty state)
+   ===================================================================== */
 .register-prompt {
   text-align: center;
   padding: 30px 20px;
-  background: #f9f9f9;
-  border-radius: 10px;
-  margin-top: 30px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-card);
+  margin: 30px 12px 0;
 }
 
 .register-prompt p {
   font-size: 1rem;
-  color: #333;
+  color: var(--brand-text);
   margin-bottom: 15px;
 }
 
-/* ===== PAGE HEADER ===== */
 .page-header {
   text-align: center;
-  padding: 20px 0;
-  border-bottom: 1px solid #eee;
-  margin-bottom: 20px;
+  padding: 20px 16px;
+  margin: 12px 12px 16px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-card);
 }
 
 .page-header h2 {
   font-size: 1.6rem;
   margin-bottom: 6px;
+  color: var(--brand-text);
 }
 
 .page-header p {
-  color: #666;
+  color: #6b5a4e;
   font-size: 0.95rem;
   margin-bottom: 15px;
 }
 
-/* ===== NO CONTENT ===== */
 .no-content {
   text-align: center;
-  color: #aaa;
+  color: #fff;
   font-style: italic;
-  margin-top: 40px;
+  margin: 40px 20px 0;
+  padding: 14px 18px;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 16px;
 }
 
-/* ===== SVG ICONS ===== */
 a svg {
   height: 20px;
 }
 
-/* ===== YOUTUBE EMBED ===== */
 .youtube-embed {
   width: 100%;
   margin-bottom: 10px;
 }
 
 .youtube-embed iframe {
-  border-radius: 8px;
+  border-radius: 12px;
 }
 
-/* ===== FACEBOOK-STYLE CARD ===== */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
-
+/* =====================================================================
+   4. GLASS CARD (feed cards for posts + media)
+   ===================================================================== */
 .fb-card {
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(139,90,43,0.1),
-              0 1px 3px rgba(0,0,0,0.06);
-  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--glass-shadow);
+  margin: 0 10px 14px;
   overflow: hidden;
   transition: box-shadow 0.2s ease;
   font-family: 'DM Sans', sans-serif;
-  border: 1px solid rgba(205,133,63,0.08);
 }
 
-/* CARD HEADER */
 .fb-card-header {
   display: flex;
   align-items: center;
@@ -182,7 +343,8 @@ a svg {
   font-weight: 700;
   font-size: 1rem;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(139,69,19,0.3);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 2px 8px rgba(139, 69, 19, 0.35);
 }
 
 .fb-author-info {
@@ -195,32 +357,31 @@ a svg {
 .fb-author-name {
   font-weight: 600;
   font-size: 0.9rem;
-  color: #2d2420;
+  color: var(--brand-text);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .fb-author-name:hover {
-  color: #CD853F;
+  color: var(--brand-gold);
 }
 
 .fb-time {
   font-size: 0.75rem;
-  color: #a07850;
+  color: #8a6a4a;
 }
 
 .fb-badge {
   font-size: 0.72rem;
-  background: #f0e8de;
-  color: #8B4513;
+  background: rgba(255, 255, 255, 0.45);
+  color: var(--brand-dark);
   padding: 3px 10px;
-  border-radius: 20px;
+  border-radius: var(--radius-pill);
   font-weight: 600;
-  border: 1px solid rgba(139,69,19,0.15);
+  border: 1px solid rgba(255, 255, 255, 0.7);
   white-space: nowrap;
 }
 
-/* CARD BODY */
 .fb-card-body {
   padding: 6px 16px 10px;
 }
@@ -229,7 +390,7 @@ a svg {
   display: block;
   font-size: 1rem;
   font-weight: 600;
-  color: #2d2420;
+  color: var(--brand-text);
   text-decoration: none;
   margin-bottom: 5px;
   line-height: 1.4;
@@ -237,12 +398,12 @@ a svg {
 }
 
 .fb-title:hover {
-  color: #CD853F;
+  color: var(--brand-gold);
 }
 
 .fb-summary {
   font-size: 0.88rem;
-  color: #6b5a4e;
+  color: var(--brand-text-soft);
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -250,7 +411,6 @@ a svg {
   overflow: hidden;
 }
 
-/* CARD IMAGE */
 .fb-card-image {
   display: flex;
   width: 100%;
@@ -258,7 +418,7 @@ a svg {
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  background: #f0e8de;
+  background: rgba(0, 0, 0, 0.18);
 }
 
 .fb-card-image img {
@@ -267,42 +427,49 @@ a svg {
   object-fit: cover;
   display: block;
   transition: transform 0.3s ease;
-  
 }
 
 .fb-card-image img:hover {
   transform: scale(1.02);
 }
 
-/* AUDIO PLAYER */
 .fb-audio-player {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: #f0e8de;
-  border-top: 1px solid rgba(205,133,63,0.15);
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  padding: 30px 20px;
+  min-height: 140px;
+  max-height: 200px;
+  background: linear-gradient(135deg, rgba(26, 18, 9, 0.78), rgba(61, 36, 16, 0.72));
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .fb-audio-icon {
-  font-size: 1.5rem;
+  font-size: 4rem;
   flex-shrink: 0;
+  animation: audioFloat 2s ease-in-out infinite;
+}
+
+@keyframes audioFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
 .fb-audio-player audio {
-  flex: 1;
   width: 100%;
+  max-width: 320px;
 }
 
-/* CARD FOOTER */
-/* Facebook footer - hidden, use TikTok buttons instead */
+/* Facebook footer - hidden, the TikTok buttons are used instead */
 .fb-card-footer {
   display: none !important;
 }
 
 .fb-card-footer-visible {
   display: flex;
-  border-top: 1px solid rgba(205,133,63,0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.4);
   padding: 4px 8px;
 }
 
@@ -315,12 +482,12 @@ a svg {
   padding: 8px 4px;
   border: none;
   background: none;
-  color: #8B4513;
+  color: var(--brand-dark);
   font-size: 0.85rem;
   font-weight: 500;
   font-family: 'DM Sans', sans-serif;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: var(--radius-input);
   text-decoration: none;
   transition: all 0.2s ease;
   width: auto;
@@ -328,8 +495,8 @@ a svg {
 }
 
 .fb-action-btn:hover {
-  background: #f0e8de;
-  color: #CD853F;
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--brand-gold);
   transform: scale(1.05);
 }
 
@@ -345,12 +512,19 @@ a svg {
   color: #e0245e !important;
 }
 
-/* ===== TIKTOK STYLE ===== */
+/* =====================================================================
+   5. TIKTOK-STYLE FLOATING BUTTONS + MEDIA
+   ===================================================================== */
 .tiktok-card { position: relative; }
-.tiktok-media-wrapper { position: relative; }
+
+.tiktok-media-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
 
 .tiktok-actions {
-  /* Always visible TikTok buttons on right side */
   position: absolute;
   right: 10px;
   bottom: 16px;
@@ -366,95 +540,25 @@ a svg {
   flex-direction: column;
   align-items: center;
   gap: 3px;
-  background: rgba(0,0,0,0.45);
-  border: none;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 50px;
   padding: 10px 8px;
   cursor: pointer;
   width: auto;
   margin: 0;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(10px) saturate(150%);
+  -webkit-backdrop-filter: blur(10px) saturate(150%);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
   min-width: 44px;
   transition: background 0.2s;
 }
 
-.tiktok-btn:hover { background: rgba(0,0,0,0.65); }
+.tiktok-btn:hover { background: rgba(255, 255, 255, 0.3); }
 .tiktok-btn span:first-child { font-size: 1.4rem; line-height: 1; }
-.tiktok-count { font-size: 0.7rem; color: white; font-family: 'DM Sans', sans-serif; font-weight: 600; }
-.tiktok-liked span:first-child { filter: drop-shadow(0 0 6px rgba(224,36,94,0.8)); }
+.tiktok-count { font-size: 0.7rem; color: white; font-family: 'DM Sans', sans-serif; font-weight: 600; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); }
+.tiktok-liked span:first-child { filter: drop-shadow(0 0 6px rgba(224, 36, 94, 0.8)); }
 
-/* ===== MODAL ===== */
-.modal-overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5); display: flex; align-items: flex-end;
-  justify-content: center; z-index: 1000;
-}
-
-.modal-box {
-  background: white; width: 100%; max-width: 600px;
-  border-radius: 20px 20px 0 0; padding: 20px;
-  max-height: 75vh; display: flex; flex-direction: column;
-  box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
-}
-
-.modal-header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid #f0e8de;
-}
-
-.modal-header h3 { font-family: 'DM Sans', sans-serif; font-size: 1rem; color: #2d2420; }
-
-.modal-close-btn {
-  background: #f0e8de; border: none; border-radius: 20px;
-  cursor: pointer; color: #8B4513; width: auto; padding: 4px 10px; margin: 0;
-}
-
-.modal-comments-list { flex: 1; overflow-y: auto; margin-bottom: 12px; }
-
-.modal-comment {
-  background: #faf7f4; border-radius: 10px; padding: 10px 12px;
-  margin-bottom: 8px; border: 1px solid rgba(205,133,63,0.1);
-}
-
-.modal-comment-author { font-weight: 600; font-size: 0.85rem; color: #8B4513; margin-bottom: 4px; font-family: 'DM Sans', sans-serif; }
-.modal-comment-content { font-size: 0.9rem; color: #2d2420; margin-bottom: 4px; font-family: 'DM Sans', sans-serif; }
-.modal-comment-date { font-size: 0.7rem; color: #aaa; font-family: 'DM Sans', sans-serif; }
-.no-comments-text { text-align: center; color: #aaa; font-style: italic; padding: 20px 0; font-family: 'DM Sans', sans-serif; }
-
-.modal-comment-form {
-  display: flex; gap: 8px; padding-top: 10px; border-top: 1px solid #f0e8de;
-}
-
-.modal-comment-form input {
-  flex: 1; margin-bottom: 0; border-color: rgba(205,133,63,0.3);
-  border-radius: 20px; padding: 8px 16px;
-}
-
-.modal-comment-form input:focus { border-color: #CD853F; }
-
-.modal-comment-form button {
-  width: auto; padding: 8px 18px; border-radius: 20px;
-  background: linear-gradient(135deg, #8B4513, #CD853F); margin: 0;
-}
-
-.modal-login-prompt { text-align: center; color: #8B4513; font-family: 'DM Sans', sans-serif; padding: 10px 0; font-size: 0.9rem; }
-.modal-login-prompt a { color: #CD853F; font-weight: 600; text-decoration: none; }
-
-/* ===== HOME PAGE CARD - no forced min-height ===== */
-.fb-card {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Media wrapper fills remaining space */
-.tiktok-media-wrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Video fills the wrapper */
 .tiktok-media-wrapper .fb-card-image {
   flex: 1;
   overflow: hidden;
@@ -482,35 +586,6 @@ a svg {
   display: block;
 }
 
-/* Audio card */
-.fb-audio-player {
-  min-height: 140px;
-  max-height: 200px;
-  background: linear-gradient(135deg, #1a1209, #3d2410);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 16px;
-  padding: 30px 20px;
-}
-
-.fb-audio-icon {
-  font-size: 4rem;
-  animation: audioFloat 2s ease-in-out infinite;
-}
-
-@keyframes audioFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-.fb-audio-player audio {
-  width: 100%;
-  max-width: 320px;
-}
-
-/* Blog post card — cover image fills space */
 .fb-card .fb-card-image {
   overflow: hidden;
 }
@@ -522,52 +597,113 @@ a svg {
   display: block;
 }
 
-/* ===== FULL WIDTH CARDS ON HOME PAGE ===== */
-.fb-card {
-  border-radius: 0 !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  border-left: none !important;
-  border-right: none !important;
+/* =====================================================================
+   6. MODAL (glass bottom sheet)
+   ===================================================================== */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(20, 10, 4, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex; align-items: flex-end;
+  justify-content: center; z-index: 1000;
 }
 
-/* ===== BLOG PAGE ===== */
+.modal-box {
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-border);
+  border-bottom: none;
+  width: 100%; max-width: 600px;
+  border-radius: 24px 24px 0 0; padding: 20px;
+  max-height: 75vh; display: flex; flex-direction: column;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid rgba(139, 69, 19, 0.15);
+}
+
+.modal-header h3 { font-family: 'DM Sans', sans-serif; font-size: 1rem; color: var(--brand-text); }
+
+.modal-close-btn {
+  background: rgba(255, 255, 255, 0.55); border: 1px solid rgba(255, 255, 255, 0.7); border-radius: 20px;
+  cursor: pointer; color: var(--brand-dark); width: auto; padding: 4px 10px; margin: 0;
+}
+
+.modal-close-btn:hover { background: rgba(255, 255, 255, 0.8); }
+
+.modal-comments-list { flex: 1; overflow-y: auto; margin-bottom: 12px; }
+
+.modal-comment {
+  background: rgba(255, 255, 255, 0.45); border-radius: 14px; padding: 10px 12px;
+  margin-bottom: 8px; border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.modal-comment-author { font-weight: 600; font-size: 0.85rem; color: var(--brand-dark); margin-bottom: 4px; font-family: 'DM Sans', sans-serif; }
+.modal-comment-content { font-size: 0.9rem; color: var(--brand-text); margin-bottom: 4px; font-family: 'DM Sans', sans-serif; }
+.modal-comment-date { font-size: 0.7rem; color: #8a7a6e; font-family: 'DM Sans', sans-serif; }
+.no-comments-text { text-align: center; color: #8a7a6e; font-style: italic; padding: 20px 0; font-family: 'DM Sans', sans-serif; }
+
+.modal-comment-form {
+  display: flex; gap: 8px; padding-top: 10px; border-top: 1px solid rgba(139, 69, 19, 0.15);
+}
+
+.modal-comment-form input {
+  flex: 1; margin-bottom: 0;
+  border-radius: 20px; padding: 8px 16px;
+}
+
+.modal-comment-form button {
+  width: auto; padding: 8px 18px; border-radius: 20px; margin: 0;
+}
+
+.modal-login-prompt { text-align: center; color: var(--brand-dark); font-family: 'DM Sans', sans-serif; padding: 10px 0; font-size: 0.9rem; }
+.modal-login-prompt a { color: var(--brand-gold); font-weight: 600; text-decoration: none; }
+
+/* =====================================================================
+   7. BLOG LIST + EDITOR HELPERS
+   ===================================================================== */
 .blog-page {
   max-width: 780px;
   margin: 0 auto;
   padding-bottom: 40px;
 }
 
-/* ===== BLOG LIST ===== */
 .blog-list {
   padding: 0 12px;
 }
 
-/* ===== BLOG LIST ITEM - Google/YouTube style ===== */
 .blog-list-item {
   display: flex;
   gap: 14px;
   padding: 14px 12px;
-  border-bottom: 1px solid rgba(205,133,63,0.12);
-  border-radius: 10px;
-  transition: background 0.2s;
+  margin-bottom: 10px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 18px;
+  transition: background 0.2s, transform 0.15s;
   cursor: pointer;
   text-decoration: none;
 }
 
-.blog-list-item:last-child {
-  border-bottom: none;
+.blog-list-item:active {
+  transform: scale(0.99);
 }
 
-/* Thumbnail */
 .blog-list-thumb {
   flex-shrink: 0;
   width: 100px;
   height: 75px;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   display: block;
-  background: #f0e8de;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .blog-list-thumb img {
@@ -584,10 +720,9 @@ a svg {
   align-items: center;
   justify-content: center;
   font-size: 2rem;
-  background: linear-gradient(135deg, #f0e8de, #e8d5b7);
+  background: linear-gradient(135deg, rgba(240, 232, 222, 0.7), rgba(232, 213, 183, 0.7));
 }
 
-/* Content */
 .blog-list-content {
   flex: 1;
   display: flex;
@@ -599,7 +734,7 @@ a svg {
 .blog-list-title {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #2d2420;
+  color: var(--brand-text);
   text-decoration: none;
   font-family: 'DM Sans', sans-serif;
   line-height: 1.3;
@@ -611,7 +746,7 @@ a svg {
 }
 
 .blog-list-title:hover {
-  color: #CD853F;
+  color: var(--brand-gold);
 }
 
 .blog-list-meta {
@@ -623,20 +758,20 @@ a svg {
 
 .blog-list-author {
   font-size: 0.75rem;
-  color: #8B4513;
+  color: var(--brand-dark);
   font-family: 'DM Sans', sans-serif;
   font-weight: 500;
 }
 
 .blog-list-date {
   font-size: 0.72rem;
-  color: #aaa;
+  color: #8a7a6e;
   font-family: 'DM Sans', sans-serif;
 }
 
 .blog-list-summary {
   font-size: 0.8rem;
-  color: #6b5a4e;
+  color: var(--brand-text-soft);
   font-family: 'DM Sans', sans-serif;
   line-height: 1.4;
   display: -webkit-box;
@@ -657,7 +792,7 @@ a svg {
   border: none;
   cursor: pointer;
   font-size: 0.8rem;
-  color: #8B4513;
+  color: var(--brand-dark);
   width: auto;
   padding: 0;
   margin: 0;
@@ -667,7 +802,7 @@ a svg {
 
 .blog-list-like:hover {
   background: none;
-  color: #CD853F;
+  color: var(--brand-gold);
 }
 
 .blog-list-liked {
@@ -676,13 +811,13 @@ a svg {
 
 .blog-list-comments {
   font-size: 0.8rem;
-  color: #aaa;
+  color: #8a7a6e;
   font-family: 'DM Sans', sans-serif;
 }
 
 .blog-list-read {
   font-size: 0.78rem;
-  color: #CD853F;
+  color: var(--brand-gold);
   text-decoration: none;
   font-weight: 600;
   font-family: 'DM Sans', sans-serif;
@@ -692,26 +827,24 @@ a svg {
 }
 
 .blog-list-read:hover {
-  color: #8B4513;
+  color: var(--brand-dark);
 }
 
-/* ===== EDITOR IMAGE MANAGER ===== */
 .editor-image-manager {
   margin-top: 8px;
   padding: 10px 12px;
-  background: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  background: var(--glass-bg-soft);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
 }
 
 .editor-image-manager-title {
   font-size: 0.8rem;
-  color: #555;
+  color: var(--brand-text-soft);
   margin-bottom: 8px;
   font-weight: bold;
 }
 
-/* Horizontal scrollable row */
 .editor-image-list {
   display: flex;
   flex-direction: row;
@@ -721,7 +854,6 @@ a svg {
   padding-bottom: 6px;
 }
 
-/* Small fixed thumbnail */
 .editor-image-item {
   position: relative;
   display: inline-block;
@@ -732,8 +864,8 @@ a svg {
   width: 80px !important;
   height: 80px !important;
   object-fit: cover;
-  border-radius: 6px;
-  border: 2px solid #ddd;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.7);
   display: block;
 }
 
@@ -752,8 +884,488 @@ a svg {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   z-index: 10;
   padding: 0;
   margin: 0;
+}
+
+/* =====================================================================
+   8. NAV / HEADER (dark glass so white text and icons stay readable)
+   ===================================================================== */
+header {
+  background: var(--glass-dark-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border-bottom: 1px solid var(--glass-dark-border) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* =====================================================================
+   9. CSS-MODULE OVERRIDES
+   ---------------------------------------------------------------------
+   CSS modules rename classes (IndexPage.module.css -> IndexPage_feedHeader__x1y2z),
+   so they can't be targeted by name from here. These selectors match the
+   readable part of the generated name, which stays the same after builds.
+   !important is used so these win over whatever the module sets.
+   A trailing __ (e.g. _sidebar__) matches ONE class exactly, so
+   _sidebar__ does not also catch _sidebarOverlay__ or _sidebarHeader__.
+   ===================================================================== */
+
+/* ---- page wrappers: no solid background, let the image show ---- */
+[class*="IndexPage_feedPage__"],
+[class*="IndexPage_feedContainer__"],
+[class*="UploadMedia_uploadPage__"] {
+  background: transparent !important;
+}
+
+/* ---- Home page (IndexPage.module.css) ---- */
+[class*="IndexPage_feedHeader__"],
+[class*="IndexPage_searchBar__"] {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+  border-radius: var(--radius-card) !important;
+}
+
+[class*="IndexPage_feedHeader__"] h2 { color: var(--brand-text) !important; }
+[class*="IndexPage_feedHeader__"] p  { color: #6b5a4e !important; }
+
+[class*="IndexPage_searchInput__"] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--brand-text) !important;
+}
+
+[class*="IndexPage_searchDropdown__"] {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+  border-radius: var(--radius-card) !important;
+}
+
+[class*="IndexPage_searchResult__"] {
+  background: transparent !important;
+  border-radius: var(--radius-input) !important;
+}
+
+[class*="IndexPage_roomBanner__"] {
+  background: var(--brand-grad) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 4px 14px rgba(50, 25, 8, 0.3) !important;
+  border-radius: var(--radius-card) !important;
+  color: #fff !important;
+}
+
+/* ---- Upload page (UploadMedia.module.css) ---- */
+[class*="UploadMedia_uploadHero__"],
+[class*="UploadMedia_uploadForm__"] {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+  border-radius: var(--radius-card) !important;
+}
+
+[class*="UploadMedia_uploadHero__"] h1 { color: var(--brand-text) !important; }
+[class*="UploadMedia_uploadHero__"] p  { color: #6b5a4e !important; }
+[class*="UploadMedia_uploadLabel__"]   { color: var(--brand-dark) !important; }
+
+[class*="UploadMedia_uploadInput__"] {
+  background: var(--glass-bg-soft) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-input) !important;
+  color: var(--brand-text) !important;
+}
+
+[class*="UploadMedia_catTab__"],
+[class*="UploadMedia_typeBtn__"] {
+  background: rgba(255, 255, 255, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  color: var(--brand-dark) !important;
+  border-radius: var(--radius-pill) !important;
+}
+
+[class*="UploadMedia_catTab__"][class*="UploadMedia_active__"],
+[class*="UploadMedia_typeBtn__"][class*="UploadMedia_active__"] {
+  background: var(--brand-grad) !important;
+  color: #fff !important;
+}
+
+[class*="UploadMedia_submitBtn__"] {
+  background: var(--brand-grad) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  color: #fff !important;
+  border-radius: var(--radius-btn) !important;
+}
+
+[class*="UploadMedia_coverPreviewBox__"] {
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-input) !important;
+  overflow: hidden;
+}
+
+/* ---- Music player (MusicPlayer.module.css) ----
+   The player is dark, so it gets dark glass plus a scrim over the
+   background image to keep its light text readable. */
+[class*="MusicPlayer_portraitRoot__"],
+[class*="MusicPlayer_landscapeRoot__"],
+[class*="MusicPlayer_loadingScreen__"] {
+  background: linear-gradient(180deg, rgba(20, 10, 5, 0.55), rgba(20, 10, 5, 0.75)) !important;
+  color: var(--text-on-dark);
+}
+
+[class*="MusicPlayer_sidebar__"],
+[class*="MusicPlayer_lsSidebar__"] {
+  background: var(--glass-dark-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border-color: var(--glass-dark-border) !important;
+  color: var(--text-on-dark);
+}
+
+[class*="MusicPlayer_trackItem__"] {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid var(--glass-dark-border) !important;
+  border-radius: var(--radius-input) !important;
+  color: var(--text-on-dark);
+}
+
+[class*="MusicPlayer_trackItemActive__"] {
+  background: rgba(205, 133, 63, 0.3) !important;
+}
+
+[class*="MusicPlayer_sortDropdown__"] {
+  background: var(--glass-dark-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-dark-border) !important;
+  border-radius: var(--radius-input) !important;
+}
+
+[class*="MusicPlayer_likeBtn__"],
+[class*="MusicPlayer_statBadge__"],
+[class*="MusicPlayer_trackStatChip__"] {
+  background: rgba(255, 255, 255, 0.14) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-dark-border) !important;
+  color: var(--text-on-dark) !important;
+  border-radius: var(--radius-pill) !important;
+}
+
+[class*="MusicPlayer_likeBtnActive__"] {
+  color: #ff6b8e !important;
+}
+
+[class*="MusicPlayer_toast__"] {
+  background: var(--glass-dark-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-dark-border) !important;
+  color: var(--text-on-dark) !important;
+}
+
+[class*="MusicPlayer_playBtn__"] {
+  background: var(--brand-grad) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* =====================================================================
+   10. EDUCATION PAGES  (EducationPage + EducationPostPage)
+   ---------------------------------------------------------------------
+   These two components carry their own <style> block (.edu-page,
+   .edu-card ...). That block loads AFTER this file, so !important is
+   needed here to override it.
+   ===================================================================== */
+.edu-page {
+  background: transparent !important;
+  min-height: 100vh;
+}
+
+.edu-hero {
+  background: var(--glass-dark-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-dark-border) !important;
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-card);
+  margin: 12px 12px 0;
+}
+
+.edu-tabs {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-card);
+  margin: 12px 12px 0;
+}
+
+.edu-tab {
+  background: rgba(255, 255, 255, 0.45) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  border-radius: var(--radius-pill) !important;
+}
+
+.edu-card {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+  border-radius: var(--radius-card) !important;
+}
+
+.edu-badge-cat,
+.edu-post-badge-cat {
+  background: rgba(255, 255, 255, 0.45) !important;
+  border-color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.edu-card-date,
+.edu-post-date {
+  color: #8a7a6e !important;
+}
+
+.edu-empty {
+  color: #fff !important;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 16px;
+}
+
+/* "Join Enchwra" line under the grid */
+.edu-grid + div {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-card);
+  margin: 0 12px;
+}
+
+/* Single article: one wide glass sheet so long text stays readable */
+.edu-post-page {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  min-height: 0 !important;
+  width: calc(100% - 24px);
+  margin: 12px auto !important;
+}
+
+/* "Loading..." and "Content not found" boxes (they only have inline styles) */
+div[style*="padding: 60px 20px"] {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-card);
+  margin: 12px;
+}
+
+/* =====================================================================
+   11. LOGIN / REGISTER / FORGOT PASSWORD  (Auth.module.css)
+   ---------------------------------------------------------------------
+   The card has a spinning border BEHIND it, so the card stays fairly
+   solid (--auth-card-bg). For a fully see-through card: lower
+   --auth-card-bg in :root and un-comment the last rule below.
+   ===================================================================== */
+[class*="Auth_authPage__"] {
+  background: transparent !important;
+}
+
+[class*="Auth_authForm__"] {
+  background: var(--auth-card-bg) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  color: var(--text-on-dark);
+}
+
+/* [class*="Auth_borderRotator__"] { display: none !important; } */
+
+/* =====================================================================
+   12. COMMUNITY ROOM  (RoomPage.module.css)
+   ===================================================================== */
+[class*="RoomPage_roomPage__"] {
+  background: transparent !important;
+}
+
+[class*="RoomPage_roomHeader__"],
+[class*="RoomPage_roomLoginPrompt__"] {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+  border-radius: var(--radius-card) !important;
+  color: var(--brand-text);
+}
+
+[class*="RoomPage_roomHeader__"] h2 { color: var(--brand-text) !important; }
+[class*="RoomPage_roomHeader__"] p  { color: #6b5a4e !important; }
+
+[class*="RoomPage_messagesContainer__"] {
+  overflow-x: hidden !important;   /* never scroll sideways */
+  background: rgba(0, 0, 0, 0.18) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-dark-border) !important;
+  border-radius: var(--radius-card) !important;
+}
+
+[class*="RoomPage_noMessages__"] {
+  color: #fff !important;
+}
+
+[class*="RoomPage_messageBubble__"] {
+  min-width: 0;
+  overflow-wrap: anywhere;          /* long words and links wrap instead of overflowing */
+  word-break: break-word;
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(8px) saturate(140%);
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: 0 4px 14px rgba(50, 25, 8, 0.2) !important;
+  border-radius: 16px !important;
+}
+
+[class*="RoomPage_ownMessage__"] {
+  background: linear-gradient(135deg, rgba(228, 160, 92, 0.88), rgba(205, 133, 63, 0.82)) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+}
+
+[class*="RoomPage_messageContent__"] { color: var(--brand-text) !important; }
+[class*="RoomPage_messageTime__"]    { color: #7a6a5e !important; }
+
+[class*="RoomPage_messageForm__"] {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-card) !important;
+  padding: 10px 12px !important;
+  align-items: flex-end !important;   /* Send button stays at the bottom while the box grows */
+}
+
+/* Auto-growing message box: starts as one line, grows with the text,
+   then scrolls once it reaches max-height (JS sets the live height). */
+[class*="RoomPage_messageForm__"] textarea {
+  flex: 1;
+  min-width: 0;
+  margin: 0 !important;
+  resize: none !important;
+  overflow-y: auto;
+  min-height: 42px;
+  max-height: 140px;            /* ~5 lines - change to taste */
+  line-height: 1.4;
+  font: inherit;
+  padding: 10px 14px !important;
+  border-radius: 14px !important;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
+}
+[class*="RoomPage_messageForm__"] button[type="submit"] {
+  flex-shrink: 0;
+  height: 42px;
+}
+
+/* own bubbles are gold, so name + time need dark text to stay readable */
+[class*="RoomPage_ownMessage__"] [class*="RoomPage_messageUsername__"] a { color: #2d2420 !important; }
+[class*="RoomPage_ownMessage__"] [class*="RoomPage_messageTime__"]      { color: #4a2c14 !important; }
+
+/* =====================================================================
+   13. PROFILE PAGE  (ProfilePage.module.css)
+   ===================================================================== */
+[class*="ProfilePage_profilePage__"],
+[class*="ProfilePage_profileFeed__"] {
+  background: transparent !important;
+}
+
+[class*="ProfilePage_profileHeader__"],
+[class*="ProfilePage_editProfileForm__"],
+[class*="ProfilePage_adminPanel__"],
+[class*="ProfilePage_adminPanelEmpty__"] {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+  border-radius: var(--radius-card) !important;
+}
+
+[class*="ProfilePage_profileUsername__"] { color: var(--brand-text) !important; }
+[class*="ProfilePage_profileBio__"]      { color: var(--brand-text-soft) !important; }
+
+[class*="ProfilePage_profilePhoto__"] {
+  border: 3px solid rgba(255, 255, 255, 0.75) !important;
+  box-shadow: 0 4px 16px rgba(50, 25, 8, 0.35) !important;
+}
+
+[class*="ProfilePage_editProfileBtn__"] {
+  background: var(--brand-grad) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  color: #fff !important;
+}
+
+[class*="ProfilePage_logoutBtn__"] {
+  background: rgba(255, 255, 255, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  color: var(--brand-dark) !important;
+}
+
+[class*="ProfilePage_editProfileForm__"] h3,
+[class*="ProfilePage_editProfileForm__"] label {
+  color: var(--brand-dark) !important;
+}
+
+[class*="ProfilePage_pendingCard__"] {
+  background: var(--glass-bg-soft) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-input) !important;
+}
+
+/* "<name>'s Content (n)" heading becomes a small glass label */
+[class*="ProfilePage_feedTitle__"] {
+  display: block;
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-card) !important;
+  color: var(--brand-text) !important;
+  padding: 10px 16px;
+  margin: 12px 12px 14px;
+}
+
+/* Delete-account popup */
+[class*="ProfilePage_deleteModalOverlay__"] {
+  background: rgba(20, 10, 4, 0.55) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+[class*="ProfilePage_deleteModalBox__"] {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
 }

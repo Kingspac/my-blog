@@ -24,19 +24,17 @@ function deleteFile(filePath) {
 exports.getAllMedia = async (req, res) => {
   try {
     const { category } = req.query; // Look for ?category=music in the URL
-    const filter = category ? { category } : {}; 
+    const filter = category ? { category } : {};
 
     const media = await Media.find(filter)
       .populate("uploadedBy", ["username"])
       .sort({ createdAt: -1 });
-      
+
     res.json(media);
   } catch (e) {
     res.status(500).json({ message: "Failed to get media", error: e.message });
   }
 };
-
-
 
 // GET SINGLE MEDIA
 exports.getSingleMedia = async (req, res) => {
@@ -59,11 +57,41 @@ exports.uploadMedia = [
   async (req, res) => {
     const { token } = req.cookies;
 
+    // If we reject the request, remove the temp files multer already saved
+    const discardUploads = () => {
+      Object.values(req.files || {})
+        .flat()
+        .forEach((f) => {
+          try { fs.unlinkSync(f.path); } catch (_) {}
+        });
+    };
+
     jwt.verify(token, secret, {}, async (error, info) => {
-      if (error) return res.status(403).json("invalid token");
+      if (error) {
+        discardUploads();
+        return res.status(403).json("invalid token");
+      }
 
       try {
-        const { title, artist, description, youtubeLink, category } = req.body;
+        const { title, artist, description, youtubeLink, category, releaseDate } = req.body;
+
+        // Artist / creator name is mandatory
+        if (!artist || !artist.trim()) {
+          discardUploads();
+          return res.status(400).json("Artist / creator name is required");
+        }
+
+        // Release date (YYYY-MM-DD from the form). Stored at noon UTC so the
+        // calendar day doesn't shift when viewed in other timezones.
+        let parsedDate = new Date();
+        if (releaseDate) {
+          const d = new Date(`${releaseDate}T12:00:00.000Z`);
+          if (isNaN(d.getTime())) {
+            discardUploads();
+            return res.status(400).json("Invalid release date");
+          }
+          parsedDate = d;
+        }
 
         let audioFilePath = null;
         let coverPhotoPath = null;
@@ -86,8 +114,9 @@ exports.uploadMedia = [
 
         const mediaDoc = await Media.create({
           title,
-          artist: artist || "",
+          artist: artist.trim(),
           description,
+          releaseDate: parsedDate,
           audioFile: audioFilePath,
           youtubeLink: youtubeLink || null,
           coverPhoto: coverPhotoPath,
