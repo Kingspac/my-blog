@@ -1,84 +1,116 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
 
 /* =====================================================================
-   ENCHWRA — GLOBAL GLASSMORPHISM THEME  (everything lives in this file)
-
-   1. THEME KNOBS ........ change the look here (colours, blur, opacity)
-   2. BASE ............... body, background image, inputs, buttons
-   3. SHARED COMPONENTS .. cards, modals, blog list, page headers
-   4. PAGE OVERRIDES ..... restyles the CSS-module pages from here, so you
-                           never have to touch the .module.css files
+   ENCHWRA — GLOBAL GLASSMORPHISM THEME
+   ---------------------------------------------------------------------
+   Everything you will want to tweak is in the :root block below.
+   Change a value there and it updates every page, including the pages
+   that use CSS modules (they are overridden in section 9).
    ===================================================================== */
-
-/* ---------------------------------------------------------------------
-   1. THEME KNOBS
-   --------------------------------------------------------------------- */
 :root {
-  /* Background picture: put the file at src/assets/bg.jpg */
-  --bg-image: url("./assets/bg.jpg");
-  --bg-overlay-top: rgba(30, 15, 5, 0.55);   /* dark gradient over the picture */
+  /* ---------- 1. BACKGROUND IMAGE ---------- */
+  --bg-image: url("./assets/bg.jpg");          /* file lives in src/assets */
+  --bg-fallback: #3a2314;                      /* shown if the image fails */
+  --bg-overlay-top: rgba(30, 15, 5, 0.55);     /* dark gradient over image */
   --bg-overlay-mid: rgba(90, 45, 15, 0.35);
   --bg-overlay-bottom: rgba(30, 15, 5, 0.65);
 
-  /* Glass strength */
-  --blur-amount:-100px;          /* bigger = more frosted (heavier on phones) */
-  --glass-alpha: 0.55;          /* 0 = see-through, 1 = solid */
-  --glass-alpha-strong: 0.78;   /* modals, dropdowns */
-  --glass-radius: 20px;
-
-  /* Light glass (cards, panels)  — r, g, b */
-  --glass-rgb: 255, 248, 240;
-  /* Dark glass (music player, header) — r, g, b */
-  --glass-dark-rgb: 30, 16, 8;
-  --glass-dark-alpha: 0.55;
-
-  /* Colours */
-  --brand-dark: #8B4513;
-  --brand-gold: #CD853F;
-  --text: #2d2420;
-  --text-muted: #6b5a4e;
-  --love: #e0245e;
-
-  /* Built from the knobs above (no need to edit these) */
-  --glass-bg: rgba(var(--glass-rgb), var(--glass-alpha));
-  --glass-bg-strong: rgba(var(--glass-rgb), var(--glass-alpha-strong));
+  /* ---------- 2. LIGHT GLASS (cards, headers, forms, modals) ---------- */
+  --glass-bg: rgba(255, 248, 240, 0.55);
+  --glass-bg-strong: rgba(255, 248, 240, 0.78);
   --glass-bg-soft: rgba(255, 255, 255, 0.35);
-  --glass-dark: rgba(var(--glass-dark-rgb), var(--glass-dark-alpha));
   --glass-border: rgba(255, 255, 255, 0.5);
   --glass-shadow: 0 8px 28px rgba(50, 25, 8, 0.28);
-  --glass-blur: blur(var(--blur-amount)) saturate(140%);
-  --glass-blur-strong: blur(calc(var(--blur-amount) * 1.8)) saturate(150%);
+  --glass-blur: blur(12px) saturate(140%);
+  --glass-blur-strong: blur(22px) saturate(150%);
+
+  /* ---------- 3. DARK GLASS (nav bar, music player, side panels) ---------- */
+  --glass-dark-bg: rgba(26, 16, 8, 0.55);
+  --glass-dark-bg-strong: rgba(26, 16, 8, 0.80);
+  --glass-dark-border: rgba(255, 255, 255, 0.18);
+  --text-on-dark: #f5e9d8;
+  --auth-card-bg: rgba(26, 16, 8, 0.90);   /* login/register card; keep high, a spinning border sits behind it */
+
+  /* ---------- 4. SHAPES ---------- */
+  --radius-card: 20px;
+  --radius-btn: 14px;
+  --radius-input: 12px;
+  --radius-pill: 999px;
+
+  /* ---------- 5. BRAND COLOURS ---------- */
+  --brand-dark: #8B4513;
+  --brand-gold: #CD853F;
+  --brand-text: #2d2420;
+  --brand-text-soft: #5a483c;
   --brand-grad: linear-gradient(135deg, rgba(139, 69, 19, 0.85), rgba(205, 133, 63, 0.85));
   --brand-grad-hover: linear-gradient(135deg, rgba(160, 82, 30, 0.95), rgba(222, 150, 80, 0.95));
 }
 
-/* Browsers without backdrop-filter get a more solid glass */
+/* Browsers without backdrop-filter get a more solid glass so text stays readable */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   :root {
-    --glass-alpha: 0.9;
-    --glass-alpha-strong: 0.96;
-    --glass-dark-alpha: 0.88;
+    --glass-bg: rgba(255, 248, 240, 0.9);
+    --glass-bg-strong: rgba(255, 248, 240, 0.96);
     --glass-bg-soft: rgba(255, 255, 255, 0.8);
+    --glass-dark-bg: rgba(26, 16, 8, 0.9);
+    --glass-dark-bg-strong: rgba(26, 16, 8, 0.95);
   }
 }
 
-/* ---------------------------------------------------------------------
-   2. BASE
-   --------------------------------------------------------------------- */
+/* =====================================================================
+   REUSABLE GLASS CLASSES — add to any element in JSX if you want glass
+   e.g. <div className="glass"> ... </div>
+   ===================================================================== */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-card);
+}
+
+.glass-strong {
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-card);
+}
+
+.glass-dark {
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-dark-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-card);
+  color: var(--text-on-dark);
+}
+
+/* =====================================================================
+   1. BASE
+   ===================================================================== */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+/* Themed scrollbars: thin, gold thumb, no white track or arrow buttons.
+   Change the two colours (thumb, track) to taste. */
+:root { scrollbar-color: rgba(205, 133, 63, 0.75) rgba(0, 0, 0, 0.15); }
+* { scrollbar-width: thin; }
+
 body {
   color: #222;
   font-family: 'DM Sans', Arial, sans-serif;
-  background-color: #3a2314; /* shown only if the image fails to load */
+  background-color: var(--bg-fallback);
   min-height: 100vh;
 }
 
-/* Fixed background layer: picture + dark gradient.
+/* Fixed background layer: image + dark gradient on top.
    (A fixed layer works on Android; background-attachment: fixed does not.) */
 body::before {
   content: "";
@@ -91,7 +123,7 @@ body::before {
       var(--bg-overlay-mid) 50%,
       var(--bg-overlay-bottom) 100%),
     var(--bg-image) center / cover no-repeat;
-  background-color: #3a2314;
+  background-color: var(--bg-fallback);
 }
 
 img {
@@ -106,21 +138,18 @@ main {
   background: transparent;
 }
 
-a svg {
-  height: 20px;
-}
-
-/* ===== INPUTS ===== */
-input,
-select {
+/* =====================================================================
+   2. INPUTS + BUTTONS
+   ===================================================================== */
+input {
   display: block;
   margin-bottom: 12px;
   width: 100%;
   padding: 10px 14px;
   border: 1px solid var(--glass-border);
-  border-radius: 12px;
+  border-radius: var(--radius-input);
   background-color: var(--glass-bg-soft);
-  color: var(--text);
+  color: var(--brand-text);
   font-size: 0.95rem;
   font-family: 'DM Sans', Arial, sans-serif;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
@@ -130,9 +159,9 @@ textarea {
   width: 100%;
   padding: 10px 14px;
   border: 1px solid var(--glass-border);
-  border-radius: 12px;
+  border-radius: var(--radius-input);
   background-color: var(--glass-bg-soft);
-  color: var(--text);
+  color: var(--brand-text);
   font-size: 0.95rem;
   resize: vertical;
   font-family: 'DM Sans', Arial, sans-serif;
@@ -145,7 +174,6 @@ textarea::placeholder {
 }
 
 input:focus,
-select:focus,
 textarea:focus {
   outline: none;
   border-color: var(--brand-gold);
@@ -153,14 +181,13 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(205, 133, 63, 0.25);
 }
 
-/* ===== BUTTONS (glass-gold) ===== */
 button {
   width: 100%;
   display: block;
   background: var(--brand-grad);
   border: 1px solid rgba(255, 255, 255, 0.35);
   color: #fff;
-  border-radius: 14px;
+  border-radius: var(--radius-btn);
   padding: 10px 0;
   cursor: pointer;
   font-size: 1rem;
@@ -181,7 +208,7 @@ button:active {
   background: var(--brand-grad);
   color: white;
   padding: 9px 22px;
-  border-radius: 14px;
+  border-radius: var(--radius-btn);
   border: 1px solid rgba(255, 255, 255, 0.4);
   text-decoration: none;
   font-size: 0.9rem;
@@ -191,7 +218,7 @@ button:active {
   -webkit-backdrop-filter: var(--glass-blur);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35),
               0 4px 14px rgba(50, 25, 8, 0.3);
-  transition: transform 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
 }
 
 .create-btn:active {
@@ -208,11 +235,9 @@ button:active {
   justify-content: center;
 }
 
-/* ---------------------------------------------------------------------
-   3. SHARED COMPONENTS
-   --------------------------------------------------------------------- */
-
-/* ===== GLASS PANELS (register prompt, page header, empty state) ===== */
+/* =====================================================================
+   3. GLASS PANELS (page header, register prompt, empty state)
+   ===================================================================== */
 .register-prompt {
   text-align: center;
   padding: 30px 20px;
@@ -221,13 +246,13 @@ button:active {
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
-  border-radius: var(--glass-radius);
+  border-radius: var(--radius-card);
   margin: 30px 12px 0;
 }
 
 .register-prompt p {
   font-size: 1rem;
-  color: var(--text);
+  color: var(--brand-text);
   margin-bottom: 15px;
 }
 
@@ -240,17 +265,17 @@ button:active {
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
-  border-radius: var(--glass-radius);
+  border-radius: var(--radius-card);
 }
 
 .page-header h2 {
   font-size: 1.6rem;
   margin-bottom: 6px;
-  color: var(--text);
+  color: var(--brand-text);
 }
 
 .page-header p {
-  color: var(--text-muted);
+  color: #6b5a4e;
   font-size: 0.95rem;
   margin-bottom: 15px;
 }
@@ -268,6 +293,10 @@ button:active {
   border-radius: 16px;
 }
 
+a svg {
+  height: 20px;
+}
+
 .youtube-embed {
   width: 100%;
   margin-bottom: 10px;
@@ -277,15 +306,17 @@ button:active {
   border-radius: 12px;
 }
 
-/* ===== GLASS CARD (Facebook-style) ===== */
+/* =====================================================================
+   4. GLASS CARD (feed cards for posts + media)
+   ===================================================================== */
 .fb-card {
   display: flex;
   flex-direction: column;
   background: var(--glass-bg);
-  backdrop-filter: blur(calc(var(--blur-amount) * 0.85)) saturate(140%);
-  -webkit-backdrop-filter: blur(calc(var(--blur-amount) * 0.85)) saturate(140%);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
   border: 1px solid var(--glass-border);
-  border-radius: var(--glass-radius);
+  border-radius: var(--radius-card);
   box-shadow: var(--glass-shadow);
   margin: 0 10px 14px;
   overflow: hidden;
@@ -312,7 +343,6 @@ button:active {
   font-weight: 700;
   font-size: 1rem;
   flex-shrink: 0;
-  overflow: hidden;
   border: 2px solid rgba(255, 255, 255, 0.7);
   box-shadow: 0 2px 8px rgba(139, 69, 19, 0.35);
 }
@@ -327,7 +357,7 @@ button:active {
 .fb-author-name {
   font-weight: 600;
   font-size: 0.9rem;
-  color: var(--text);
+  color: var(--brand-text);
   text-decoration: none;
   transition: color 0.2s;
 }
@@ -346,7 +376,7 @@ button:active {
   background: rgba(255, 255, 255, 0.45);
   color: var(--brand-dark);
   padding: 3px 10px;
-  border-radius: 20px;
+  border-radius: var(--radius-pill);
   font-weight: 600;
   border: 1px solid rgba(255, 255, 255, 0.7);
   white-space: nowrap;
@@ -360,7 +390,7 @@ button:active {
   display: block;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--brand-text);
   text-decoration: none;
   margin-bottom: 5px;
   line-height: 1.4;
@@ -373,7 +403,7 @@ button:active {
 
 .fb-summary {
   font-size: 0.88rem;
-  color: #5a483c;
+  color: var(--brand-text-soft);
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -403,7 +433,6 @@ button:active {
   transform: scale(1.02);
 }
 
-/* Audio player (dark glass) */
 .fb-audio-player {
   display: flex;
   align-items: center;
@@ -433,7 +462,7 @@ button:active {
   max-width: 320px;
 }
 
-/* Facebook footer is hidden: the TikTok buttons are used instead */
+/* Facebook footer - hidden, the TikTok buttons are used instead */
 .fb-card-footer {
   display: none !important;
 }
@@ -458,7 +487,7 @@ button:active {
   font-weight: 500;
   font-family: 'DM Sans', sans-serif;
   cursor: pointer;
-  border-radius: 12px;
+  border-radius: var(--radius-input);
   text-decoration: none;
   transition: all 0.2s ease;
   width: auto;
@@ -480,10 +509,12 @@ button:active {
 }
 
 .fb-liked {
-  color: var(--love) !important;
+  color: #e0245e !important;
 }
 
-/* ===== TIKTOK STYLE (glass floating buttons) ===== */
+/* =====================================================================
+   5. TIKTOK-STYLE FLOATING BUTTONS + MEDIA
+   ===================================================================== */
 .tiktok-card { position: relative; }
 
 .tiktok-media-wrapper {
@@ -566,7 +597,9 @@ button:active {
   display: block;
 }
 
-/* ===== MODAL (glass bottom sheet) ===== */
+/* =====================================================================
+   6. MODAL (glass bottom sheet)
+   ===================================================================== */
 .modal-overlay {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(20, 10, 4, 0.5);
@@ -593,7 +626,7 @@ button:active {
   margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid rgba(139, 69, 19, 0.15);
 }
 
-.modal-header h3 { font-family: 'DM Sans', sans-serif; font-size: 1rem; color: var(--text); }
+.modal-header h3 { font-family: 'DM Sans', sans-serif; font-size: 1rem; color: var(--brand-text); }
 
 .modal-close-btn {
   background: rgba(255, 255, 255, 0.55); border: 1px solid rgba(255, 255, 255, 0.7); border-radius: 20px;
@@ -610,7 +643,7 @@ button:active {
 }
 
 .modal-comment-author { font-weight: 600; font-size: 0.85rem; color: var(--brand-dark); margin-bottom: 4px; font-family: 'DM Sans', sans-serif; }
-.modal-comment-content { font-size: 0.9rem; color: var(--text); margin-bottom: 4px; font-family: 'DM Sans', sans-serif; }
+.modal-comment-content { font-size: 0.9rem; color: var(--brand-text); margin-bottom: 4px; font-family: 'DM Sans', sans-serif; }
 .modal-comment-date { font-size: 0.7rem; color: #8a7a6e; font-family: 'DM Sans', sans-serif; }
 .no-comments-text { text-align: center; color: #8a7a6e; font-style: italic; padding: 20px 0; font-family: 'DM Sans', sans-serif; }
 
@@ -630,7 +663,9 @@ button:active {
 .modal-login-prompt { text-align: center; color: var(--brand-dark); font-family: 'DM Sans', sans-serif; padding: 10px 0; font-size: 0.9rem; }
 .modal-login-prompt a { color: var(--brand-gold); font-weight: 600; text-decoration: none; }
 
-/* ===== BLOG LIST (glass rows) ===== */
+/* =====================================================================
+   7. BLOG LIST + EDITOR HELPERS
+   ===================================================================== */
 .blog-page {
   max-width: 780px;
   margin: 0 auto;
@@ -647,8 +682,8 @@ button:active {
   padding: 14px 12px;
   margin-bottom: 10px;
   background: var(--glass-bg);
-  backdrop-filter: blur(calc(var(--blur-amount) * 0.85)) saturate(140%);
-  -webkit-backdrop-filter: blur(calc(var(--blur-amount) * 0.85)) saturate(140%);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   border-radius: 18px;
@@ -699,7 +734,7 @@ button:active {
 .blog-list-title {
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--brand-text);
   text-decoration: none;
   font-family: 'DM Sans', sans-serif;
   line-height: 1.3;
@@ -736,7 +771,7 @@ button:active {
 
 .blog-list-summary {
   font-size: 0.8rem;
-  color: #5a483c;
+  color: var(--brand-text-soft);
   font-family: 'DM Sans', sans-serif;
   line-height: 1.4;
   display: -webkit-box;
@@ -771,7 +806,7 @@ button:active {
 }
 
 .blog-list-liked {
-  color: var(--love) !important;
+  color: #e0245e !important;
 }
 
 .blog-list-comments {
@@ -795,7 +830,6 @@ button:active {
   color: var(--brand-dark);
 }
 
-/* ===== EDITOR IMAGE MANAGER ===== */
 .editor-image-manager {
   margin-top: 8px;
   padding: 10px 12px;
@@ -806,7 +840,7 @@ button:active {
 
 .editor-image-manager-title {
   font-size: 0.8rem;
-  color: #5a483c;
+  color: var(--brand-text-soft);
   margin-bottom: 8px;
   font-weight: bold;
 }
@@ -856,139 +890,108 @@ button:active {
   margin: 0;
 }
 
-/* ---------------------------------------------------------------------
-   4. PAGE OVERRIDES  (CSS-module pages, styled from here)
-
-   React turns a module class like "searchBar" in IndexPage.module.css into
-   something like "IndexPage_searchBar__x8Jf2". The selectors below match
-   that pattern, so no .module.css file needs to be edited.
-   !important is used on purpose so this file always wins.
-   --------------------------------------------------------------------- */
-
-/* ===== TOP BAR / NAV (fixed header) ===== */
+/* =====================================================================
+   8. NAV / HEADER (dark glass so white text and icons stay readable)
+   ===================================================================== */
 header {
-  background: var(--glass-dark) !important;
-  backdrop-filter: var(--glass-blur-strong) !important;
-  -webkit-backdrop-filter: var(--glass-blur-strong) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.25) !important;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3) !important;
+  background: var(--glass-dark-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border-bottom: 1px solid var(--glass-dark-border) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
 }
 
-/* ===== HOME PAGE (IndexPage.module.css) ===== */
+/* =====================================================================
+   9. CSS-MODULE OVERRIDES
+   ---------------------------------------------------------------------
+   CSS modules rename classes (IndexPage.module.css -> IndexPage_feedHeader__x1y2z),
+   so they can't be targeted by name from here. These selectors match the
+   readable part of the generated name, which stays the same after builds.
+   !important is used so these win over whatever the module sets.
+   A trailing __ (e.g. _sidebar__) matches ONE class exactly, so
+   _sidebar__ does not also catch _sidebarOverlay__ or _sidebarHeader__.
+   ===================================================================== */
+
+/* ---- page wrappers: no solid background, let the image show ---- */
 [class*="IndexPage_feedPage__"],
 [class*="IndexPage_feedContainer__"],
-[class*="IndexPage_searchWrapper__"] {
-  background: transparent !important;
-}
-
-[class*="IndexPage_feedHeader__"] {
-  background: var(--glass-bg) !important;
-  backdrop-filter: var(--glass-blur) !important;
-  -webkit-backdrop-filter: var(--glass-blur) !important;
-  border: 1px solid var(--glass-border) !important;
-  border-radius: var(--glass-radius) !important;
-  box-shadow: var(--glass-shadow) !important;
-  margin: 12px 12px 14px !important;
-}
-
-[class*="IndexPage_feedHeader__"] h2 { color: var(--text) !important; }
-[class*="IndexPage_feedHeader__"] p  { color: var(--text-muted) !important; }
-
-[class*="IndexPage_searchBar__"] {
-  background: var(--glass-bg) !important;
-  backdrop-filter: var(--glass-blur) !important;
-  -webkit-backdrop-filter: var(--glass-blur) !important;
-  border: 1px solid var(--glass-border) !important;
-  border-radius: 999px !important;
-  box-shadow: var(--glass-shadow) !important;
-}
-
-/* the input sits inside the glass bar, so it stays flat */
-[class*="IndexPage_searchInput__"] {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  margin: 0 !important;
-  color: var(--text) !important;
-}
-
-[class*="IndexPage_searchClear__"] {
-  background: rgba(255, 255, 255, 0.45) !important;
-  color: var(--brand-dark) !important;
-  border: none !important;
-}
-
-[class*="IndexPage_searchDropdown__"] {
-  background: var(--glass-bg-strong) !important;
-  backdrop-filter: var(--glass-blur-strong) !important;
-  -webkit-backdrop-filter: var(--glass-blur-strong) !important;
-  border: 1px solid var(--glass-border) !important;
-  border-radius: 18px !important;
-  box-shadow: var(--glass-shadow) !important;
-}
-
-[class*="IndexPage_searchStatus__"],
-[class*="IndexPage_searchCount__"],
-[class*="IndexPage_searchResultSub__"] { color: var(--text-muted) !important; }
-
-[class*="IndexPage_searchResultTitle__"] { color: var(--text) !important; }
-[class*="IndexPage_searchResultType__"]  { color: var(--brand-dark) !important; }
-
-[class*="IndexPage_searchResult__"] {
-  background: transparent !important;
-  border-radius: 14px !important;
-}
-
-[class*="IndexPage_searchResult__"]:hover {
-  background: rgba(255, 255, 255, 0.45) !important;
-}
-
-[class*="IndexPage_searchResultIcon__"] {
-  background: rgba(255, 255, 255, 0.5) !important;
-}
-
-[class*="IndexPage_roomBanner__"] {
-  background: var(--brand-grad) !important;
-  color: #fff !important;
-  border: 1px solid rgba(255, 255, 255, 0.4) !important;
-  backdrop-filter: var(--glass-blur) !important;
-  -webkit-backdrop-filter: var(--glass-blur) !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 4px 14px rgba(50, 25, 8, 0.3) !important;
-  border-radius: var(--glass-radius) !important;
-}
-
-/* ===== UPLOAD PAGE (UploadMedia.module.css) ===== */
 [class*="UploadMedia_uploadPage__"] {
   background: transparent !important;
 }
 
+/* ---- Home page (IndexPage.module.css) ---- */
+[class*="IndexPage_feedHeader__"],
+[class*="IndexPage_searchBar__"] {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+  border-radius: var(--radius-card) !important;
+}
+
+[class*="IndexPage_feedHeader__"] h2 { color: var(--brand-text) !important; }
+[class*="IndexPage_feedHeader__"] p  { color: #6b5a4e !important; }
+
+[class*="IndexPage_searchInput__"] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--brand-text) !important;
+}
+
+[class*="IndexPage_searchDropdown__"] {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+  border-radius: var(--radius-card) !important;
+}
+
+[class*="IndexPage_searchResult__"] {
+  background: transparent !important;
+  border-radius: var(--radius-input) !important;
+}
+
+[class*="IndexPage_roomBanner__"] {
+  background: var(--brand-grad) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 4px 14px rgba(50, 25, 8, 0.3) !important;
+  border-radius: var(--radius-card) !important;
+  color: #fff !important;
+}
+
+/* ---- Upload page (UploadMedia.module.css) ---- */
 [class*="UploadMedia_uploadHero__"],
 [class*="UploadMedia_uploadForm__"] {
   background: var(--glass-bg) !important;
-  backdrop-filter: var(--glass-blur) !important;
-  -webkit-backdrop-filter: var(--glass-blur) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border) !important;
-  border-radius: var(--glass-radius) !important;
   box-shadow: var(--glass-shadow) !important;
+  border-radius: var(--radius-card) !important;
 }
 
-[class*="UploadMedia_uploadHero__"] h1 { color: var(--text) !important; }
-[class*="UploadMedia_uploadHero__"] p  { color: var(--text-muted) !important; }
+[class*="UploadMedia_uploadHero__"] h1 { color: var(--brand-text) !important; }
+[class*="UploadMedia_uploadHero__"] p  { color: #6b5a4e !important; }
 [class*="UploadMedia_uploadLabel__"]   { color: var(--brand-dark) !important; }
-[class*="UploadMedia_divider__"]       { border-color: rgba(139, 69, 19, 0.18) !important; }
 
 [class*="UploadMedia_uploadInput__"] {
   background: var(--glass-bg-soft) !important;
   border: 1px solid var(--glass-border) !important;
-  color: var(--text) !important;
-  border-radius: 12px !important;
+  border-radius: var(--radius-input) !important;
+  color: var(--brand-text) !important;
 }
 
 [class*="UploadMedia_catTab__"],
 [class*="UploadMedia_typeBtn__"] {
   background: rgba(255, 255, 255, 0.45) !important;
-  color: var(--brand-dark) !important;
   border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  color: var(--brand-dark) !important;
+  border-radius: var(--radius-pill) !important;
 }
 
 [class*="UploadMedia_catTab__"][class*="UploadMedia_active__"],
@@ -997,96 +1000,372 @@ header {
   color: #fff !important;
 }
 
-[class*="UploadMedia_coverPreviewBox__"] {
-  background: rgba(255, 255, 255, 0.3) !important;
-  border: 1px solid var(--glass-border) !important;
-  border-radius: 14px !important;
-}
-
 [class*="UploadMedia_submitBtn__"] {
   background: var(--brand-grad) !important;
-  color: #fff !important;
   border: 1px solid rgba(255, 255, 255, 0.4) !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 4px 14px rgba(50, 25, 8, 0.3) !important;
+  color: #fff !important;
+  border-radius: var(--radius-btn) !important;
 }
 
-/* ===== MUSIC PLAYER (MusicPlayer.module.css) — dark glass ===== */
+[class*="UploadMedia_coverPreviewBox__"] {
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-input) !important;
+  overflow: hidden;
+}
+
+/* ---- Music player (MusicPlayer.module.css) ----
+   The player is dark, so it gets dark glass plus a scrim over the
+   background image to keep its light text readable. */
 [class*="MusicPlayer_portraitRoot__"],
 [class*="MusicPlayer_landscapeRoot__"],
 [class*="MusicPlayer_loadingScreen__"] {
-  background: transparent !important;
+  background: linear-gradient(180deg, rgba(20, 10, 5, 0.55), rgba(20, 10, 5, 0.75)) !important;
+  color: var(--text-on-dark);
 }
 
 [class*="MusicPlayer_sidebar__"],
-[class*="MusicPlayer_lsSidebar__"],
-[class*="MusicPlayer_sortDropdown__"] {
-  background: rgba(var(--glass-dark-rgb), 0.62) !important;
-  backdrop-filter: var(--glass-blur-strong) !important;
-  -webkit-backdrop-filter: var(--glass-blur-strong) !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+[class*="MusicPlayer_lsSidebar__"] {
+  background: var(--glass-dark-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border-color: var(--glass-dark-border) !important;
+  color: var(--text-on-dark);
 }
 
 [class*="MusicPlayer_trackItem__"] {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid var(--glass-dark-border) !important;
+  border-radius: var(--radius-input) !important;
+  color: var(--text-on-dark);
 }
 
-[class*="MusicPlayer_trackItem__"]:hover,
 [class*="MusicPlayer_trackItemActive__"] {
-  background: rgba(205, 133, 63, 0.28) !important;
-  border-color: rgba(255, 220, 170, 0.45) !important;
-}
-
-[class*="MusicPlayer_trackStatChip__"],
-[class*="MusicPlayer_statBadge__"] {
-  background: rgba(255, 255, 255, 0.14) !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
-}
-
-[class*="MusicPlayer_sortOption__"]:hover,
-[class*="MusicPlayer_sortOptionActive__"] {
   background: rgba(205, 133, 63, 0.3) !important;
 }
 
-[class*="MusicPlayer_backBtn__"],
-[class*="MusicPlayer_listToggleBtn__"],
-[class*="MusicPlayer_sortBtn__"],
-[class*="MusicPlayer_ctrlBtn__"],
-[class*="MusicPlayer_likeBtn__"] {
-  background: rgba(255, 255, 255, 0.16) !important;
-  border: 1px solid rgba(255, 255, 255, 0.35) !important;
-  backdrop-filter: blur(10px) saturate(150%) !important;
-  -webkit-backdrop-filter: blur(10px) saturate(150%) !important;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
-  color: #fff !important;
+[class*="MusicPlayer_sortDropdown__"] {
+  background: var(--glass-dark-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-dark-border) !important;
+  border-radius: var(--radius-input) !important;
+}
+
+[class*="MusicPlayer_likeBtn__"],
+[class*="MusicPlayer_statBadge__"],
+[class*="MusicPlayer_trackStatChip__"] {
+  background: rgba(255, 255, 255, 0.14) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-dark-border) !important;
+  color: var(--text-on-dark) !important;
+  border-radius: var(--radius-pill) !important;
 }
 
 [class*="MusicPlayer_likeBtnActive__"] {
-  background: rgba(224, 36, 94, 0.35) !important;
-  border-color: rgba(255, 150, 180, 0.6) !important;
+  color: #ff6b8e !important;
+}
+
+[class*="MusicPlayer_toast__"] {
+  background: var(--glass-dark-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-dark-border) !important;
+  color: var(--text-on-dark) !important;
 }
 
 [class*="MusicPlayer_playBtn__"] {
   background: var(--brand-grad) !important;
-  border: 1px solid rgba(255, 255, 255, 0.5) !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 6px 22px rgba(205, 133, 63, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* =====================================================================
+   10. EDUCATION PAGES  (EducationPage + EducationPostPage)
+   ---------------------------------------------------------------------
+   These two components carry their own <style> block (.edu-page,
+   .edu-card ...). That block loads AFTER this file, so !important is
+   needed here to override it.
+   ===================================================================== */
+.edu-page {
+  background: transparent !important;
+  min-height: 100vh;
+}
+
+.edu-hero {
+  background: var(--glass-dark-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-dark-border) !important;
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-card);
+  margin: 12px 12px 0;
+}
+
+.edu-tabs {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-card);
+  margin: 12px 12px 0;
+}
+
+.edu-tab {
+  background: rgba(255, 255, 255, 0.45) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  border-radius: var(--radius-pill) !important;
+}
+
+.edu-card {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+  border-radius: var(--radius-card) !important;
+}
+
+.edu-badge-cat,
+.edu-post-badge-cat {
+  background: rgba(255, 255, 255, 0.45) !important;
+  border-color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.edu-card-date,
+.edu-post-date {
+  color: #8a7a6e !important;
+}
+
+.edu-empty {
+  color: #fff !important;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 16px;
+}
+
+/* "Join Enchwra" line under the grid */
+.edu-grid + div {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-card);
+  margin: 0 12px;
+}
+
+/* Single article: one wide glass sheet so long text stays readable */
+.edu-post-page {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  min-height: 0 !important;
+  width: calc(100% - 24px);
+  margin: 12px auto !important;
+}
+
+/* "Loading..." and "Content not found" boxes (they only have inline styles) */
+div[style*="padding: 60px 20px"] {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-card);
+  margin: 12px;
+}
+
+/* =====================================================================
+   11. LOGIN / REGISTER / FORGOT PASSWORD  (Auth.module.css)
+   ---------------------------------------------------------------------
+   The card has a spinning border BEHIND it, so the card stays fairly
+   solid (--auth-card-bg). For a fully see-through card: lower
+   --auth-card-bg in :root and un-comment the last rule below.
+   ===================================================================== */
+[class*="Auth_authPage__"] {
+  background: transparent !important;
+}
+
+[class*="Auth_authForm__"] {
+  background: var(--auth-card-bg) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  color: var(--text-on-dark);
+}
+
+/* [class*="Auth_borderRotator__"] { display: none !important; } */
+
+/* =====================================================================
+   12. COMMUNITY ROOM  (RoomPage.module.css)
+   ===================================================================== */
+[class*="RoomPage_roomPage__"] {
+  background: transparent !important;
+}
+
+[class*="RoomPage_roomHeader__"],
+[class*="RoomPage_roomLoginPrompt__"] {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+  border-radius: var(--radius-card) !important;
+  color: var(--brand-text);
+}
+
+[class*="RoomPage_roomHeader__"] h2 { color: var(--brand-text) !important; }
+[class*="RoomPage_roomHeader__"] p  { color: #6b5a4e !important; }
+
+[class*="RoomPage_messagesContainer__"] {
+  overflow-x: hidden !important;   /* never scroll sideways */
+  background: rgba(0, 0, 0, 0.18) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-dark-border) !important;
+  border-radius: var(--radius-card) !important;
+}
+
+[class*="RoomPage_noMessages__"] {
   color: #fff !important;
 }
 
-[class*="MusicPlayer_progressBg__"] {
-  background: rgba(255, 255, 255, 0.22) !important;
+[class*="RoomPage_messageBubble__"] {
+  min-width: 0;
+  overflow-wrap: anywhere;          /* long words and links wrap instead of overflowing */
+  word-break: break-word;
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(8px) saturate(140%);
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: 0 4px 14px rgba(50, 25, 8, 0.2) !important;
+  border-radius: 16px !important;
 }
 
-[class*="MusicPlayer_progressFill__"] {
-  background: linear-gradient(90deg, #8B4513, #CD853F, #f0b96a) !important;
+[class*="RoomPage_ownMessage__"] {
+  background: linear-gradient(135deg, rgba(228, 160, 92, 0.88), rgba(205, 133, 63, 0.82)) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
 }
 
-[class*="MusicPlayer_toast__"] {
-  background: rgba(var(--glass-dark-rgb), 0.75) !important;
-  backdrop-filter: var(--glass-blur) !important;
-  -webkit-backdrop-filter: var(--glass-blur) !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+[class*="RoomPage_messageContent__"] { color: var(--brand-text) !important; }
+[class*="RoomPage_messageTime__"]    { color: #7a6a5e !important; }
+
+[class*="RoomPage_messageForm__"] {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-card) !important;
+  padding: 10px 12px !important;
+  align-items: flex-end !important;   /* Send button stays at the bottom while the box grows */
+}
+
+/* Auto-growing message box: starts as one line, grows with the text,
+   then scrolls once it reaches max-height (JS sets the live height). */
+[class*="RoomPage_messageForm__"] textarea {
+  flex: 1;
+  min-width: 0;
+  margin: 0 !important;
+  resize: none !important;
+  overflow-y: auto;
+  min-height: 42px;
+  max-height: 140px;            /* ~5 lines - change to taste */
+  line-height: 1.4;
+  font: inherit;
+  padding: 10px 14px !important;
+  border-radius: 14px !important;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
+}
+[class*="RoomPage_messageForm__"] button[type="submit"] {
+  flex-shrink: 0;
+  height: 42px;
+}
+
+/* own bubbles are gold, so name + time need dark text to stay readable */
+[class*="RoomPage_ownMessage__"] [class*="RoomPage_messageUsername__"] a { color: #2d2420 !important; }
+[class*="RoomPage_ownMessage__"] [class*="RoomPage_messageTime__"]      { color: #4a2c14 !important; }
+
+/* =====================================================================
+   13. PROFILE PAGE  (ProfilePage.module.css)
+   ===================================================================== */
+[class*="ProfilePage_profilePage__"],
+[class*="ProfilePage_profileFeed__"] {
+  background: transparent !important;
+}
+
+[class*="ProfilePage_profileHeader__"],
+[class*="ProfilePage_editProfileForm__"],
+[class*="ProfilePage_adminPanel__"],
+[class*="ProfilePage_adminPanelEmpty__"] {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+  border-radius: var(--radius-card) !important;
+}
+
+[class*="ProfilePage_profileUsername__"] { color: var(--brand-text) !important; }
+[class*="ProfilePage_profileBio__"]      { color: var(--brand-text-soft) !important; }
+
+[class*="ProfilePage_profilePhoto__"] {
+  border: 3px solid rgba(255, 255, 255, 0.75) !important;
+  box-shadow: 0 4px 16px rgba(50, 25, 8, 0.35) !important;
+}
+
+[class*="ProfilePage_editProfileBtn__"] {
+  background: var(--brand-grad) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
   color: #fff !important;
+}
+
+[class*="ProfilePage_logoutBtn__"] {
+  background: rgba(255, 255, 255, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  color: var(--brand-dark) !important;
+}
+
+[class*="ProfilePage_editProfileForm__"] h3,
+[class*="ProfilePage_editProfileForm__"] label {
+  color: var(--brand-dark) !important;
+}
+
+[class*="ProfilePage_pendingCard__"] {
+  background: var(--glass-bg-soft) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-input) !important;
+}
+
+/* "<name>'s Content (n)" heading becomes a small glass label */
+[class*="ProfilePage_feedTitle__"] {
+  display: block;
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-card) !important;
+  color: var(--brand-text) !important;
+  padding: 10px 16px;
+  margin: 12px 12px 14px;
+}
+
+/* Delete-account popup */
+[class*="ProfilePage_deleteModalOverlay__"] {
+  background: rgba(20, 10, 4, 0.55) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+[class*="ProfilePage_deleteModalBox__"] {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
 }

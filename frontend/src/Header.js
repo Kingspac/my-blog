@@ -135,9 +135,9 @@ export default function Header() {
           <Link to="/education" className={`${styles.navBtn} ${location.pathname === "/education" ? styles.navBtnActive : ""}`} title="Education">
             <LibraryBig size={iconSize} />
           </Link>
-          <Link to="/" className={styles.navBtn} title="Search">
+         {/*<Link to="/" className={styles.navBtn} title="Search">
             <Search size={iconSize} />
-          </Link>
+          </Link>*/}
           <Link
             to="/room"
             className={`${styles.navBtn} ${location.pathname === "/room" ? styles.navBtnActive : ""}`}

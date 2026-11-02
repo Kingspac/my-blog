@@ -8,7 +8,9 @@ export default function RoomPage() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const { userInfo } = useContext(UserContext);
-  const bottomRef = useRef(null);
+  const messagesRef = useRef(null);    // the scrolling message list
+  const inputRef = useRef(null);       // the auto-growing message box
+  const lastCountRef = useRef(0);     // how many messages we have already scrolled for
 
   useEffect(() => {
     if (!userInfo?.id) return;
@@ -17,9 +19,34 @@ export default function RoomPage() {
     return () => clearInterval(interval);
   }, [userInfo]);
 
+  // Scroll the message LIST (not the whole page) to the bottom, and only when
+  // new messages arrive. The old scrollIntoView moved the entire window and
+  // also ran on every 5-second refresh, snapping you away from old messages.
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    const list = messagesRef.current;
+    if (!list) return;
+    if (messages.length > lastCountRef.current) {
+      list.scrollTo({ top: list.scrollHeight, behavior: "smooth" });
+    }
+    lastCountRef.current = messages.length;
   }, [messages]);
+
+  // Grow the message box with its text. CSS max-height caps it; past that
+  // the box scrolls. Runs on every change, including clearing after send.
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  }, [newMessage, userInfo]);
+
+  // Enter sends, Shift+Enter adds a new line
+  function handleKeyDown(e) {
+    if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+      e.preventDefault();
+      handleSend(e);
+    }
+  }
 
   async function fetchMessages() {
     const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/room`);
@@ -96,7 +123,7 @@ export default function RoomPage() {
       ) : (
         <>
           {/* MESSAGES */}
-          <div className={styles.messagesContainer}>
+          <div className={styles.messagesContainer} ref={messagesRef}>
             {messages.length === 0 && (
               <p className={styles.noMessages}>
                 No messages yet. Be the first to say something! 😊
@@ -131,17 +158,17 @@ export default function RoomPage() {
                 </div>
               </div>
             ))}
-
-            <div ref={bottomRef} />
           </div>
 
           {/* MESSAGE INPUT - hides home button on focus */}
           <form className={styles.messageForm} onSubmit={handleSend}>
-            <input
-              type="text"
+            <textarea
+              ref={inputRef}
+              rows={1}
               placeholder="Say something to the community..."
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
               onFocus={handleInputFocus}
               onBlur={handleInputBlur}
             />
@@ -150,6 +177,6 @@ export default function RoomPage() {
         </>
       )}
     </div>
+    
   );
 }
- 
