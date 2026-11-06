@@ -1,0 +1,85 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 100000;
+}
+
+.modal {
+  background: #fff;
+  color: #222;
+  width: 100%;
+  max-width: 340px;
+  border-radius: 14px;
+  padding: 22px 20px 18px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border-top: 4px solid #333;
+  animation: modalPop 0.15s ease-out;
+}
+
+.success { border-top-color: #2e9e5b; }
+.error { border-top-color: #d64545; }
+.warning { border-top-color: #e0a100; }
+.confirm { border-top-color: #333; }
+.prompt { border-top-color: #CD853F; }
+
+.icon {
+  font-size: 2rem;
+  margin-bottom: 6px;
+}
+
+.title {
+  font-size: 1.1rem;
+  margin: 0 0 8px;
+}
+
+.message {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #555;
+  margin: 0 0 18px;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.promptInput {
+  width: 100%;
+  box-sizing: border-box;
+  margin: -6px 0 16px;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.actions button {
+  width: auto;
+  flex: 1;
+  padding: 10px 16px;
+  margin: 0;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.confirmBtn { background: #333; color: #fff; }
+.confirmBtn.danger { background: #d64545; }
+.cancelBtn { background: #eee; color: #333; }
+
+@keyframes modalPop {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

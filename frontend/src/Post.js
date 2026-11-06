@@ -3,29 +3,41 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useContext, useState } from "react";
 import { UserContext } from "./UserContext";
+import { useModal } from "./ModalContext";
+import AutoTextarea from "./AutoTextarea";
 
 const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
 // Comments Modal
 function CommentsModal({ postId, comments: initialComments, onClose, currentUser }) {
+  const { showLoginRequired, showError } = useModal();
   const [comments, setComments] = useState(initialComments || []);
   const [comment, setComment] = useState("");
 
   async function handleComment(e) {
     e.preventDefault();
-    if (!currentUser?.id) { alert("Please login to comment"); return; }
+    if (!currentUser?.id) {
+      showLoginRequired("Please login to comment", { title: "Login required" });
+      return;
+    }
     if (!comment.trim()) return;
 
-    const res = await fetch(`${apiUrl}/api/post/${postId}/comment`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content: comment }),
-    });
-    if (res.ok) {
-      const newComment = await res.json();
-      setComments([...comments, newComment]);
-      setComment("");
+    try {
+      const res = await fetch(`${apiUrl}/api/post/${postId}/comment`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: comment }),
+      });
+      if (res.ok) {
+        const newComment = await res.json();
+        setComments([...comments, newComment]);
+        setComment("");
+      } else {
+        showError("Could not post your comment. Please try again.");
+      }
+    } catch {
+      showError("Could not post your comment. Check your connection.");
     }
   }
 
@@ -56,7 +68,9 @@ function CommentsModal({ postId, comments: initialComments, onClose, currentUser
             comments.map((c, i) => (
               <div className="modal-comment" key={i}>
                 <div className="modal-comment-author">👤 {c.username}</div>
-                <div className="modal-comment-content">{c.content}</div>
+                <div className="modal-comment-content" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+                  {c.content}
+                </div>
                 <div className="modal-comment-date">
                   {formatISO9075(new Date(c.createdAt))}
                 </div>
@@ -65,9 +79,8 @@ function CommentsModal({ postId, comments: initialComments, onClose, currentUser
           )}
         </div>
         {currentUser?.id ? (
-          <form className="modal-comment-form" onSubmit={handleComment}>
-            <input
-              type="text"
+          <form className="modal-comment-form" onSubmit={handleComment} style={{ alignItems: "flex-end" }}>
+            <AutoTextarea
               placeholder="Write a comment..."
               value={comment}
               onChange={(e) => setComment(e.target.value)}
@@ -90,6 +103,7 @@ export default function Post({
   variant = "list" // "list" for BlogPage, "feed" for IndexPage
 }) {
   const { userInfo } = useContext(UserContext);
+  const { showLoginRequired, showSuccess, showError } = useModal();
   const [likes, setLikes] = useState(initialLikes?.length || 0);
   const [liked, setLiked] = useState(
     userInfo?.id ? initialLikes?.includes(userInfo.id) : false
@@ -100,26 +114,43 @@ export default function Post({
   async function handleLike(e) {
     e.preventDefault();
     e.stopPropagation();
-    if (!userInfo?.id) { alert("Please login to like"); return; }
-    const res = await fetch(`${apiUrl}/api/post/${_id}/like`, {
-      method: "PUT",
-      credentials: "include",
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setLikes(data.likes);
-      setLiked(data.liked);
+    if (!userInfo?.id) {
+      showLoginRequired("Please login to like", { title: "Login required" });
+      return;
+    }
+    try {
+      const res = await fetch(`${apiUrl}/api/post/${_id}/like`, {
+        method: "PUT",
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setLikes(data.likes);
+        setLiked(data.liked);
+      } else {
+        showError("Could not update your like. Please try again.");
+      }
+    } catch {
+      showError("Could not update your like. Check your connection.");
     }
   }
 
-  function sharePost(e) {
+  async function sharePost(e) {
     e.preventDefault();
     const url = `${window.location.origin}/post/${_id}`;
     if (navigator.share) {
-      navigator.share({ title, url });
+      try {
+        await navigator.share({ title, url });
+      } catch {
+        // user closed the share sheet - nothing to show
+      }
     } else {
-      navigator.clipboard.writeText(url);
-      alert("Link copied!");
+      try {
+        await navigator.clipboard.writeText(url);
+        showSuccess("Link copied!", { title: "Copied" });
+      } catch {
+        showError("Could not copy the link.");
+      }
     }
   }
 

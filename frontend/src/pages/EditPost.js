@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Editor from "../Editor";
 import styles from "../styles/Editor.module.css";
+import { useModal } from "../ModalContext";
 
 export default function EditPost() {
   const { id } = useParams();
@@ -14,6 +15,7 @@ export default function EditPost() {
   const [fileError, setFileError] = useState("");
 
   const navigate = useNavigate();
+  const { showError, showConfirm } = useModal();
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/post/` + id, {
@@ -29,7 +31,7 @@ export default function EditPost() {
         setSummary(postInfo.summary);
         setExistingCover(postInfo.cover);
       })
-      .catch((err) => console.error(err));
+      .catch(() => showError("Could not load this post. Please try again."));
   }, []);
 
   function handleFileChange(e) {
@@ -60,9 +62,10 @@ export default function EditPost() {
     if (fileInput) fileInput.value = "";
   }
 
-  function removeEditorImages() {
-    const confirmed = window.confirm(
-      "This will remove all images inside the editor. Continue?"
+  async function removeEditorImages() {
+    const confirmed = await showConfirm(
+      "This will remove all images inside the editor. Continue?",
+      { title: "Remove images", confirmText: "Remove", danger: true }
     );
     if (!confirmed) return;
     const stripped = content.replace(/<img[^>]*>/g, "");
@@ -83,14 +86,20 @@ export default function EditPost() {
       data.append("cover", files[0]);
     }
 
-    const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/post`, {
-      method: "PUT",
-      body: data,
-      credentials: "include",
-    });
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/post`, {
+        method: "PUT",
+        body: data,
+        credentials: "include",
+      });
 
-    if (response.ok) {
-      navigate("/post/" + id);
+      if (response.ok) {
+        navigate("/post/" + id);
+      } else {
+        showError("Could not update the post. Please try again.");
+      }
+    } catch {
+      showError("Could not update the post. Check your connection.");
     }
   }
 

@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import { format, formatISO9075 } from "date-fns";
 import { useMusic } from "../MusicContext";
+import { useModal } from "../ModalContext";
+import AutoTextarea from "../AutoTextarea";
 import { motion, AnimatePresence } from "framer-motion";
 
 
@@ -40,22 +42,32 @@ function startPlayback(el) {
 // ===== COMMENTS MODAL =====
 function CommentsModal({ media, currentUser, onClose }) {
   const { backendUrl: apiUrl } = useMusic();
+  const { showLoginRequired, showError } = useModal();
   const [comments, setComments] = useState(media.comments || []);
   const [comment, setComment] = useState("");
 
   async function handleComment(e) {
     e.preventDefault();
-    if (!currentUser?.id) { alert("Please login to comment"); return; }
+    if (!currentUser?.id) {
+      showLoginRequired("Please login to comment", { title: "Login required" });
+      return;
+    }
     if (!comment.trim()) return;
-    const res = await fetch(`${apiUrl}/api/music/${media._id}/comment`, {
-      method: "POST", credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content: comment }),
-    });
-    if (res.ok) {
-      const newComment = await res.json();
-      setComments([...comments, newComment]);
-      setComment("");
+    try {
+      const res = await fetch(`${apiUrl}/api/music/${media._id}/comment`, {
+        method: "POST", credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: comment }),
+      });
+      if (res.ok) {
+        const newComment = await res.json();
+        setComments([...comments, newComment]);
+        setComment("");
+      } else {
+        showError("Could not post your comment. Please try again.");
+      }
+    } catch {
+      showError("Could not post your comment. Check your connection.");
     }
   }
 
@@ -79,15 +91,17 @@ function CommentsModal({ media, currentUser, onClose }) {
             comments.map((c, i) => (
               <div className="modal-comment" key={i}>
                 <div className="modal-comment-author">👤 {c.username}</div>
-                <div className="modal-comment-content">{c.content}</div>
+                <div className="modal-comment-content" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+                  {c.content}
+                </div>
                 <div className="modal-comment-date">{formatISO9075(new Date(c.createdAt))}</div>
               </div>
             ))
           )}
         </div>
         {currentUser?.id ? (
-          <form className="modal-comment-form" onSubmit={handleComment}>
-            <input type="text" placeholder="Write a comment..."
+          <form className="modal-comment-form" onSubmit={handleComment} style={{ alignItems: "flex-end" }}>
+            <AutoTextarea placeholder="Write a comment..."
               value={comment} onChange={(e) => setComment(e.target.value)} />
             <button type="submit">Post</button>
           </form>
@@ -104,6 +118,7 @@ function CommentsModal({ media, currentUser, onClose }) {
 // ===== MEDIA CARD - pure TikTok style =====
 function MediaCard({ media, currentUser, onDelete }) {
   const { backendUrl: apiUrl } = useMusic();
+  const { showLoginRequired, showSuccess, showError, showConfirm } = useModal();
   const mediaRef = useRef(null);
   const cardRef = useRef(null);
   const [likes, setLikes] = useState(media.likes?.length || 0);
@@ -164,30 +179,60 @@ function MediaCard({ media, currentUser, onDelete }) {
   }, []);
 
   async function handleLike() {
-    if (!currentUser?.id) { alert("Please login to like"); return; }
-    const res = await fetch(`${apiUrl}/api/music/${media._id}/like`, {
-      method: "PUT", credentials: "include",
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setLikes(data.likes);
-      setLiked(data.liked);
+    if (!currentUser?.id) {
+      showLoginRequired("Please login to like", { title: "Login required" });
+      return;
+    }
+    try {
+      const res = await fetch(`${apiUrl}/api/music/${media._id}/like`, {
+        method: "PUT", credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setLikes(data.likes);
+        setLiked(data.liked);
+      } else {
+        showError("Could not update your like. Please try again.");
+      }
+    } catch {
+      showError("Could not update your like. Check your connection.");
     }
   }
 
   async function handleDelete() {
-    if (!window.confirm("Delete this media?")) return;
-    const res = await fetch(`${apiUrl}/api/music/${media._id}`, {
-      method: "DELETE", credentials: "include",
+    const confirmed = await showConfirm("Delete this media?", {
+      title: "Delete media",
+      confirmText: "Delete",
+      danger: true,
     });
-    if (res.ok) onDelete(media._id);
-    else alert("Failed to delete");
+    if (!confirmed) return;
+    try {
+      const res = await fetch(`${apiUrl}/api/music/${media._id}`, {
+        method: "DELETE", credentials: "include",
+      });
+      if (res.ok) onDelete(media._id);
+      else showError("Failed to delete. Please try again.");
+    } catch {
+      showError("Failed to delete. Check your connection.");
+    }
   }
 
-  function shareMedia() {
+  async function shareMedia() {
     const url = window.location.href;
-    if (navigator.share) navigator.share({ title: media.title, url });
-    else { navigator.clipboard.writeText(url); alert("Link copied!"); }
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: media.title, url });
+      } catch {
+        // user closed the share sheet - nothing to show
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(url);
+        showSuccess("Link copied!", { title: "Copied" });
+      } catch {
+        showError("Could not copy the link.");
+      }
+    }
   }
 
   const descLimit = 80;
@@ -375,6 +420,7 @@ function MediaCard({ media, currentUser, onDelete }) {
 // ===== MAIN PAGE =====
 export default function EntertainmentPage() {
   const { backendUrl: apiUrl } = useMusic();
+  const { showError } = useModal();
   const [mediaList, setMediaList] = useState([]);
   const [activeTab, setActiveTab] = useState(null);
   const { userInfo } = useContext(UserContext);
@@ -384,7 +430,8 @@ export default function EntertainmentPage() {
   useEffect(() => {
     fetch(`${apiUrl}/api/music`)
       .then((res) => res.json())
-      .then((data) => setMediaList(data));
+      .then((data) => setMediaList(data))
+      .catch(() => showError("Could not load content. Check your connection."));
   }, []);
 
   function handleDelete(id) {
@@ -396,7 +443,7 @@ export default function EntertainmentPage() {
     : mediaList;
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: 80 }}>
+    <div className="page-column" style={{ minHeight: "100vh", paddingBottom: 80 }}>
 
       {/* PAGE HEADER */}
       <div className="page-header">

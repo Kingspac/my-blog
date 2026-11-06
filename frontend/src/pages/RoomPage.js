@@ -1,16 +1,21 @@
 import { useState, useEffect, useContext, useRef } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../UserContext";
+import { useModal } from "../ModalContext";
 import { formatISO9075 } from "date-fns";
 import styles from "../styles/RoomPage.module.css";
+
+const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
 export default function RoomPage() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const { userInfo } = useContext(UserContext);
+  const { showError, showConfirm } = useModal();
   const messagesRef = useRef(null);    // the scrolling message list
   const inputRef = useRef(null);       // the auto-growing message box
   const lastCountRef = useRef(0);     // how many messages we have already scrolled for
+  const fetchErrorShownRef = useRef(false); // so a lost connection shows ONE modal, not one every 5 seconds
 
   useEffect(() => {
     if (!userInfo?.id) return;
@@ -20,8 +25,7 @@ export default function RoomPage() {
   }, [userInfo]);
 
   // Scroll the message LIST (not the whole page) to the bottom, and only when
-  // new messages arrive. The old scrollIntoView moved the entire window and
-  // also ran on every 5-second refresh, snapping you away from old messages.
+  // new messages arrive.
   useEffect(() => {
     const list = messagesRef.current;
     if (!list) return;
@@ -49,11 +53,20 @@ export default function RoomPage() {
   }
 
   async function fetchMessages() {
-    const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/room`);
-    const data = await res.json();
-    setMessages(data);
-    if (data.length > 0) {
-      localStorage.setItem("lastSeenMessageCount", data.length.toString());
+    try {
+      const res = await fetch(`${apiUrl}/api/room`);
+      if (!res.ok) throw new Error("Bad response");
+      const data = await res.json();
+      fetchErrorShownRef.current = false;
+      setMessages(data);
+      if (data.length > 0) {
+        localStorage.setItem("lastSeenMessageCount", data.length.toString());
+      }
+    } catch {
+      if (!fetchErrorShownRef.current) {
+        fetchErrorShownRef.current = true;
+        showError("Could not load messages. Check your connection.");
+      }
     }
   }
 
@@ -61,31 +74,47 @@ export default function RoomPage() {
     e.preventDefault();
     if (!newMessage.trim()) return;
 
-    const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/room`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content: newMessage }),
-    });
+    try {
+      const res = await fetch(`${apiUrl}/api/room`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: newMessage }),
+      });
 
-    if (res.ok) {
-      const message = await res.json();
-      setMessages([...messages, message]);
-      setNewMessage("");
+      if (res.ok) {
+        const message = await res.json();
+        setMessages((prev) => [...prev, message]);
+        setNewMessage("");
+      } else {
+        showError("Your message could not be sent. Please try again.");
+      }
+    } catch {
+      showError("Your message could not be sent. Check your connection.");
     }
   }
 
   async function handleDelete(id) {
-    const confirmed = window.confirm("Delete this message?");
+    const confirmed = await showConfirm("Delete this message?", {
+      title: "Delete message",
+      confirmText: "Delete",
+      danger: true,
+    });
     if (!confirmed) return;
 
-    const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/room/${id}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
+    try {
+      const res = await fetch(`${apiUrl}/api/room/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
 
-    if (res.ok) {
-      setMessages(messages.filter((m) => m._id !== id));
+      if (res.ok) {
+        setMessages((prev) => prev.filter((m) => m._id !== id));
+      } else {
+        showError("Could not delete the message. Please try again.");
+      }
+    } catch {
+      showError("Could not delete the message. Check your connection.");
     }
   }
 
@@ -177,6 +206,5 @@ export default function RoomPage() {
         </>
       )}
     </div>
-    
   );
 }

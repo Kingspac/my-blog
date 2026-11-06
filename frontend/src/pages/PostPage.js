@@ -4,6 +4,8 @@ import {formatISO9075} from "date-fns";
 import {UserContext} from "../UserContext";
 import { motion } from "framer-motion";
 import styles from "../styles/Post.module.css";
+import { useModal } from "../ModalContext";
+import AutoTextarea from "../AutoTextarea";
 
 const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
@@ -15,65 +17,92 @@ export default function PostPage(){
   const [comment, setComment] = useState("");
 
   const {userInfo} = useContext(UserContext);
+  const { showLoginRequired, showSuccess, showError, showConfirm } = useModal();
   const {id} = useParams();
   const navigate = useNavigate();
   const postURL = window.location.href;
 
   useEffect(() => {
     fetch(`${apiUrl}/api/post/${id}`)
-      .then(response => {
-        response.json().then(data => {
-          setPostInfo(data);
-          setLikes(data.likes?.length || 0);
-          setComments(data.comments || []);
-          if(userInfo?.id){
-            setLiked(data.likes?.includes(userInfo.id));
-          }
-        });
-      });
+      .then(response => response.json())
+      .then(data => {
+        setPostInfo(data);
+        setLikes(data.likes?.length || 0);
+        setComments(data.comments || []);
+        if(userInfo?.id){
+          setLiked(data.likes?.includes(userInfo.id));
+        }
+      })
+      .catch(() => showError("Could not load this post. Check your connection."));
   }, []);
 
   async function deletePost() {
-    const confirmDelete = window.confirm("Are you sure you want to delete this post?");
-    if (!confirmDelete) return;
-    const response = await fetch(`${apiUrl}/api/post/${id}`, {
-      method: "DELETE",
-      credentials: "include",
+    const confirmDelete = await showConfirm("Are you sure you want to delete this post?", {
+      title: "Delete post",
+      confirmText: "Delete",
+      danger: true,
     });
-    if (response.ok) {
-      navigate("/blog");
-    } else {
-      alert("Failed to delete post");
+    if (!confirmDelete) return;
+    try {
+      const response = await fetch(`${apiUrl}/api/post/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (response.ok) {
+        navigate("/blog");
+      } else {
+        showError("Failed to delete the post. Please try again.");
+      }
+    } catch {
+      showError("Failed to delete the post. Check your connection.");
     }
   }
 
   async function handleLike() {
-    if (!userInfo?.id) { alert("Please login to like this post"); return; }
-    const response = await fetch(`${apiUrl}/api/post/${id}/like`, {
-      method: "PUT",
-      credentials: "include",
-    });
-    if (response.ok) {
-      const data = await response.json();
-      setLikes(data.likes);
-      setLiked(data.liked);
+    if (!userInfo?.id) {
+      showLoginRequired("Please login to like this post", { title: "Login required" });
+      return;
+    }
+    try {
+      const response = await fetch(`${apiUrl}/api/post/${id}/like`, {
+        method: "PUT",
+        credentials: "include",
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setLikes(data.likes);
+        setLiked(data.liked);
+      } else {
+        showError("Could not update your like. Please try again.");
+      }
+    } catch {
+      showError("Could not update your like. Check your connection.");
     }
   }
 
   async function handleComment(e) {
     e.preventDefault();
-    if (!userInfo?.id) { alert("Please login to comment"); return; }
+    if (!userInfo?.id) {
+      showLoginRequired("Please login to comment", { title: "Login required" });
+      return;
+    }
     if (!comment.trim()) return;
-    const response = await fetch(`${apiUrl}/api/post/${id}/comment`, {
-      method: "POST",
-      credentials: "include",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({content: comment}),
-    });
-    if (response.ok) {
-      const newComment = await response.json();
-      setComments([...comments, newComment]);
-      setComment("");
+    try {
+      const response = await fetch(`${apiUrl}/api/post/${id}/comment`, {
+        method: "POST",
+        credentials: "include",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({content: comment}),
+      });
+      if (response.ok) {
+        const newComment = await response.json();
+        setComments([...comments, newComment]);
+        setComment("");
+      } else {
+        showError("Could not post your comment. Please try again.");
+      }
+    } catch {
+      showError("Could not post your comment. Check your connection.");
     }
   }
 
@@ -86,9 +115,13 @@ export default function PostPage(){
   function shareToTwitter() {
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out: ${postInfo.title}`)}&url=${encodeURIComponent(postURL)}`, "_blank");
   }
-  function copyLink() {
-    navigator.clipboard.writeText(postURL);
-    alert("Link copied!");
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(postURL);
+      showSuccess("Link copied!", { title: "Copied" });
+    } catch {
+      showError("Could not copy the link.");
+    }
   }
 
   if (!postInfo) return "";
@@ -197,9 +230,8 @@ export default function PostPage(){
         <h4>{comments.length} {comments.length === 1 ? "Comment" : "Comments"}</h4>
 
         {userInfo?.id && (
-          <form className={styles.commentForm} onSubmit={handleComment}>
-            <input
-              type="text"
+          <form className={styles.commentForm} onSubmit={handleComment} style={{ alignItems: "flex-end" }}>
+            <AutoTextarea
               placeholder="Write a comment..."
               value={comment}
               onChange={(e) => setComment(e.target.value)}
@@ -220,7 +252,9 @@ export default function PostPage(){
               transition={{ delay: index * 0.05 }}
             >
               <div className={styles.commentAuthor}>👤 {c.username}</div>
-              <div className={styles.commentContent}>{c.content}</div>
+              <div className={styles.commentContent} style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+                {c.content}
+              </div>
               <div className={styles.commentDate}>
                 {formatISO9075(new Date(c.createdAt))}
               </div>

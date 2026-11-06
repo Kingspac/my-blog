@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Editor from "./Editor";
 import styles from "./styles/Editor.module.css";
 import Spinner from "./Spinner";
+import { useModal } from "./ModalContext";
 
 export default function CreatePost() {
   const [title, setTitle] = useState("");
@@ -13,6 +14,7 @@ export default function CreatePost() {
   const [coverPreview, setCoverPreview] = useState(null);
 
   const navigate = useNavigate();
+  const { showError, showConfirm } = useModal();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   function handleFileChange(e) {
@@ -43,9 +45,10 @@ export default function CreatePost() {
     if (fileInput) fileInput.value = "";
   }
 
-  function removeEditorImages() {
-    const confirmed = window.confirm(
-      "This will remove all images inside the editor. Continue?"
+  async function removeEditorImages() {
+    const confirmed = await showConfirm(
+      "This will remove all images inside the editor. Continue?",
+      { title: "Remove images", confirmText: "Remove", danger: true }
     );
     if (!confirmed) return;
     const stripped = content.replace(/<img[^>]*>/g, "");
@@ -54,8 +57,8 @@ export default function CreatePost() {
 
   async function createNewPost(e) {
     e.preventDefault();
-    setIsSubmitting(true);
     if (fileError) return;
+    setIsSubmitting(true);
 
     const data = new FormData();
     data.append("title", title);
@@ -66,15 +69,22 @@ export default function CreatePost() {
       data.append("cover", files[0]);
     }
 
-    const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/post`, {
-      method: "POST",
-      body: data,
-      credentials: "include",
-    });
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/post`, {
+        method: "POST",
+        body: data,
+        credentials: "include",
+      });
 
-    setIsSubmitting(false);
-    if (response.ok) {
-      navigate("/");
+      setIsSubmitting(false);
+      if (response.ok) {
+        navigate("/");
+      } else {
+        showError("Could not create the post. Please try again.");
+      }
+    } catch {
+      setIsSubmitting(false);
+      showError("Could not create the post. Check your connection.");
     }
   }
 
@@ -136,7 +146,9 @@ export default function CreatePost() {
         )}
       </div>
 
-      <button style={{ marginTop: "5px" }}>Create Post</button>
+      <button disabled={isSubmitting} style={{ marginTop: "5px" }}>
+        {isSubmitting ? "Creating..." : "Create Post"}
+      </button>
     </form>
   );
 }

@@ -1369,3 +1369,390 @@ div[style*="padding: 60px 20px"] {
   border: 1px solid var(--glass-border) !important;
   box-shadow: var(--glass-shadow) !important;
 }
+
+/* =====================================================================
+   14. RESPONSIVE  (media queries for every screen size)
+   ---------------------------------------------------------------------
+   Phones:  <= 360px small | <= 480px | <= 768px (form fields)
+   Tablets: >= 768px   Laptops: >= 1024px   Large screens: >= 1440px
+   Also: short landscape phones, touch screens, reduced motion.
+   Kept at the END of the file so it wins over earlier rules of equal weight.
+   ===================================================================== */
+
+:root {
+  --column-max: 780px;   /* width of the centred content column on tablets and up */
+}
+
+/* ---------- 14a. ALL SCREENS: safety net ---------- */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;   /* correct height on phones with moving browser bars */
+  overflow-wrap: break-word;
+}
+
+video,
+iframe {
+  max-width: 100%;
+}
+
+/* flex children must be allowed to shrink or long names push the page wide */
+.fb-author-info {
+  min-width: 0;
+}
+
+.fb-title,
+.fb-summary,
+.blog-list-title,
+.blog-list-summary,
+.modal-comment-content,
+.edu-post-content {
+  overflow-wrap: anywhere;
+}
+
+/* rows of buttons wrap instead of overflowing */
+.login-required-buttons,
+.edu-edit-row {
+  flex-wrap: wrap;
+}
+
+.blog-list-actions {
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+
+/* wide content inside posts scrolls inside itself, not the whole page */
+.edu-post-content table,
+[class*="Post_content__"] table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.edu-post-content pre,
+[class*="Post_content__"] pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.edu-post-content iframe,
+[class*="Post_content__"] iframe {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+
+/* education video keeps a 16:9 shape at every width */
+.edu-post-page .edu-post-video iframe {
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+
+/* search results, admin rows, share + upload buttons */
+[class*="IndexPage_searchDropdown__"] {
+  max-height: 60vh;
+  max-height: 60dvh;
+  overflow-y: auto;
+}
+
+[class*="ProfilePage_pendingCard__"],
+[class*="ProfilePage_pendingActions__"],
+[class*="ProfilePage_profileActions__"],
+[class*="ProfilePage_profileCreateButtons__"],
+[class*="Post_shareButtons__"],
+[class*="Post_editRow__"],
+[class*="UploadMedia_categoryTabs__"],
+[class*="UploadMedia_typeToggle__"] {
+  flex-wrap: wrap;
+}
+
+/* the delete-account popup is tall: let it scroll on short screens */
+[class*="ProfilePage_deleteModalBox__"] {
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
+}
+
+/* Create / Edit post forms sit directly in <main>: give them side padding */
+main > form {
+  width: 100%;
+  padding: 12px 12px 24px;
+}
+
+
+/* ---------- 14b. TOUCH SCREENS ---------- */
+@media (pointer: coarse) {
+  .create-btn,
+  .modal-close-btn {
+    min-height: 40px;
+  }
+
+  .modal-close-btn {
+    min-width: 40px;
+  }
+}
+
+
+/* ---------- 14c. PHONES + SMALL TABLETS (<= 768px) ---------- */
+@media (max-width: 768px) {
+  /* 16px stops phones zooming in when a field is tapped */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* keep the sheet clear of the phone's gesture bar */
+  .modal-box {
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+
+/* ---------- 14d. PHONES (<= 480px) ---------- */
+@media (max-width: 480px) {
+  .modal-box {
+    max-height: 75vh;
+    max-height: 75dvh;
+  }
+
+  .page-header h2 {
+    font-size: 1.45rem;
+  }
+
+  .blog-list-thumb {
+    width: 90px;
+    height: 68px;
+  }
+
+  .edu-post-page .edu-post-title {
+    font-size: 1.45rem;
+  }
+
+  .edu-post-page .edu-post-cover {
+    height: 220px;
+  }
+}
+
+
+/* ---------- 14e. SMALL PHONES (<= 360px) ---------- */
+@media (max-width: 360px) {
+  .page-header {
+    padding: 16px 12px;
+    margin: 10px 8px 12px;
+  }
+
+  .page-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .register-prompt {
+    margin: 24px 8px 0;
+    padding: 24px 14px;
+  }
+
+  .login-required-buttons {
+    gap: 10px;
+  }
+
+  .fb-card {
+    margin: 0 6px 12px;
+  }
+
+  .fb-card-header {
+    gap: 8px;
+    padding: 10px 12px 6px;
+  }
+
+  .fb-avatar {
+    width: 34px;
+    height: 34px;
+  }
+
+  .fb-badge {
+    font-size: 0.68rem;
+    padding: 3px 8px;
+  }
+
+  .fb-card-body {
+    padding: 6px 12px 8px;
+  }
+
+  .tiktok-actions {
+    right: 6px;
+    gap: 12px;
+  }
+
+  .tiktok-btn {
+    padding: 8px 6px;
+    min-width: 40px;
+  }
+
+  .tiktok-btn span:first-child {
+    font-size: 1.25rem;
+  }
+
+  .blog-list {
+    padding: 0 8px;
+  }
+
+  .blog-list-item {
+    gap: 10px;
+    padding: 12px 10px;
+  }
+
+  .blog-list-thumb {
+    width: 80px;
+    height: 60px;
+  }
+
+  .modal-box {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .modal-comment-form button {
+    padding: 8px 14px;
+  }
+
+  .edu-post-page .edu-post-title {
+    font-size: 1.3rem;
+  }
+
+  .edu-post-page .edu-post-header,
+  .edu-post-page .edu-post-content,
+  .edu-post-page .edu-like-section,
+  .edu-post-page .edu-post-bottom {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .edu-post-page .edu-like-btn {
+    padding: 8px 16px;
+  }
+}
+
+
+/* ---------- 14f. TABLETS (>= 768px) ---------- */
+@media (min-width: 768px) {
+  /* one centred column so headers, cards and forms all line up */
+  .blog-page,
+  .page-column,
+  .create-education-page,
+  [class*="IndexPage_feedPage__"],
+  [class*="ProfilePage_profilePage__"],
+  [class*="UploadMedia_uploadPage__"],
+  [class*="Post_postPage__"] {
+    width: 100%;
+    max-width: var(--column-max);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  main > form {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* wide cards: videos get a proper 16:9 box (phones keep their own sizing) */
+  .fb-card-image iframe {
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+  }
+
+  .edu-post-page .edu-post-cover {
+    height: 340px;
+  }
+
+  .edu-post-page .edu-post-title {
+    font-size: 2rem;
+  }
+
+  .edu-post-page .edu-post-header,
+  .edu-post-page .edu-post-content,
+  .edu-post-page .edu-like-section,
+  .edu-post-page .edu-post-bottom {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+
+/* ---------- 14g. LAPTOPS (>= 1024px) ---------- */
+@media (min-width: 1024px) {
+  /* comments become a centred dialog instead of a bottom sheet */
+  .modal-overlay {
+    align-items: center;
+  }
+
+  .modal-box {
+    border-radius: 24px;
+    border-bottom: 1px solid var(--glass-border);
+    max-height: 80vh;
+  }
+
+  .edu-post-page .edu-post-cover {
+    height: 400px;
+  }
+}
+
+
+/* ---------- 14h. LARGE SCREENS (>= 1440px) ---------- */
+@media (min-width: 1440px) {
+  :root {
+    --column-max: 860px;
+  }
+}
+
+
+/* ---------- 14i. SHORT LANDSCAPE PHONES ---------- */
+@media (max-height: 500px) and (orientation: landscape) {
+  .modal-box {
+    max-height: 92vh;
+    max-height: 92dvh;
+  }
+
+  /* let pictures and videos use the little height there is */
+  .fb-card-image,
+  .tiktok-media-wrapper .fb-card-image img,
+  .fb-card .fb-card-image img,
+  .tiktok-media-wrapper video {
+    max-height: 85vh;
+  }
+
+  /* the Entertainment page sets the iframe's max-height inline, so !important is needed */
+  .fb-card-image iframe {
+    max-height: 85vh !important;
+  }
+
+  .page-header {
+    padding: 12px 16px;
+    margin: 8px 12px 10px;
+  }
+
+  .edu-post-page .edu-post-cover {
+    height: 180px;
+  }
+
+  .edu-post-page .edu-post-placeholder {
+    height: 100px;
+  }
+}
+
+
+/* ---------- 14j. REDUCED MOTION ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

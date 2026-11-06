@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { format, formatISO9075 } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserContext } from "../UserContext";
+import { useModal } from "../ModalContext";
+import AutoTextarea from "../AutoTextarea";
 import Post from "../Post.js";
 import styles from "../styles/ProfilePage.module.css";
 import Spinner from "../Spinner";
@@ -24,26 +26,33 @@ let currentlyPlaying = null;
 
 // ===== COMMENTS MODAL =====
 function CommentsModal({ mediaId, comments: initialComments, onClose, currentUser }) {
+  const { showLoginRequired, showError } = useModal();
   const [comments, setComments] = useState(initialComments || []);
   const [comment, setComment] = useState("");
 
   async function handleComment(e) {
     e.preventDefault();
     if (!currentUser?.id) {
-      alert("Please login");
+      showLoginRequired("Please login to comment", { title: "Login required" });
       return;
     }
     if (!comment.trim()) return;
-    const res = await fetch(`${apiUrl}/api/music/${mediaId}/comment`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content: comment }),
-    });
-    if (res.ok) {
-      const newComment = await res.json();
-      setComments([...comments, newComment]);
-      setComment("");
+    try {
+      const res = await fetch(`${apiUrl}/api/music/${mediaId}/comment`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: comment }),
+      });
+      if (res.ok) {
+        const newComment = await res.json();
+        setComments([...comments, newComment]);
+        setComment("");
+      } else {
+        showError("Could not post your comment. Please try again.");
+      }
+    } catch {
+      showError("Could not post your comment. Check your connection.");
     }
   }
 
@@ -76,16 +85,17 @@ function CommentsModal({ mediaId, comments: initialComments, onClose, currentUse
             comments.map((c, i) => (
               <div className="modal-comment" key={i}>
                 <div className="modal-comment-author">👤 {c.username}</div>
-                <div className="modal-comment-content">{c.content}</div>
+                <div className="modal-comment-content" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+                  {c.content}
+                </div>
                 <div className="modal-comment-date">{formatISO9075(new Date(c.createdAt))}</div>
               </div>
             ))
           )}
         </div>
         {currentUser?.id ? (
-          <form className="modal-comment-form" onSubmit={handleComment}>
-            <input
-              type="text"
+          <form className="modal-comment-form" onSubmit={handleComment} style={{ alignItems: "flex-end" }}>
+            <AutoTextarea
               placeholder="Write a comment..."
               value={comment}
               onChange={(e) => setComment(e.target.value)}
@@ -107,6 +117,7 @@ function MediaCard({ item, isOwnProfile, onDelete }) {
   const mediaRef = useRef(null);
   const cardRef = useRef(null);
   const { userInfo } = useContext(UserContext);
+  const { showLoginRequired, showSuccess, showError, showConfirm } = useModal();
   const [likes, setLikes] = useState(item.likes?.length || 0);
   const [liked, setLiked] = useState(userInfo?.id ? item.likes?.includes(userInfo.id) : false);
   const [showModal, setShowModal] = useState(false);
@@ -138,36 +149,60 @@ function MediaCard({ item, isOwnProfile, onDelete }) {
 
   async function handleLike() {
     if (!userInfo?.id) {
-      alert("Please login to like");
+      showLoginRequired("Please login to like", { title: "Login required" });
       return;
     }
-    const res = await fetch(`${apiUrl}/api/music/${item._id}/like`, {
-      method: "PUT",
-      credentials: "include",
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setLikes(data.likes);
-      setLiked(data.liked);
+    try {
+      const res = await fetch(`${apiUrl}/api/music/${item._id}/like`, {
+        method: "PUT",
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setLikes(data.likes);
+        setLiked(data.liked);
+      } else {
+        showError("Could not update your like. Please try again.");
+      }
+    } catch {
+      showError("Could not update your like. Check your connection.");
     }
   }
 
   async function handleDelete() {
-    if (!window.confirm("Delete this media?")) return;
-    const res = await fetch(`${apiUrl}/api/music/${item._id}`, {
-      method: "DELETE",
-      credentials: "include",
+    const confirmed = await showConfirm("Delete this media?", {
+      title: "Delete media",
+      confirmText: "Delete",
+      danger: true,
     });
-    if (res.ok) onDelete(item._id);
-    else alert("Failed to delete");
+    if (!confirmed) return;
+    try {
+      const res = await fetch(`${apiUrl}/api/music/${item._id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (res.ok) onDelete(item._id);
+      else showError("Failed to delete. Please try again.");
+    } catch {
+      showError("Failed to delete. Check your connection.");
+    }
   }
 
-  function shareMedia() {
+  async function shareMedia() {
     const url = window.location.href;
-    if (navigator.share) navigator.share({ title: item.title, url });
-    else {
-      navigator.clipboard.writeText(url);
-      alert("Link copied!");
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: item.title, url });
+      } catch {
+        // user closed the share sheet - nothing to show
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(url);
+        showSuccess("Link copied!", { title: "Copied" });
+      } catch {
+        showError("Could not copy the link.");
+      }
     }
   }
 
@@ -337,6 +372,7 @@ export default function ProfilePage() {
 
   const { id } = useParams();
   const { userInfo, setUserInfo } = useContext(UserContext);
+  const { showSuccess, showError, showConfirm, showPrompt } = useModal();
   const navigate = useNavigate();
   const isOwnProfile = userInfo?.id === id;
   const [pendingPosts, setPendingPosts] = useState([]);
@@ -349,8 +385,8 @@ export default function ProfilePage() {
         setProfileData(data);
         setBio(data.user.bio || "");
       })
-      .catch((err) => {
-        console.error("Failed to load profile:", err);
+      .catch(() => {
+        showError("Failed to load profile. Check your connection.");
       })
       .finally(() => {
         setPageLoading(false);
@@ -360,7 +396,8 @@ export default function ProfilePage() {
       .then((res) => res.json())
       .then((data) => {
         setMusic(data.filter((m) => m.uploadedBy?._id === id || m.uploadedBy === id));
-      });
+      })
+      .catch(() => {});
 
     // Only check admin if viewing own profile
     if (userInfo?.id === id) {
@@ -386,6 +423,7 @@ export default function ProfilePage() {
 
   function handlePhotoChange(e) {
     const file = e.target.files[0];
+    if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
       setFileError("Photo too large! Max 5MB.");
       e.target.value = "";
@@ -401,19 +439,23 @@ export default function ProfilePage() {
     formData.append("bio", bio);
     if (profilePhoto && profilePhoto[0]) formData.append("profilePhoto", profilePhoto[0]);
 
-    const response = await fetch(`${apiUrl}/api/profile/${id}`, {
-      method: "PUT",
-      credentials: "include",
-      body: formData,
-    });
+    try {
+      const response = await fetch(`${apiUrl}/api/profile/${id}`, {
+        method: "PUT",
+        credentials: "include",
+        body: formData,
+      });
 
-    if (response.ok) {
-      const updatedUser = await response.json();
-      setProfileData((prev) => ({ ...prev, user: updatedUser }));
-      setIsEditing(false);
-      alert("Profile updated!");
-    } else {
-      alert("Failed to update profile");
+      if (response.ok) {
+        const updatedUser = await response.json();
+        setProfileData((prev) => ({ ...prev, user: updatedUser }));
+        setIsEditing(false);
+        showSuccess("Profile updated!");
+      } else {
+        showError("Failed to update profile. Please try again.");
+      }
+    } catch {
+      showError("Failed to update profile. Check your connection.");
     }
   }
 
@@ -463,7 +505,12 @@ export default function ProfilePage() {
 
   // Delete own blog post
   async function deletePost(postId) {
-    if (!window.confirm("Delete this post?")) return;
+    const confirmed = await showConfirm("Delete this post?", {
+      title: "Delete post",
+      confirmText: "Delete",
+      danger: true,
+    });
+    if (!confirmed) return;
     const res = await fetch(`${apiUrl}/api/post/${postId}`, {
       method: "DELETE",
       credentials: "include",
@@ -475,13 +522,18 @@ export default function ProfilePage() {
       }));
       setMusic((prev) => prev.filter((m) => m._id !== postId));
     } else {
-      alert("Failed to delete post");
+      showError("Failed to delete the post. Please try again.");
     }
   }
 
   // Delete own media
   async function deleteMedia(mediaId) {
-    if (!window.confirm("Delete this media?")) return;
+    const confirmed = await showConfirm("Delete this media?", {
+      title: "Delete media",
+      confirmText: "Delete",
+      danger: true,
+    });
+    if (!confirmed) return;
     const res = await fetch(`${apiUrl}/api/music/${mediaId}`, {
       method: "DELETE",
       credentials: "include",
@@ -489,7 +541,7 @@ export default function ProfilePage() {
     if (res.ok) {
       setMusic((prev) => prev.filter((m) => m._id !== mediaId));
     } else {
-      alert("Failed to delete media");
+      showError("Failed to delete the media. Please try again.");
     }
   }
 
@@ -500,11 +552,19 @@ export default function ProfilePage() {
     });
     if (res.ok) {
       setPendingPosts(pendingPosts.filter((p) => p._id !== postId));
+    } else {
+      showError("Could not approve the post. Please try again.");
     }
   }
 
   async function rejectPost(postId) {
-    const note = window.prompt("Reason for rejection (optional):");
+    const note = await showPrompt("Reason for rejection (optional):", {
+      title: "Reject post",
+      placeholder: "Type a reason...",
+      confirmText: "Reject",
+      danger: true,
+    });
+    if (note === null) return; // cancelled
     const res = await fetch(`${apiUrl}/api/education/${postId}/reject`, {
       method: "PUT",
       credentials: "include",
@@ -513,6 +573,8 @@ export default function ProfilePage() {
     });
     if (res.ok) {
       setPendingPosts(pendingPosts.filter((p) => p._id !== postId));
+    } else {
+      showError("Could not reject the post. Please try again.");
     }
   }
 

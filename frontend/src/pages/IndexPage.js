@@ -5,6 +5,8 @@ import { format, formatISO9075 } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import Spinner from "../Spinner";
 import { UserContext } from "../UserContext";
+import { useModal } from "../ModalContext";
+import AutoTextarea from "../AutoTextarea";
 import styles from "../styles/IndexPage.module.css";
 
 const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
@@ -42,23 +44,33 @@ function startPlayback(el) {
 
 // Comments Modal
 function CommentsModal({ mediaId, comments: initialComments, onClose, currentUser }) {
+  const { showLoginRequired, showError } = useModal();
   const [comments, setComments] = useState(initialComments || []);
   const [comment, setComment] = useState("");
 
   async function handleComment(e) {
     e.preventDefault();
-    if (!currentUser?.id) { alert("Please login to comment"); return; }
+    if (!currentUser?.id) {
+      showLoginRequired("Please login to comment");
+      return;
+    }
     if (!comment.trim()) return;
-    const res = await fetch(`${apiUrl}/api/music/${mediaId}/comment`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content: comment }),
-    });
-    if (res.ok) {
-      const newComment = await res.json();
-      setComments([...comments, newComment]);
-      setComment("");
+    try {
+      const res = await fetch(`${apiUrl}/api/music/${mediaId}/comment`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: comment }),
+      });
+      if (res.ok) {
+        const newComment = await res.json();
+        setComments([...comments, newComment]);
+        setComment("");
+      } else {
+        showError("Could not post your comment. Please try again.");
+      }
+    } catch {
+      showError("Could not post your comment. Check your connection.");
     }
   }
 
@@ -81,15 +93,17 @@ function CommentsModal({ mediaId, comments: initialComments, onClose, currentUse
             comments.map((c, i) => (
               <div className="modal-comment" key={i}>
                 <div className="modal-comment-author">👤 {c.username}</div>
-                <div className="modal-comment-content">{c.content}</div>
+                <div className="modal-comment-content" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+                  {c.content}
+                </div>
                 <div className="modal-comment-date">{formatISO9075(new Date(c.createdAt))}</div>
               </div>
             ))
           )}
         </div>
         {currentUser?.id ? (
-          <form className="modal-comment-form" onSubmit={handleComment}>
-            <input type="text" placeholder="Write a comment..."
+          <form className="modal-comment-form" onSubmit={handleComment} style={{ alignItems: "flex-end" }}>
+            <AutoTextarea placeholder="Write a comment..."
               value={comment} onChange={(e) => setComment(e.target.value)} />
             <button type="submit">Post</button>
           </form>
@@ -106,6 +120,7 @@ function MediaCard({ item }) {
   const mediaRef = useRef(null);
   const cardRef = useRef(null);
   const { userInfo } = useContext(UserContext);
+  const { showLoginRequired, showSuccess, showError } = useModal();
   const [likes, setLikes] = useState(item.likes?.length || 0);
   const [liked, setLiked] = useState(userInfo?.id ? item.likes?.includes(userInfo.id) : false);
   const [showModal, setShowModal] = useState(false);
@@ -154,21 +169,42 @@ function MediaCard({ item }) {
   }, []);
 
   async function handleLike() {
-    if (!userInfo?.id) { alert("Please login to like"); return; }
-    const res = await fetch(`${apiUrl}/api/music/${item._id}/like`, {
-      method: "PUT", credentials: "include",
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setLikes(data.likes);
-      setLiked(data.liked);
+    if (!userInfo?.id) {
+      showLoginRequired("Please login to like");
+      return;
+    }
+    try {
+      const res = await fetch(`${apiUrl}/api/music/${item._id}/like`, {
+        method: "PUT", credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setLikes(data.likes);
+        setLiked(data.liked);
+      } else {
+        showError("Could not update your like. Please try again.");
+      }
+    } catch {
+      showError("Could not update your like. Check your connection.");
     }
   }
 
-  function shareMedia() {
+  async function shareMedia() {
     const url = `${window.location.origin}/entertainment`;
-    if (navigator.share) navigator.share({ title: item.title, url });
-    else { navigator.clipboard.writeText(url); alert("Link copied!"); }
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: item.title, url });
+      } catch {
+        // user closed the share sheet - nothing to show
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(url);
+        showSuccess("Link copied!", { title: "Copied" });
+      } catch {
+        showError("Could not copy the link.");
+      }
+    }
   }
 
   const hasVideo = isVideoFile(item.audioFile);
@@ -355,6 +391,7 @@ function SearchResultCard({ item, onSelect }) {
 
 // MAIN INDEX PAGE
 export default function IndexPage() {
+  const { showError } = useModal();
   const [posts, setPosts] = useState([]);
   const [music, setMusic] = useState([]);
   const [users, setUsers] = useState([]);
@@ -373,12 +410,14 @@ export default function IndexPage() {
       fetch(`${apiUrl}/api/post`).then((r) => r.json()),
       fetch(`${apiUrl}/api/music`).then((r) => r.json()),
       fetch(`${apiUrl}/api/users`).then((r) => r.json()), // ← fetch users
-    ]).then(([postsData, musicData, usersData]) => {
-      setPosts(postsData);
-      setMusic(musicData);
-      setUsers(Array.isArray(usersData) ? usersData : []);
-      setLoaded(true);
-    });
+    ])
+      .then(([postsData, musicData, usersData]) => {
+        setPosts(postsData);
+        setMusic(musicData);
+        setUsers(Array.isArray(usersData) ? usersData : []);
+        setLoaded(true);
+      })
+      .catch(() => showError("Could not load the feed. Check your connection."));
   }, []);
 
   // Search across posts + media + users

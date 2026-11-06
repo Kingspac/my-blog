@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Editor from "../Editor";
 import Spinner from "../Spinner";
+import { useModal } from "../ModalContext";
 
 export default function CreateEducation() {
   const [title, setTitle] = useState("");
@@ -14,9 +15,11 @@ export default function CreateEducation() {
   const [fileError, setFileError] = useState("");
 
   const navigate = useNavigate();
+  const { showError } = useModal();
 
   function handleCoverChange(e) {
     const file = e.target.files[0];
+    if (!file) return;
     const maxSize = 1150 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
       setFileError("Image too large! Max 150MB.");
@@ -43,16 +46,22 @@ export default function CreateEducation() {
     if (youtubeLink) formData.append("youtubeLink", youtubeLink);
     if (cover) formData.append("cover", cover[0]);
 
-    const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/education/create`, {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-    });
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/education/create`, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
 
-    if (response.ok) {
-      navigate("/education");
-    } else {
-      alert("Failed to create content. Please try again.");
+      if (response.ok) {
+        navigate("/education");
+      } else {
+        setIsSubmitting(false);
+        showError("Failed to create content. Please try again.");
+      }
+    } catch {
+      setIsSubmitting(false);
+      showError("Failed to create content. Check your connection and try again.");
     }
   }
 
@@ -158,8 +167,8 @@ export default function CreateEducation() {
         <label>Content</label>
         <Editor onChange={setContent} value={content} />
 
-        <button type="submit" style={{ marginTop: "15px" }}>
-          Publish 📚
+        <button type="submit" disabled={isSubmitting} style={{ marginTop: "15px" }}>
+          {isSubmitting ? "Publishing..." : "Publish 📚"}
         </button>
       </form>
     </div>

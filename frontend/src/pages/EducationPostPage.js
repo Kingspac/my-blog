@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Spinner from "../Spinner";
 import { UserContext } from "../UserContext";
+import { useModal } from "../ModalContext";
 
 const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
@@ -33,6 +34,7 @@ export default function EducationPostPage() {
   const [liked, setLiked] = useState(false);
   const [loading, setLoading] = useState(true);
   const { userInfo } = useContext(UserContext);
+  const { showLoginRequired, showError, showConfirm } = useModal();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -45,28 +47,49 @@ export default function EducationPostPage() {
         if (userInfo?.id) setLiked(data.likes?.includes(userInfo.id));
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        setLoading(false);
+        showError("Could not load this post. Check your connection.");
+      });
   }, [id]);
 
   async function handleLike() {
-    if (!userInfo?.id) { alert("Please login to like"); return; }
-    const res = await fetch(`${apiUrl}/api/education/${id}/like`, {
-      method: "PUT", credentials: "include",
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setLikes(data.likes);
-      setLiked(data.liked);
+    if (!userInfo?.id) {
+      showLoginRequired("Please login to like", { title: "Login required" });
+      return;
+    }
+    try {
+      const res = await fetch(`${apiUrl}/api/education/${id}/like`, {
+        method: "PUT", credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setLikes(data.likes);
+        setLiked(data.liked);
+      } else {
+        showError("Could not update your like. Please try again.");
+      }
+    } catch {
+      showError("Could not update your like. Check your connection.");
     }
   }
 
   async function handleDelete() {
-    if (!window.confirm("Delete this post?")) return;
-    const res = await fetch(`${apiUrl}/api/education/${id}`, {
-      method: "DELETE", credentials: "include",
+    const confirmed = await showConfirm("Delete this post?", {
+      title: "Delete post",
+      confirmText: "Delete",
+      danger: true,
     });
-    if (res.ok) navigate("/education");
-    else alert("Failed to delete");
+    if (!confirmed) return;
+    try {
+      const res = await fetch(`${apiUrl}/api/education/${id}`, {
+        method: "DELETE", credentials: "include",
+      });
+      if (res.ok) navigate("/education");
+      else showError("Failed to delete the post. Please try again.");
+    } catch {
+      showError("Failed to delete the post. Check your connection.");
+    }
   }
 
   if (loading) return <Spinner text="Loading post..." />;
