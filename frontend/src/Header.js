@@ -19,6 +19,7 @@ export default function Header() {
   const [newMessageCount, setNewMessageCount] = useState(0);
   const [navVisible, setNavVisible] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
+  const [photoBroken, setPhotoBroken] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
@@ -112,6 +113,12 @@ export default function Header() {
   const handleRoomClick = () => setNewMessageCount(0);
 
   const { username, id, profilePhoto } = userInfo || {};
+  const photoSrc = profilePhoto ? String(profilePhoto).replace(/\\/g, "/") : "";
+
+  // a new photo gets a fresh chance to load
+  useEffect(() => {
+    setPhotoBroken(false);
+  }, [profilePhoto]);
   const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
   const isRoom = location.pathname === "/room";
   const showHomeBtn = navVisible && !isTyping;
@@ -155,8 +162,13 @@ export default function Header() {
 
           {username ? (
             <Link to={`/profile/${id}`} className={styles.profileLink} title={username}>
-              {profilePhoto ? (
-                <img src={`${apiUrl}/${profilePhoto}`} alt={username} className={styles.profileAvatar} />
+              {photoSrc && !photoBroken ? (
+                <img
+                  src={/^https?:\/\//i.test(photoSrc) ? photoSrc : `${apiUrl}/${photoSrc}`}
+                  alt={username}
+                  className={styles.profileAvatar}
+                  onError={() => setPhotoBroken(true)}
+                />
               ) : (
                 <div className={styles.profileAvatarPlaceholder}>{username.charAt(0).toUpperCase()}</div>
               )}

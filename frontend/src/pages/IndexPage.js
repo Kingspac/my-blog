@@ -7,6 +7,7 @@ import Spinner from "../Spinner";
 import { UserContext } from "../UserContext";
 import { useModal } from "../ModalContext";
 import AutoTextarea from "../AutoTextarea";
+import Avatar from "../Avatar";
 import styles from "../styles/IndexPage.module.css";
 
 const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
@@ -92,7 +93,7 @@ function CommentsModal({ mediaId, comments: initialComments, onClose, currentUse
           ) : (
             comments.map((c, i) => (
               <div className="modal-comment" key={i}>
-                <div className="modal-comment-author">👤 {c.username}</div>
+                <div className="modal-comment-author"><Avatar username={c.username} photo={c.profilePhoto} size={22} /> {c.username}</div>
                 <div className="modal-comment-content" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
                   {c.content}
                 </div>
@@ -218,7 +219,7 @@ function MediaCard({ item }) {
         viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.45 }}
         whileHover={{ y: -2 }}>
         <div className="fb-card-header">
-          <div className="fb-avatar">{item.uploadedBy?.username?.charAt(0).toUpperCase()}</div>
+          <Avatar user={item.uploadedBy} />
           <div className="fb-author-info">
             <Link to={`/profile/${item.uploadedBy?._id}`} className="fb-author-name">
               {item.artist || item.uploadedBy?.username}

@@ -1,15 +1,30 @@
 const Message = require("../models/Message");
 const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
 const secret = process.env.JWT_SECRET;
+
+// Keeps `author` as the plain id (the app relies on that) and adds `profilePhoto`
+function withPhoto(msg) {
+  const o = msg.toObject ? msg.toObject() : msg;
+  const a = o.author;
+  if (a && typeof a === "object" && a._id) {
+    o.author = a._id;
+    o.profilePhoto = a.profilePhoto || null;
+  } else {
+    o.profilePhoto = null;
+  }
+  return o;
+}
 
 // GET ALL MESSAGES
 exports.getMessages = async (req, res) => {
   try {
     const messages = await Message.find()
+      .populate("author", ["profilePhoto"])
       .sort({ createdAt: 1 }) // oldest first
       .limit(200);
-    res.json(messages);
+    res.json(messages.map(withPhoto));
   } catch (e) {
     res.status(500).json({ message: "Failed to get messages", error: e.message });
   }
@@ -45,7 +60,8 @@ exports.sendMessage = async (req, res) => {
         username: info.username,
       });
 
-      res.json(message);
+      const me = await User.findById(info.id).select("profilePhoto");
+      res.json({ ...message.toObject(), profilePhoto: me?.profilePhoto || null });
     } catch (e) {
       res.status(500).json({ message: "Failed to send message", error: e.message });
     }

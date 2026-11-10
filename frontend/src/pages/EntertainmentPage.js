@@ -5,6 +5,7 @@ import { format, formatISO9075 } from "date-fns";
 import { useMusic } from "../MusicContext";
 import { useModal } from "../ModalContext";
 import AutoTextarea from "../AutoTextarea";
+import Avatar from "../Avatar";
 import { motion, AnimatePresence } from "framer-motion";
 
 
@@ -90,7 +91,7 @@ function CommentsModal({ media, currentUser, onClose }) {
           ) : (
             comments.map((c, i) => (
               <div className="modal-comment" key={i}>
-                <div className="modal-comment-author">👤 {c.username}</div>
+                <div className="modal-comment-author"><Avatar username={c.username} photo={c.profilePhoto} size={22} /> {c.username}</div>
                 <div className="modal-comment-content" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
                   {c.content}
                 </div>
@@ -249,9 +250,7 @@ function MediaCard({ media, currentUser, onDelete }) {
 
         {/* CARD HEADER */}
         <div className="fb-card-header">
-          <div className="fb-avatar">
-            {media.uploadedBy?.username?.charAt(0).toUpperCase()}
-          </div>
+          <Avatar user={media.uploadedBy} />
           <div className="fb-author-info">
             <Link to={`/profile/${media.uploadedBy?._id}`} className="fb-author-name">
               {media.artist || media.uploadedBy?.username}

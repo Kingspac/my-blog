@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { UserContext } from "../UserContext";
 import { useModal } from "../ModalContext";
 import AutoTextarea from "../AutoTextarea";
+import Avatar from "../Avatar";
 import Post from "../Post.js";
 import styles from "../styles/ProfilePage.module.css";
 import Spinner from "../Spinner";
@@ -84,7 +85,7 @@ function CommentsModal({ mediaId, comments: initialComments, onClose, currentUse
           ) : (
             comments.map((c, i) => (
               <div className="modal-comment" key={i}>
-                <div className="modal-comment-author">👤 {c.username}</div>
+                <div className="modal-comment-author"><Avatar username={c.username} photo={c.profilePhoto} size={22} /> {c.username}</div>
                 <div className="modal-comment-content" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
                   {c.content}
                 </div>
@@ -220,7 +221,7 @@ function MediaCard({ item, isOwnProfile, onDelete }) {
         transition={{ duration: 0.4 }}
       >
         <div className="fb-card-header">
-          <div className="fb-avatar">{item.uploadedBy?.username?.charAt(0).toUpperCase()}</div>
+          <Avatar user={item.uploadedBy} />
           <div className="fb-author-info">
             <Link to={`/profile/${item.uploadedBy?._id}`} className="fb-author-name">
               {item.artist || item.uploadedBy?.username}
@@ -449,6 +450,8 @@ export default function ProfilePage() {
       if (response.ok) {
         const updatedUser = await response.json();
         setProfileData((prev) => ({ ...prev, user: updatedUser }));
+        // keep the signed-in user's photo (header icon) up to date
+        setUserInfo((prev) => (prev ? { ...prev, profilePhoto: updatedUser.profilePhoto } : prev));
         setIsEditing(false);
         showSuccess("Profile updated!");
       } else {

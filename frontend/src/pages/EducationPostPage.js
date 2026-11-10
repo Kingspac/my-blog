@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Spinner from "../Spinner";
 import { UserContext } from "../UserContext";
 import { useModal } from "../ModalContext";
+import Avatar from "../Avatar";
 
 const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
@@ -410,6 +411,7 @@ export default function EducationPostPage() {
         <div className="edu-post-meta">
           <span className="edu-post-author">
             ✍️ By{" "}
+            <Avatar user={postInfo.author} size={24} />{" "}
             <Link to={`/profile/${postInfo.author?._id}`}>
               {postInfo.author?.username}
             </Link>

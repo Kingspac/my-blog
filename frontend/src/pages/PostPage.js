@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import styles from "../styles/Post.module.css";
 import { useModal } from "../ModalContext";
 import AutoTextarea from "../AutoTextarea";
+import Avatar from "../Avatar";
 
 const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
@@ -149,7 +150,7 @@ export default function PostPage(){
 
         <div className={styles.postMeta}>
           <span className={styles.postAuthor}>
-            ✍️{" "}
+            <Avatar user={postInfo.author} size={24} />{" "}
             <Link to={`/profile/${postInfo.author._id}`}>
               {postInfo.author.username}
             </Link>
@@ -251,7 +252,7 @@ export default function PostPage(){
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <div className={styles.commentAuthor}>👤 {c.username}</div>
+              <div className={styles.commentAuthor}><Avatar username={c.username} photo={c.profilePhoto} size={22} /> {c.username}</div>
               <div className={styles.commentContent} style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
                 {c.content}
               </div>

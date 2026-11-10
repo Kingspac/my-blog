@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
+const { addCommentPhotos, photoOf } = require("../utils/commentPhotos");
 
 const uploadMiddleware = multer({
   dest: "uploads",
@@ -27,10 +28,10 @@ exports.getAllMedia = async (req, res) => {
     const filter = category ? { category } : {};
 
     const media = await Media.find(filter)
-      .populate("uploadedBy", ["username"])
+      .populate("uploadedBy", ["username", "profilePhoto"])
       .sort({ createdAt: -1 });
 
-    res.json(media);
+    res.json(await addCommentPhotos(media));
   } catch (e) {
     res.status(500).json({ message: "Failed to get media", error: e.message });
   }
@@ -40,9 +41,9 @@ exports.getAllMedia = async (req, res) => {
 exports.getSingleMedia = async (req, res) => {
   const { id } = req.params;
   try {
-    const media = await Media.findById(id).populate("uploadedBy", ["username"]);
+    const media = await Media.findById(id).populate("uploadedBy", ["username", "profilePhoto"]);
     if (!media) return res.status(404).json("not found");
-    res.json(media);
+    res.json(await addCommentPhotos(media));
   } catch (e) {
     res.status(500).json({ message: "Failed to get media", error: e.message });
   }
@@ -214,7 +215,7 @@ exports.addComment = async (req, res) => {
       mediaDoc.comments.push(newComment);
       await mediaDoc.save();
 
-      res.json(newComment);
+      res.json({ ...newComment, profilePhoto: await photoOf(info.id) });
     } catch (e) {
       res.status(500).json({ message: "Comment failed", error: e.message });
     }

@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const multer = require("multer");
 const fs = require("fs");
+const { addCommentPhotos, photoOf } = require("../utils/commentPhotos");
 
 const uploadMiddleware = multer({
   dest: "uploads",
@@ -32,7 +33,6 @@ exports.login = async (req, res) => {
   const { username, password } = req.body;
   const userDoc = await User.findOne({ username });
   if (!userDoc) return res.status(400).json("wrong credentials");
-console.log(userDoc)
   const passOk = bcrypt.compareSync(password, userDoc.password);
   if (passOk) {
     jwt.sign({ username, id: userDoc._id }, secret, {}, (error, token) => {
@@ -40,6 +40,7 @@ console.log(userDoc)
       res.cookie("token", token).json({
         id: userDoc._id,
         username,
+        profilePhoto: userDoc.profilePhoto || null,
       });
     });
   } else {
@@ -52,9 +53,13 @@ exports.profile = (req, res) => {
   const { token } = req.cookies;
   if (!token) return res.status(401).json("no token");
 
-  jwt.verify(token, secret, {}, (error, info) => {
+  jwt.verify(token, secret, {}, async (error, info) => {
     if (error) return res.status(403).json("invalid token");
-    res.json(info);
+    try {
+      res.json({ ...info, profilePhoto: await photoOf(info.id) });
+    } catch {
+      res.json(info);
+    }
   });
 };
 
@@ -127,17 +132,17 @@ exports.editPost = [
 // ===== GET ALL POSTS =====
 exports.getPosts = async (req, res) => {
   const posts = await Post.find()
-    .populate("author", ["username"])
+    .populate("author", ["username", "profilePhoto"])
     .sort({ createdAt: -1 })
     .limit(20);
-  res.json(posts);
+  res.json(await addCommentPhotos(posts));
 };
 
 // ===== GET SINGLE POST =====
 exports.getPostId = async (req, res) => {
   const { id } = req.params;
-  const postDoc = await Post.findById(id).populate("author", ["username"]);
-  res.json(postDoc);
+  const postDoc = await Post.findById(id).populate("author", ["username", "profilePhoto"]);
+  res.json(await addCommentPhotos(postDoc));
 };
 
 // ===== DELETE POST =====
@@ -193,7 +198,7 @@ exports.addComment = async (req, res) => {
     };
     postDoc.comments.push(newComment);
     await postDoc.save();
-    res.json(newComment);
+    res.json({ ...newComment, profilePhoto: await photoOf(info.id) });
   });
 };
 
@@ -204,9 +209,9 @@ exports.getProfile = async (req, res) => {
     const user = await User.findById(id).select("-password");
     if (!user) return res.status(404).json("user not found");
     const posts = await Post.find({ author: id })
-      .populate("author", ["username"])
+      .populate("author", ["username", "profilePhoto"])
       .sort({ createdAt: -1 });
-    res.json({ user, posts });
+    res.json({ user, posts: await addCommentPhotos(posts) });
   } catch (e) {
     res.status(500).json({ message: "Failed to get profile", error: e.message });
   }

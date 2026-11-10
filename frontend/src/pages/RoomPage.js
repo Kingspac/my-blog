@@ -2,6 +2,7 @@ import { useState, useEffect, useContext, useRef } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import { useModal } from "../ModalContext";
+import Avatar from "../Avatar";
 import { formatISO9075 } from "date-fns";
 import styles from "../styles/RoomPage.module.css";
 
@@ -168,7 +169,7 @@ export default function RoomPage() {
               >
                 <div className={styles.messageUsername}>
                   <Link to={`/profile/${msg.author}`}>
-                    👤 {msg.username}
+                    <Avatar username={msg.username} photo={msg.profilePhoto} size={22} /> {msg.username}
                   </Link>
                   {userInfo?.username === msg.username && (
                     <button

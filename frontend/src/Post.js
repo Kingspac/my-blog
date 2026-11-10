@@ -5,6 +5,7 @@ import { useContext, useState } from "react";
 import { UserContext } from "./UserContext";
 import { useModal } from "./ModalContext";
 import AutoTextarea from "./AutoTextarea";
+import Avatar from "./Avatar";
 
 const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
@@ -67,7 +68,7 @@ function CommentsModal({ postId, comments: initialComments, onClose, currentUser
           ) : (
             comments.map((c, i) => (
               <div className="modal-comment" key={i}>
-                <div className="modal-comment-author">👤 {c.username}</div>
+                <div className="modal-comment-author"><Avatar username={c.username} photo={c.profilePhoto} size={22} /> {c.username}</div>
                 <div className="modal-comment-content" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
                   {c.content}
                 </div>
@@ -167,9 +168,7 @@ export default function Post({
         >
           {/* CARD HEADER */}
           <div className="fb-card-header">
-            <div className="fb-avatar">
-              {author?.username?.charAt(0).toUpperCase()}
-            </div>
+            <Avatar user={author} />
             <div className="fb-author-info">
               <Link to={`/post/${_id}`} className="fb-author-name">
                 {author?.username}
