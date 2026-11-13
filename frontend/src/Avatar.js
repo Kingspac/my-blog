@@ -4,12 +4,19 @@ const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
 function photoUrl(photo) {
   const clean = String(photo).replace(/\\/g, "/");
-  return /^https?:\/\//i.test(clean) ? clean : `${apiUrl}/${clean}`;
+
+  const isFullUrl = clean.startsWith("http://") || clean.startsWith("https://");
+
+  if (isFullUrl) {
+    return clean;
+  }
+
+  return `${apiUrl}/${clean}`;
 }
 
 // The photo comes with the data from the server, so nothing extra is fetched.
-//   <Avatar user={post.author} />                      (object with username + profilePhoto)
-//   <Avatar username={c.username} photo={c.profilePhoto} size={22} />
+// <Avatar user={post.author} /> (object with username + profilePhoto)
+// <Avatar username={c.username} photo={c.profilePhoto} size={22} />
 // No photo (or it fails to load) -> first letter of the username.
 export default function Avatar({ user, username, photo, size = 40, className = "", style }) {
   const [broken, setBroken] = useState(false);
@@ -35,6 +42,7 @@ export default function Avatar({ user, username, photo, size = 40, className = "
         fontSize: Math.round(size * 0.42),
         display: "inline-flex",
         verticalAlign: "middle",
+        borderRadius: 10,
         ...style,
       }}
     >
