@@ -13,16 +13,13 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "http://10.231.87.153:3000",
+  "https://enchwra-project.onrender.com/education",
   " http://10.231.87.153:3000",
 ];
 
 app.use(
   cors({
     credentials: true,
-<<<<<<< HEAD
-    origin: allowedOrigin,
-=======
     origin: function (origin, callback) {
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) {
@@ -31,7 +28,6 @@ app.use(
         return callback(null, false);
       }
     },
->>>>>>> c539ee8aef8b8b6ad76d287552d40a1d5349af41
   })
 );
 
