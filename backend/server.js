@@ -13,7 +13,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://enchwra-project.onrender.com/education",
+  "https://enchwra-project.onrender.com",
   " http://10.231.87.153:3000",
 ];
 
