@@ -11,13 +11,27 @@ const educationRoutes = require("./routes/educationRoute");
 
 const app = express();
 
-// CORS - supports both development and production
-const allowedOrigin = process.env.FRONTEND_URL || "http://localhost:3000";
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://10.231.87.153:3000",
+  " http://10.231.87.153:3000",
+];
 
 app.use(
   cors({
     credentials: true,
+<<<<<<< HEAD
     origin: allowedOrigin,
+=======
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(null, false);
+      }
+    },
+>>>>>>> c539ee8aef8b8b6ad76d287552d40a1d5349af41
   })
 );
 
