@@ -1,3 +1,4 @@
+import { mediaUrl } from "../mediaUrl";
 import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -327,7 +328,7 @@ export default function EducationPage() {
               {post.cover && !post.youtubeLink && (
                 <img
                   className="edu-card-thumb"
-                  src={`${apiUrl}/${post.cover}`}
+                  src={mediaUrl(post.cover)}
                   alt={post.title}
                 />
               )}

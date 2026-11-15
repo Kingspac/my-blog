@@ -1,3 +1,4 @@
+import { mediaUrl } from "../mediaUrl";
 import Post from "../Post.js";
 import { useEffect, useState, useRef, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -251,7 +252,7 @@ function MediaCard({ item }) {
         <div className="tiktok-media-wrapper">
           {item.coverPhoto && !item.youtubeLink && !hasVideo && (
             <div className="fb-card-image">
-              <img src={`${apiUrl}/${item.coverPhoto}`} alt={item.title} />
+              <img src={mediaUrl(item.coverPhoto)} alt={item.title} />
             </div>
           )}
           {/* YouTube - autoplays (muted) only while the card is on screen */}
@@ -267,7 +268,7 @@ function MediaCard({ item }) {
           {item.audioFile && !item.youtubeLink && hasVideo && (
             <div className="fb-card-image" style={{ background: "#000" }}>
               <video ref={mediaRef} controls playsInline loop preload="auto"
-                src={`${apiUrl}/${item.audioFile}`} onPlay={handlePlay}
+                src={mediaUrl(item.audioFile)} onPlay={handlePlay}
                 style={{ width: "100%", display: "block", maxHeight: "360px" }} />
             </div>
           )}
@@ -275,7 +276,7 @@ function MediaCard({ item }) {
             <div className="fb-audio-player">
               <div className="fb-audio-icon">🎵</div>
               <audio ref={mediaRef} controls playsInline preload="auto" onPlay={handlePlay} style={{ flex: 1 }}>
-                <source src={`${apiUrl}/${item.audioFile}`} />
+                <source src={mediaUrl(item.audioFile)} />
               </audio>
             </div>
           )}
@@ -344,7 +345,7 @@ function SearchResultCard({ item, onSelect }) {
 
   // Avatar for users
   const avatar = item.itemType === "user" && item.profilePhoto
-    ? `${apiUrl}/${item.profilePhoto}`
+    ? mediaUrl(item.profilePhoto)
     : null;
 
   const subtitle = item.itemType === "post"

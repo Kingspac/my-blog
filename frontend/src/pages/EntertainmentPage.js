@@ -1,3 +1,4 @@
+import { mediaUrl } from "../mediaUrl";
 import { useState, useEffect, useContext, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
@@ -300,7 +301,7 @@ function MediaCard({ media, currentUser, onDelete }) {
           {/* Cover photo (audio with cover) */}
           {media.coverPhoto && !media.youtubeLink && !hasVideo && (
             <div className="fb-card-image">
-              <img src={`${apiUrl}/${media.coverPhoto}`} alt={media.title}
+              <img src={mediaUrl(media.coverPhoto)} alt={media.title}
                 style={{ width: "100%", maxHeight: "70vh", objectFit: "cover", display: "block" }} />
             </div>
           )}
@@ -310,7 +311,7 @@ function MediaCard({ media, currentUser, onDelete }) {
             <div className="fb-card-image" style={{ background: "#000" }}>
               <video
                 ref={mediaRef}
-                src={`${apiUrl}/${media.audioFile}`}
+                src={mediaUrl(media.audioFile)}
                 controls
                 playsInline
                 loop
@@ -326,7 +327,7 @@ function MediaCard({ media, currentUser, onDelete }) {
             <div className="fb-audio-player">
               <div className="fb-audio-icon">🎵</div>
               <audio ref={mediaRef} controls playsInline preload="auto" onPlay={handlePlay} style={{ width: "100%", maxWidth: 320 }}>
-                <source src={`${apiUrl}/${media.audioFile}`} />
+                <source src={mediaUrl(media.audioFile)} />
               </audio>
             </div>
           )}
@@ -337,7 +338,7 @@ function MediaCard({ media, currentUser, onDelete }) {
               {/* audio player below cover */}
               <div style={{ padding: "10px 16px", background: "#1a1209" }}>
                 <audio ref={mediaRef} controls playsInline preload="auto" onPlay={handlePlay} style={{ width: "100%" }}>
-                  <source src={`${apiUrl}/${media.audioFile}`} />
+                  <source src={mediaUrl(media.audioFile)} />
                 </audio>
               </div>
             </div>

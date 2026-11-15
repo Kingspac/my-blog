@@ -1,30 +1,61 @@
 const Media = require("../models/Media");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
-const fs = require("fs");
-const path = require("path");
+const cloudinary = require("cloudinary").v2;
 const { addCommentPhotos, photoOf } = require("../utils/commentPhotos");
 
+// Reads CLOUDINARY_URL automatically (your Render shorthand).
+// Only uses the 3 separate keys if they are all set.
+if (
+  process.env.CLOUDINARY_CLOUD_NAME &&
+  process.env.CLOUDINARY_API_KEY &&
+  process.env.CLOUDINARY_API_SECRET
+) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+}
+cloudinary.config({ secure: true });
+
 const uploadMiddleware = multer({
-  dest: "uploads",
-  limits: { fileSize: 200 * 1024 * 1024 }, // 200MB
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB, Cloudinary free plan cap
 });
 
 const secret = process.env.JWT_SECRET;
 
-// HELPER - safely delete a file from uploads folder
-function deleteFile(filePath) {
-  if (!filePath) return;
-  const fullPath = path.join(__dirname, "..", filePath);
-  if (fs.existsSync(fullPath)) {
-    fs.unlinkSync(fullPath);
-  }
+// HELPER - upload a buffer to Cloudinary
+function uploadToCloudinary(buffer, folder, resourceType) {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder, resource_type: resourceType },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result.secure_url);
+      }
+    );
+    stream.end(buffer);
+  });
+}
+
+// HELPER - delete a file from Cloudinary using its URL
+async function deleteFromCloudinary(fileUrl, resourceType) {
+  if (!fileUrl || !fileUrl.includes("cloudinary")) return;
+  try {
+    const parts = fileUrl.split("/upload/");
+    if (parts.length < 2) return;
+    let publicId = parts[1].split("/").slice(1).join("/"); // remove version part
+    publicId = publicId.replace(/\.[^/.]+$/, ""); // remove extension
+    await cloudinary.uploader.destroy(publicId, { resource_type: resourceType });
+  } catch (_) {}
 }
 
 // GET MEDIA (With optional category filter)
 exports.getAllMedia = async (req, res) => {
   try {
-    const { category } = req.query; // Look for ?category=music in the URL
+    const { category } = req.query;
     const filter = category ? { category } : {};
 
     const media = await Media.find(filter)
@@ -58,37 +89,22 @@ exports.uploadMedia = [
   async (req, res) => {
     const { token } = req.cookies;
 
-    // If we reject the request, remove the temp files multer already saved
-    const discardUploads = () => {
-      Object.values(req.files || {})
-        .flat()
-        .forEach((f) => {
-          try { fs.unlinkSync(f.path); } catch (_) {}
-        });
-    };
-
     jwt.verify(token, secret, {}, async (error, info) => {
       if (error) {
-        discardUploads();
         return res.status(403).json("invalid token");
       }
 
       try {
         const { title, artist, description, youtubeLink, category, releaseDate } = req.body;
 
-        // Artist / creator name is mandatory
         if (!artist || !artist.trim()) {
-          discardUploads();
           return res.status(400).json("Artist / creator name is required");
         }
 
-        // Release date (YYYY-MM-DD from the form). Stored at noon UTC so the
-        // calendar day doesn't shift when viewed in other timezones.
         let parsedDate = new Date();
         if (releaseDate) {
           const d = new Date(`${releaseDate}T12:00:00.000Z`);
           if (isNaN(d.getTime())) {
-            discardUploads();
             return res.status(400).json("Invalid release date");
           }
           parsedDate = d;
@@ -98,19 +114,13 @@ exports.uploadMedia = [
         let coverPhotoPath = null;
 
         if (req.files?.audioFile) {
-          const { originalname, path: filePath } = req.files.audioFile[0];
-          const ext = originalname.split(".").pop();
-          const newPath = filePath + "." + ext;
-          fs.renameSync(filePath, newPath);
-          audioFilePath = newPath;
+          const file = req.files.audioFile[0];
+          audioFilePath = await uploadToCloudinary(file.buffer, "enchwra/audio", "video");
         }
 
         if (req.files?.coverPhoto) {
-          const { originalname, path: filePath } = req.files.coverPhoto[0];
-          const ext = originalname.split(".").pop();
-          const newPath = filePath + "." + ext;
-          fs.renameSync(filePath, newPath);
-          coverPhotoPath = newPath;
+          const file = req.files.coverPhoto[0];
+          coverPhotoPath = await uploadToCloudinary(file.buffer, "enchwra/covers", "image");
         }
 
         const mediaDoc = await Media.create({
@@ -145,13 +155,11 @@ exports.deleteMedia = async (req, res) => {
       const mediaDoc = await Media.findById(id);
       if (!mediaDoc) return res.status(404).json("not found");
 
-      const isOwner =
-        JSON.stringify(mediaDoc.uploadedBy) === JSON.stringify(info.id);
+      const isOwner = JSON.stringify(mediaDoc.uploadedBy) === JSON.stringify(info.id);
       if (!isOwner) return res.status(403).json("not authorized");
 
-      // Delete files from disk
-      deleteFile(mediaDoc.audioFile);
-      deleteFile(mediaDoc.coverPhoto);
+      await deleteFromCloudinary(mediaDoc.audioFile, "video");
+      await deleteFromCloudinary(mediaDoc.coverPhoto, "image");
 
       await mediaDoc.deleteOne();
       res.json("deleted successfully");
@@ -226,14 +234,10 @@ exports.addComment = async (req, res) => {
 exports.incrementPlayCount = async (req, res) => {
   const { id } = req.params;
   try {
-    const media = await Media.findByIdAndUpdate(
-      id,
-      { $inc: { playCount: 1 } },
-      { new: true }
-    );
+    const media = await Media.findByIdAndUpdate(id, { $inc: { playCount: 1 } }, { new: true });
     if (!media) return res.status(404).json("not found");
     res.json({ playCount: media.playCount });
   } catch (e) {
-    res.status(500).json({ message: "Failed to update play count", error: e.message });
+    res.status(500).json({ message: "Failed to get play count", error: e.message });
   }
 };

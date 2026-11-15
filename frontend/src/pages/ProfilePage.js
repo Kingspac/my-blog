@@ -1,3 +1,4 @@
+import { mediaUrl } from "../mediaUrl";
 import { useState, useEffect, useContext, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { format, formatISO9075 } from "date-fns";
@@ -241,7 +242,7 @@ function MediaCard({ item, isOwnProfile, onDelete }) {
         <div className="tiktok-media-wrapper">
           {item.coverPhoto && !item.youtubeLink && !hasVideo && (
             <div className="fb-card-image">
-              <img src={`${apiUrl}/${item.coverPhoto}`} alt={item.title} />
+              <img src={mediaUrl(item.coverPhoto)} alt={item.title} />
             </div>
           )}
           {item.youtubeLink && (
@@ -265,7 +266,7 @@ function MediaCard({ item, isOwnProfile, onDelete }) {
                 onPlay={handlePlay}
                 style={{ width: "100%", display: "block", maxHeight: "360px" }}
               >
-                <source src={`${apiUrl}/${item.audioFile}`} type="video/mp4" />
+                <source src={mediaUrl(item.audioFile)} type="video/mp4" />
               </video>
             </div>
           )}
@@ -273,7 +274,7 @@ function MediaCard({ item, isOwnProfile, onDelete }) {
             <div className="fb-audio-player">
               <div className="fb-audio-icon">🎵</div>
               <audio ref={mediaRef} controls onPlay={handlePlay} style={{ flex: 1 }}>
-                <source src={`${apiUrl}/${item.audioFile}`} />
+                <source src={mediaUrl(item.audioFile)} />
               </audio>
             </div>
           )}
@@ -601,7 +602,7 @@ export default function ProfilePage() {
       <div className={styles.profileHeader}>
         <div className={styles.profilePhoto}>
           {user.profilePhoto ? (
-            <img src={`${apiUrl}/${user.profilePhoto}`} alt="profile" />
+            <img src={mediaUrl(user.profilePhoto)} alt="profile" />
           ) : (
             <div className={styles.profilePhotoPlaceholder}>👤</div>
           )}

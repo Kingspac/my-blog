@@ -1,13 +1,7 @@
 const Education = require("../models/Education");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-const multer = require("multer");
-const fs = require("fs");
-
-const uploadMiddleware = multer({
-  dest: "uploads",
-  limits: { fileSize: 200 * 1024 * 1024 }, // 200MB
-});
+const { uploadImage, uploadToCloudinary, deleteFromCloudinary } = require("../utils/cloudinary");
 
 const secret = process.env.JWT_SECRET;
 
@@ -65,7 +59,7 @@ exports.getSingleEducation = async (req, res) => {
 
 // ===== CREATE (logged in, starts as pending) =====
 exports.createEducation = [
-  uploadMiddleware.single("cover"),
+  uploadImage.single("cover"),
   async (req, res) => {
     const { token } = req.cookies;
     try {
@@ -74,14 +68,10 @@ exports.createEducation = [
 
       let coverPath = null;
       if (req.file) {
-        const { originalname, path } = req.file;
-        const ext = originalname.split(".").pop();
-        const newPath = path + "." + ext;
-        fs.renameSync(path, newPath);
-        coverPath = newPath;
+        coverPath = await uploadToCloudinary(req.file.buffer, "enchwra/covers");
       }
 
-      // Check if user is admin — if so, auto-approve
+      // If user is admin, auto-approve
       const user = await User.findById(info.id);
       const status = user?.isAdmin ? "approved" : "pending";
 
@@ -147,7 +137,7 @@ exports.rejectEducation = async (req, res) => {
 
 // ===== EDIT =====
 exports.editEducation = [
-  uploadMiddleware.single("cover"),
+  uploadImage.single("cover"),
   async (req, res) => {
     const { token } = req.cookies;
     try {
@@ -163,16 +153,15 @@ exports.editEducation = [
       if (!isAuthor && !user?.isAdmin) return res.status(403).json("not authorized");
 
       const updateData = { title, content, summary, category, language };
+      let oldCover = null;
       if (req.file) {
-        const { originalname, path } = req.file;
-        const ext = originalname.split(".").pop();
-        const newPath = path + "." + ext;
-        fs.renameSync(path, newPath);
-        updateData.cover = newPath;
+        updateData.cover = await uploadToCloudinary(req.file.buffer, "enchwra/covers");
+        oldCover = educationDoc.cover;
       }
       if (youtubeLink) updateData.youtubeLink = youtubeLink;
 
       const updated = await Education.findByIdAndUpdate(id, updateData, { new: true });
+      if (oldCover) await deleteFromCloudinary(oldCover);
       res.json(updated);
     } catch (e) {
       res.status(500).json({ message: "Failed to edit", error: e.message });
@@ -193,6 +182,7 @@ exports.deleteEducation = async (req, res) => {
     const user = await User.findById(info.id);
     if (!isAuthor && !user?.isAdmin) return res.status(403).json("not authorized");
 
+    await deleteFromCloudinary(educationDoc.cover);
     await educationDoc.deleteOne();
     res.json("deleted successfully");
   } catch (e) {

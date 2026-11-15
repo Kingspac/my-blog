@@ -5,6 +5,7 @@ import Spinner from "../Spinner";
 import { UserContext } from "../UserContext";
 import { useModal } from "../ModalContext";
 import Avatar from "../Avatar";
+import { mediaUrl } from "../mediaUrl";
 
 const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
@@ -19,14 +20,16 @@ function safeDate(dateStr) {
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return "";
     return d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
-  } catch (e) { return ""; }
+  } catch (e) {
+    return "";
+  }
 }
 
 const CATEGORY_ICONS = {
-  history:  { icon: "🏛️", label: "History & Culture",  color: "#6B3410" },
-  language: { icon: "🗣️", label: "Language Lessons",   color: "#5C4033" },
-  health:   { icon: "❤️", label: "Health & Wellness",  color: "#8B2020" },
-  career:   { icon: "💼", label: "Career & Skills",    color: "#2d4a22" },
+  history: { icon: "🏛️", label: "History & Culture", color: "#6B3410" },
+  language: { icon: "🗣️", label: "Language Lessons", color: "#5C4033" },
+  health: { icon: "❤️", label: "Health & Wellness", color: "#8B2020" },
+  career: { icon: "💼", label: "Career & Skills", color: "#2d4a22" },
 };
 
 export default function EducationPostPage() {
@@ -41,8 +44,8 @@ export default function EducationPostPage() {
 
   useEffect(() => {
     fetch(`${apiUrl}/api/education/${id}`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setPostInfo(data);
         setLikes(data.likes?.length || 0);
         if (userInfo?.id) setLiked(data.likes?.includes(userInfo.id));
@@ -61,7 +64,8 @@ export default function EducationPostPage() {
     }
     try {
       const res = await fetch(`${apiUrl}/api/education/${id}/like`, {
-        method: "PUT", credentials: "include",
+        method: "PUT",
+        credentials: "include",
       });
       if (res.ok) {
         const data = await res.json();
@@ -84,7 +88,8 @@ export default function EducationPostPage() {
     if (!confirmed) return;
     try {
       const res = await fetch(`${apiUrl}/api/education/${id}`, {
-        method: "DELETE", credentials: "include",
+        method: "DELETE",
+        credentials: "include",
       });
       if (res.ok) navigate("/education");
       else showError("Failed to delete the post. Please try again.");
@@ -95,14 +100,21 @@ export default function EducationPostPage() {
 
   if (loading) return <Spinner text="Loading post..." />;
 
-  if (!postInfo || postInfo === "not found") return (
-    <div style={{ textAlign: "center", padding: "60px 20px" }}>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", color: "#aaa" }}>Content not found.</p>
-      <Link to="/education" style={{ color: "#CD853F" }}>← Back to Education</Link>
-    </div>
-  );
+  if (!postInfo || postInfo === "not found")
+    return (
+      <div style={{ textAlign: "center", padding: "60px 20px" }}>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", color: "#aaa" }}>Content not found.</p>
+        <Link to="/education" style={{ color: "#CD853F" }}>
+          ← Back to Education
+        </Link>
+      </div>
+    );
 
-  const catInfo = CATEGORY_ICONS[postInfo.category] || { icon: "📚", label: postInfo.category, color: "#8B4513" };
+  const catInfo = CATEGORY_ICONS[postInfo.category] || {
+    icon: "📚",
+    label: postInfo.category,
+    color: "#8B4513",
+  };
   const isAuthor = userInfo?.id === postInfo.author?._id;
   const hasVideo = postInfo.youtubeLink;
 
@@ -381,14 +393,12 @@ export default function EducationPostPage() {
       {/* COVER IMAGE */}
       {postInfo.cover && !hasVideo && (
         <div className="edu-post-cover">
-          <img src={`${apiUrl}/${postInfo.cover}`} alt={postInfo.title} />
+          <img src={mediaUrl(postInfo.cover)} alt={postInfo.title} />
         </div>
       )}
 
       {/* PLACEHOLDER */}
-      {!postInfo.cover && !hasVideo && (
-        <div className="edu-post-placeholder">{catInfo.icon}</div>
-      )}
+      {!postInfo.cover && !hasVideo && <div className="edu-post-placeholder">{catInfo.icon}</div>}
 
       {/* HEADER */}
       <div className="edu-post-header">
@@ -396,30 +406,23 @@ export default function EducationPostPage() {
           <span className="edu-post-badge-cat">
             {catInfo.icon} {catInfo.label}
           </span>
-          {postInfo.language && (
-            <span className="edu-post-badge-lang">
-              🌐 {postInfo.language}
-            </span>
-          )}
-          {hasVideo && (
-            <span className="edu-post-badge-lang">▶️ Video Lesson</span>
-          )}
+          {postInfo.language && <span className="edu-post-badge-lang">🌐 {postInfo.language}</span>}
+          {hasVideo && <span className="edu-post-badge-lang">▶️ Video Lesson</span>}
         </div>
 
         <h1 className="edu-post-title">{postInfo.title}</h1>
 
         <div className="edu-post-meta">
           <span className="edu-post-author">
-            ✍️ By{" "}
-            <Avatar user={postInfo.author} size={24} />{" "}
-            <Link to={`/profile/${postInfo.author?._id}`}>
-              {postInfo.author?.username}
-            </Link>
+            ✍️ By <Avatar user={postInfo.author} size={24} />{" "}
+            <Link to={`/profile/${postInfo.author?._id}`}>{postInfo.author?.username}</Link>
           </span>
           {postInfo.createdAt && (
             <span className="edu-post-date">📅 {safeDate(postInfo.createdAt)}</span>
           )}
-          <span className="edu-post-date">❤️ {likes} {likes === 1 ? "Like" : "Likes"}</span>
+          <span className="edu-post-date">
+            ❤️ {likes} {likes === 1 ? "Like" : "Likes"}
+          </span>
         </div>
 
         {/* Edit / Delete for author */}
@@ -436,10 +439,7 @@ export default function EducationPostPage() {
       </div>
 
       {/* CONTENT */}
-      <div
-        className="edu-post-content"
-        dangerouslySetInnerHTML={{ __html: postInfo.content }}
-      />
+      <div className="edu-post-content" dangerouslySetInnerHTML={{ __html: postInfo.content }} />
 
       {/* LIKE */}
       <div className="edu-like-section">
@@ -459,13 +459,16 @@ export default function EducationPostPage() {
           ← Back to Education
         </Link>
         {!userInfo?.id && (
-          <Link to="/register" style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: "0.82rem",
-            color: "#CD853F",
-            fontWeight: 600,
-            textDecoration: "none"
-          }}>
+          <Link
+            to="/register"
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: "0.82rem",
+              color: "#CD853F",
+              fontWeight: 600,
+              textDecoration: "none",
+            }}
+          >
             Join to like & comment →
           </Link>
         )}

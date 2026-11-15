@@ -1,3 +1,4 @@
+import { mediaUrl } from "../mediaUrl";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Editor from "../Editor";
@@ -13,6 +14,7 @@ export default function EditPost() {
   const [existingCover, setExistingCover] = useState("");
   const [coverPreview, setCoverPreview] = useState(null);
   const [fileError, setFileError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
   const { showError, showConfirm } = useModal();
@@ -38,9 +40,9 @@ export default function EditPost() {
     const file = e.target.files[0];
     if (!file) return;
 
-    const maxSize = 20 * 1024 * 1024; // 20MB
+    const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
-      setFileError("Image too large! Max 20MB.");
+      setFileError("Image too large! Max 10MB.");
       e.target.value = "";
       setFiles(null);
       setCoverPreview(null);
@@ -75,6 +77,7 @@ export default function EditPost() {
   async function updatePost(e) {
     e.preventDefault();
     if (fileError) return;
+    setIsSubmitting(true);
 
     const data = new FormData();
     data.append("title", title);
@@ -87,18 +90,23 @@ export default function EditPost() {
     }
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/post`, {
-        method: "PUT",
-        body: data,
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/post`,
+        {
+          method: "PUT",
+          body: data,
+          credentials: "include",
+        }
+      );
 
+      setIsSubmitting(false);
       if (response.ok) {
         navigate("/post/" + id);
       } else {
         showError("Could not update the post. Please try again.");
       }
     } catch {
+      setIsSubmitting(false);
       showError("Could not update the post. Check your connection.");
     }
   }
@@ -123,10 +131,7 @@ export default function EditPost() {
       {existingCover && !coverPreview && (
         <div className={styles.coverPreview}>
           <p style={{ fontSize: "0.85rem", color: "#666" }}>Current cover image:</p>
-          <img
-            src={`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/` + existingCover}
-            alt="current cover"
-          />
+          <img src={mediaUrl(existingCover)} alt="current cover" />
         </div>
       )}
 
@@ -135,43 +140,30 @@ export default function EditPost() {
         <div className={styles.coverPreview}>
           <p style={{ fontSize: "0.85rem", color: "#666" }}>New cover image:</p>
           <img src={coverPreview} alt="new cover preview" />
-          <button
-            type="button"
-            className={styles.removeCoverBtn}
-            onClick={removeNewCover}
-          >
+          <button type="button" className={styles.removeCoverBtn} onClick={removeNewCover}>
             ❌ Remove New Image
           </button>
         </div>
       )}
 
       {/* FILE INPUT */}
-      <input
-        id="cover-input"
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange}
-      />
-      {fileError && (
-        <p style={{ color: "red", fontSize: "0.85rem" }}>{fileError}</p>
-      )}
+      <input id="cover-input" type="file" accept="image/*" onChange={handleFileChange} />
+      {fileError && <p style={{ color: "red", fontSize: "0.85rem" }}>{fileError}</p>}
 
       {/* EDITOR */}
       <div className={styles.editorWrapper}>
         <Editor onChange={setContent} value={content} />
 
         {content.includes("<img") && (
-          <button
-            type="button"
-            className={styles.removeImagesBtn}
-            onClick={removeEditorImages}
-          >
+          <button type="button" className={styles.removeImagesBtn} onClick={removeEditorImages}>
             🗑️ Remove All Images from Editor
           </button>
         )}
       </div>
 
-      <button style={{ marginTop: "5px" }}>Update Post</button>
+      <button disabled={isSubmitting} style={{ marginTop: "5px" }}>
+        {isSubmitting ? "Updating..." : "Update Post"}
+      </button>
     </form>
   );
 }

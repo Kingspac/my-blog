@@ -20,10 +20,11 @@ export default function CreateEducation() {
   function handleCoverChange(e) {
     const file = e.target.files[0];
     if (!file) return;
-    const maxSize = 1150 * 1024 * 1024; // 5MB
+    const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
-      setFileError("Image too large! Max 150MB.");
+      setFileError("Image too large! Max 10MB.");
       e.target.value = "";
+      setCover(null);
       return;
     }
     setFileError("");
@@ -35,6 +36,7 @@ export default function CreateEducation() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (fileError) return;
     setIsSubmitting(true);
 
     const formData = new FormData();
@@ -47,11 +49,14 @@ export default function CreateEducation() {
     if (cover) formData.append("cover", cover[0]);
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/education/create`, {
-        method: "POST",
-        credentials: "include",
-        body: formData,
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/education/create`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        }
+      );
 
       if (response.ok) {
         navigate("/education");
@@ -67,22 +72,35 @@ export default function CreateEducation() {
 
   if (submitted) {
     return (
-      <div style={{ maxWidth: 500, margin: "40px auto", padding: "30px 20px", textAlign: "center" }}>
+      <div
+        style={{ maxWidth: 500, margin: "40px auto", padding: "30px 20px", textAlign: "center" }}
+      >
         <div style={{ fontSize: "3rem", marginBottom: 16 }}>⏳</div>
         <h2 style={{ fontFamily: "Georgia, serif", color: "#8B4513", marginBottom: 12 }}>
           Submitted for Review!
         </h2>
-        <p style={{ fontFamily: "'DM Sans', sans-serif", color: "#666", lineHeight: 1.6, marginBottom: 20 }}>
-          Your education post has been submitted and is <strong>pending approval</strong>.
-          An admin will review it shortly. Once approved, it will appear in the Education section.
+        <p
+          style={{
+            fontFamily: "'DM Sans', sans-serif",
+            color: "#666",
+            lineHeight: 1.6,
+            marginBottom: 20,
+          }}
+        >
+          Your education post has been submitted and is <strong>pending approval</strong>. An admin
+          will review it shortly. Once approved, it will appear in the Education section.
         </p>
         <button
           onClick={() => navigate("/education")}
           style={{
             background: "linear-gradient(135deg, #8B4513, #CD853F)",
-            color: "white", border: "none", borderRadius: 10,
-            padding: "10px 24px", cursor: "pointer",
-            fontFamily: "'DM Sans', sans-serif", fontSize: "0.95rem"
+            color: "white",
+            border: "none",
+            borderRadius: 10,
+            padding: "10px 24px",
+            cursor: "pointer",
+            fontFamily: "'DM Sans', sans-serif",
+            fontSize: "0.95rem",
           }}
         >
           Back to Education
@@ -96,7 +114,6 @@ export default function CreateEducation() {
       <h1>📚 Create Educational Content</h1>
 
       <form onSubmit={handleSubmit}>
-
         <label>Title *</label>
         <input
           type="text"
@@ -133,11 +150,7 @@ export default function CreateEducation() {
         {category === "language" && (
           <>
             <label>Language *</label>
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              required
-            >
+            <select value={language} onChange={(e) => setLanguage(e.target.value)} required>
               <option value="">Select language...</option>
               <option value="adara">🪨 Adara</option>
               <option value="hausa">Hausa</option>
@@ -146,15 +159,9 @@ export default function CreateEducation() {
           </>
         )}
 
-        <label>Cover Image (Max 150MB)</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleCoverChange}
-        />
-        {fileError && (
-          <p style={{ color: "red", fontSize: "0.85rem" }}>{fileError}</p>
-        )}
+        <label>Cover Image (Max 10MB)</label>
+        <input type="file" accept="image/*" onChange={handleCoverChange} />
+        {fileError && <p style={{ color: "red", fontSize: "0.85rem" }}>{fileError}</p>}
 
         <label>YouTube Link (optional)</label>
         <input

@@ -11,11 +11,14 @@ const educationRoutes = require("./routes/educationRoute");
 
 const app = express();
 
-const allowedOrigins = [
-  "http://localhost:3000",
-  "https://enchwra-project.onrender.com",
-  " http://10.231.87.153:3000",
-];
+// Allowed frontend origins come from FRONTEND_URL in .env.
+// One URL, or several separated by commas.
+const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
+  .split(",")
+  .map((url) => url.trim().replace(/\/+$/, "").replace(/\.$/, ""))
+  .filter(Boolean);
+
+console.log("Allowed origins:", allowedOrigins);
 
 app.use(
   cors({
@@ -24,17 +27,16 @@ app.use(
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
-      } else {
-        return callback(null, false);
       }
+      console.log("CORS blocked origin:", origin);
+      return callback(null, false);
     },
   })
 );
 
-app.use(express.json({ limit: "200mb" }));
-app.use(express.urlencoded({ limit: "200mb", extended: true }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(cookieParser());
-app.use("/uploads", express.static(__dirname + "/uploads"));
 
 // routes
 app.use("/api", userRoutes);
@@ -58,7 +60,7 @@ mongoose
 app.use((err, req, res, next) => {
   if (err.code === "LIMIT_FILE_SIZE") {
     return res.status(400).json({
-      message: "File too large! Maximum allowed size is 200MB.",
+      message: "File too large! Images max 10MB, music/video max 100MB.",
     });
   }
   if (err.code === "LIMIT_UNEXPECTED_FILE") {
@@ -66,7 +68,6 @@ app.use((err, req, res, next) => {
       message: "Unexpected file field.",
     });
   }
-  // Any other error
   console.error("Server error:", err.message);
   res.status(500).json({ message: "Server error", error: err.message });
 });

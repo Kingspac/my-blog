@@ -1,15 +1,9 @@
-const User = require('../models/User');
-const Post = require('../models/Post');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const multer = require("multer");
-const fs = require("fs");
+const User = require("../models/User");
+const Post = require("../models/Post");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const { addCommentPhotos, photoOf } = require("../utils/commentPhotos");
-
-const uploadMiddleware = multer({
-  dest: "uploads",
-  limits: { fileSize: 200 * 1024 * 1024 }
-});
+const { uploadImage, uploadToCloudinary, deleteFromCloudinary } = require("../utils/cloudinary");
 
 const salt = bcrypt.genSaltSync(10);
 const secret = process.env.JWT_SECRET;
@@ -70,25 +64,22 @@ exports.logout = (req, res) => {
 
 // ===== CREATE POST =====
 exports.createPost = [
-  uploadMiddleware.single("cover"),
+  uploadImage.single("cover"),
   async (req, res) => {
     const { token } = req.cookies;
     jwt.verify(token, secret, {}, async (error, info) => {
       if (error) return res.status(403).json("invalid token");
       try {
         const { title, summary, content } = req.body;
-        let newPath = null;
+        let coverUrl = null;
         if (req.file) {
-          const { originalname, path } = req.file;
-          const ext = originalname.split(".").pop();
-          newPath = path + "." + ext;
-          fs.renameSync(path, newPath);
+          coverUrl = await uploadToCloudinary(req.file.buffer, "enchwra/covers");
         }
         const postDoc = await Post.create({
           title,
           summary,
           content,
-          cover: newPath,
+          cover: coverUrl,
           author: info.id,
         });
         res.json({ postDoc });
@@ -96,37 +87,38 @@ exports.createPost = [
         res.status(500).json({ message: "Failed to create post", error: e.message });
       }
     });
-  }
+  },
 ];
 
 // ===== EDIT POST =====
 exports.editPost = [
-  uploadMiddleware.single("cover"),
+  uploadImage.single("cover"),
   async (req, res) => {
-    let newPath = null;
-    if (req.file) {
-      const { originalname, path } = req.file;
-      const ext = originalname.split(".").pop();
-      newPath = path + "." + ext;
-      fs.renameSync(path, newPath);
-    }
     const { token } = req.cookies;
     jwt.verify(token, secret, {}, async (error, info) => {
       if (error) return res.status(403).json("invalid token");
-      const { id, title, summary, content } = req.body;
-      const postDoc = await Post.findById(id);
-      if (!postDoc) return res.status(404).json("post not found");
-      const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
-      if (!isAuthor) return res.status(400).json("you are not the author");
-      await postDoc.updateOne({
-        title,
-        summary,
-        content,
-        cover: newPath ? newPath : postDoc.cover,
-      });
-      res.json({ postDoc });
+      try {
+        const { id, title, summary, content } = req.body;
+        const postDoc = await Post.findById(id);
+        if (!postDoc) return res.status(404).json("post not found");
+        const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
+        if (!isAuthor) return res.status(400).json("you are not the author");
+
+        let cover = postDoc.cover;
+        let oldCover = null;
+        if (req.file) {
+          cover = await uploadToCloudinary(req.file.buffer, "enchwra/covers");
+          oldCover = postDoc.cover;
+        }
+
+        await postDoc.updateOne({ title, summary, content, cover });
+        if (oldCover) await deleteFromCloudinary(oldCover);
+        res.json({ postDoc });
+      } catch (e) {
+        res.status(500).json({ message: "Failed to edit post", error: e.message });
+      }
     });
-  }
+  },
 ];
 
 // ===== GET ALL POSTS =====
@@ -155,6 +147,7 @@ exports.deletePost = async (req, res) => {
     if (!postDoc) return res.status(404).json("post not found");
     const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
     if (!isAuthor) return res.status(403).json("you are not the author");
+    await deleteFromCloudinary(postDoc.cover);
     await postDoc.deleteOne();
     res.json("post deleted successfully");
   });
@@ -170,9 +163,7 @@ exports.likePost = async (req, res) => {
     if (!postDoc) return res.status(404).json("post not found");
     const alreadyLiked = postDoc.likes.includes(info.id);
     if (alreadyLiked) {
-      postDoc.likes = postDoc.likes.filter(
-        userId => userId.toString() !== info.id.toString()
-      );
+      postDoc.likes = postDoc.likes.filter((userId) => userId.toString() !== info.id.toString());
     } else {
       postDoc.likes.push(info.id);
     }
@@ -219,42 +210,44 @@ exports.getProfile = async (req, res) => {
 
 // ===== UPDATE PROFILE =====
 exports.updateProfile = [
-  uploadMiddleware.single("profilePhoto"),
+  uploadImage.single("profilePhoto"),
   async (req, res) => {
     const { token } = req.cookies;
     jwt.verify(token, secret, {}, async (error, info) => {
-      if (error) return res.status(403).json("invalid token");
+      if (error) {
+        console.log("updateProfile: login check failed:", error.message);
+        return res.status(403).json("invalid token");
+      }
       try {
         const { bio } = req.body;
         const updateData = { bio };
+        let oldPhoto = null;
+
         if (req.file) {
-          const { originalname, path } = req.file;
-          const ext = originalname.split(".").pop();
-          const newPath = path + "." + ext;
-          fs.renameSync(path, newPath);
-          updateData.profilePhoto = newPath;
+          const existing = await User.findById(info.id).select("profilePhoto");
+          oldPhoto = existing?.profilePhoto;
+          updateData.profilePhoto = await uploadToCloudinary(req.file.buffer, "enchwra/avatars");
         }
-        const updatedUser = await User.findByIdAndUpdate(
-          info.id,
-          updateData,
-          { new: true }
-        ).select("-password");
+
+        const updatedUser = await User.findByIdAndUpdate(info.id, updateData, { new: true }).select(
+          "-password"
+        );
+
+        if (oldPhoto) await deleteFromCloudinary(oldPhoto);
         res.json(updatedUser);
       } catch (e) {
+        console.error("updateProfile failed:", e);
         res.status(500).json({ message: "Failed to update profile", error: e.message });
       }
     });
-  }
+  },
 ];
-
 // ===== GET ALL USERS (for search) =====
 exports.getUsers = async (req, res) => {
   try {
     const { q } = req.query;
     const query = q ? { username: { $regex: q, $options: "i" } } : {};
-    const users = await User.find(query)
-      .select("_id username bio profilePhoto")
-      .limit(20);
+    const users = await User.find(query).select("_id username bio profilePhoto").limit(20);
     res.json(users);
   } catch (e) {
     res.status(500).json({ message: "Failed to get users", error: e.message });
@@ -277,7 +270,6 @@ exports.deleteAccount = async (req, res) => {
 
       // Clear cookie
       res.cookie("token", "").json({ message: "Account deleted successfully" });
-
     } catch (e) {
       res.status(500).json({ message: "Failed to delete account", error: e.message });
     }

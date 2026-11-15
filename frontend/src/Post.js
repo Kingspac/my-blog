@@ -1,3 +1,4 @@
+import { mediaUrl } from "./mediaUrl";
 import { format, formatISO9075 } from "date-fns";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -191,7 +192,7 @@ export default function Post({
             <div className="tiktok-media-wrapper">
               <Link to={`/post/${_id}`}>
                 <div className="fb-card-image">
-                  <img src={`${apiUrl}/${cover}`} alt={title} />
+                  <img src={mediaUrl(cover)} alt={title} />
                 </div>
               </Link>
 
@@ -275,7 +276,7 @@ export default function Post({
         {/* Thumbnail */}
         <Link to={`/post/${_id}`} className="blog-list-thumb">
           {cover ? (
-            <img src={`${apiUrl}/${cover}`} alt={title} />
+            <img src={mediaUrl(cover)} alt={title} />
           ) : (
             <div className="blog-list-thumb-placeholder">📝</div>
           )}

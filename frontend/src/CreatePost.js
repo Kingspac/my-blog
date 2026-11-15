@@ -21,9 +21,9 @@ export default function CreatePost() {
     const file = e.target.files[0];
     if (!file) return;
 
-    const maxSize = 1150 * 1024 * 1024; // 20MB
+    const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
-      setFileError("Image is too large! Please upload an image smaller than 20MB.");
+      setFileError("Image is too large! Please upload an image smaller than 10MB.");
       e.target.value = "";
       setFiles(null);
       setCoverPreview(null);
@@ -70,11 +70,14 @@ export default function CreatePost() {
     }
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/post`, {
-        method: "POST",
-        body: data,
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL || "http://localhost:4000"}/api/post`,
+        {
+          method: "POST",
+          body: data,
+          credentials: "include",
+        }
+      );
 
       setIsSubmitting(false);
       if (response.ok) {
@@ -89,7 +92,7 @@ export default function CreatePost() {
   }
 
   return (
-    <form onSubmit={createNewPost} >
+    <form onSubmit={createNewPost}>
       <input
         type="text"
         placeholder="Title"
@@ -105,27 +108,16 @@ export default function CreatePost() {
       />
 
       {/* COVER IMAGE INPUT */}
-      <input
-        id="cover-input"
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange}
-      />
+      <input id="cover-input" type="file" accept="image/*" onChange={handleFileChange} />
 
       {/* ERROR MESSAGE */}
-      {fileError && (
-        <p style={{ color: "red", fontSize: "0.85rem" }}>{fileError}</p>
-      )}
+      {fileError && <p style={{ color: "red", fontSize: "0.85rem" }}>{fileError}</p>}
 
       {/* COVER IMAGE PREVIEW */}
       {coverPreview && (
         <div className={styles.coverPreview}>
           <img src={coverPreview} alt="Cover preview" />
-          <button
-            type="button"
-            className={styles.removeCoverBtn}
-            onClick={removeCoverImage}
-          >
+          <button type="button" className={styles.removeCoverBtn} onClick={removeCoverImage}>
             ❌ Remove Cover Image
           </button>
         </div>
@@ -136,11 +128,7 @@ export default function CreatePost() {
         <Editor onChange={setContent} value={content} />
 
         {content.includes("<img") && (
-          <button
-            type="button"
-            className={styles.removeImagesBtn}
-            onClick={removeEditorImages}
-          >
+          <button type="button" className={styles.removeImagesBtn} onClick={removeEditorImages}>
             🗑️ Remove All Images from Editor
           </button>
         )}
