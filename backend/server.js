@@ -13,7 +13,11 @@ const app = express();
 
 // Allowed frontend origins come from FRONTEND_URL in .env.
 // One URL, or several separated by commas.
-const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
+const allowedOrigins = (
+  process.env.FRONTEND_URL ||
+  "https://enchwra-project.onrender.com" ||
+  "http://localhost:3000"
+)
   .split(",")
   .map((url) => url.trim().replace(/\/+$/, "").replace(/\.$/, ""))
   .filter(Boolean);
