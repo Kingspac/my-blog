@@ -11,18 +11,20 @@ const educationRoutes = require("./routes/educationRoute");
 
 const app = express();
 
+// Render sits behind a proxy
+app.set("trust proxy", 1);
+
 // Allowed frontend origins come from FRONTEND_URL in .env.
 // One URL, or several separated by commas.
-const allowedOrigins = (
-  process.env.FRONTEND_URL ||
-  "https://enchwra-project.onrender.com" ||
-  "http://localhost:3000"
-)
+const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
   .split(",")
   .map((url) => url.trim().replace(/\/+$/, "").replace(/\.$/, ""))
   .filter(Boolean);
 
 console.log("Allowed origins:", allowedOrigins);
+
+// Live site (https) needs cross-site cookies. Local (http) keeps normal ones.
+const isSecureSite = allowedOrigins.some((o) => o.startsWith("https://"));
 
 app.use(
   cors({
@@ -37,6 +39,20 @@ app.use(
     },
   })
 );
+
+// Default cookie settings for every res.cookie(...) call in the app
+app.use((req, res, next) => {
+  const originalCookie = res.cookie.bind(res);
+  res.cookie = (name, value, options = {}) =>
+    originalCookie(name, value, {
+      httpOnly: true,
+      secure: isSecureSite,
+      sameSite: isSecureSite ? "none" : "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000, // stay logged in for 30 days
+      ...options,
+    });
+  next();
+});
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
